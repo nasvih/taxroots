@@ -38,3 +38,7 @@ Irish/UK English, € amounts, friendly plain language. Footer already carries t
 2. Screenshot your pages at 1440×900 and 390×844 with Playwright — helper: `node /private/tmp/claude-501/-Users-nasvih/159edcc5-f5d1-4cab-8f93-3ef53fa4c873/scratchpad/shots.mjs <url> <out-prefix> <w> <h> <n-shots>` (scrolls with the wheel so reveals fire; writes <prefix>-0..n.png). Write outputs to the scratchpad dir. LOOK at every screenshot with Read. Fix overflow, collisions, empty gaps, hidden-by-reveal content, contrast.
 3. Check the dev-server console for errors. Stop your dev server when done (TaskStop on its task id — never pkill).
 4. Final reply: files created, anything you needed changed in shared files, open questions. Short.
+
+## Class-name rules (learned the hard way)
+- Never reuse a global utility name (`.mega .note .card .tag .band .pic .lede …` — see base.css/motion.css) as a component's own class: the global style leaks in (the Services dropdown once inherited `.mega`'s 94px headline type).
+- Scoped `<style>` cannot reach markup rendered by a child component (Arrow, Button, Pic, LeadForm…). Use `:global(...)` under your own scoped parent, e.g. `.card :global(svg){…}`.

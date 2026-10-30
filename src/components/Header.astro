@@ -16,7 +16,7 @@ const active = (href: string) => href !== '/' && path.startsWith(href);
           {NAV.map((l) => l.children ? (
             <li class="has-mega">
               <a href={l.href} class:list={['nl', { on: active(l.href) }]} aria-haspopup="true">{l.label}<svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></a>
-              <div class="mega" role="group" aria-label="Services">
+              <div class="mm" role="group" aria-label="Services">
                 <div class="mega-in">
                   <ul class="mega-list">
                     {l.children.map((c) => (
@@ -75,8 +75,8 @@ const active = (href: string) => href !== '/' && path.startsWith(href);
   .end{display:flex;align-items:center;gap:6px}
   /* Mega menu */
   .has-mega{position:relative}
-  .mega{position:absolute;left:50%;top:100%;padding-top:18px;transform:translate(-38%,8px);opacity:0;visibility:hidden;transition:opacity .25s,transform .35s var(--ease-out),visibility .25s}
-  .has-mega:hover .mega,.has-mega:focus-within .mega{opacity:1;visibility:visible;transform:translate(-38%,0)}
+  .mm{position:absolute;left:50%;top:100%;padding-top:18px;transform:translate(-38%,8px);opacity:0;visibility:hidden;transition:opacity .25s,transform .35s var(--ease-out),visibility .25s}
+  .has-mega:hover .mm,.has-mega:focus-within .mm{opacity:1;visibility:visible;transform:translate(-38%,0)}
   .mega-in{display:grid;grid-template-columns:1fr 260px;gap:12px;width:min(880px,90vw);padding:12px;background:#fff;border:1px solid var(--line);border-radius:var(--r-xl);box-shadow:var(--sh-3)}
   .mega-list{display:grid;grid-template-columns:1fr 1fr;gap:2px;list-style:none;margin:0;padding:0}
   .mega-list a{display:grid;gap:2px;padding:12px 14px;border-radius:var(--r-md);text-decoration:none;transition:background .2s}
@@ -87,8 +87,8 @@ const active = (href: string) => href !== '/' && path.startsWith(href);
   .mega-cta strong{color:#fff;font:600 1.15rem/1.25 var(--f-display)}
   .mega-cta img{width:44px;height:auto}
   .mega-cta .go{margin-top:auto;display:inline-flex;align-items:center;gap:8px;color:var(--green-bright);font-weight:600}
-  .mega-cta .go svg{width:16px;transition:transform .3s}
-  .mega-cta:hover .go svg{transform:translateX(4px)}
+  .mega-cta .go :global(svg){width:16px;height:16px;flex:none;transition:transform .3s}
+  .mega-cta:hover .go :global(svg){transform:translateX(4px)}
   /* Burger + mobile */
   .burger{display:none;width:48px;height:48px;border:0;border-radius:50%;background:var(--indigo);cursor:pointer;position:relative}
   .burger span{position:absolute;left:15px;right:15px;height:2px;background:#fff;border-radius:2px;transition:transform .35s var(--ease-out)}
