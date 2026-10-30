@@ -1,0 +1,870 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Button from '../components/Button.astro';
+import Pic from '../components/Pic.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { CTA } from '../data/site';
+import { ESTIMATOR, openYears, deadlineBanner, pick } from '../lib/estimator';
+
+const now = new Date();
+const OPEN = openYears(now);
+// Render one extra (current) year so the page rolls over on 1 January without a rebuild;
+// the client script shows only the years that are open on the visitor's date.
+const YEARS = [...OPEN, OPEN[OPEN.length - 1] + 1];
+const CUR = YEARS[YEARS.length - 1];
+const banner = deadlineBanner(now);
+const range = `${OPEN[0]}–${OPEN[OPEN.length - 1]}`;
+const fmtDate = (d: string) => new Date(d + 'T12:00:00').toLocaleDateString('en-IE', { day: 'numeric', month: 'long', year: 'numeric' });
+
+const DISCLAIMER = "Estimate only. This is a rough guide based on what you've told us and Revenue's published rates. It isn't tax advice or a guarantee. Your actual refund depends on your full tax record and Revenue's review.";
+
+const STEPS = [
+  { id: 'you', label: 'You' },
+  { id: 'rent', label: 'Rent' },
+  { id: 'health', label: 'Health' },
+  { id: 'wfh', label: 'Home working' },
+  { id: 'job', label: 'Your job' },
+  { id: 'college', label: 'College' },
+  { id: 'family', label: 'Family & more' },
+  { id: 'result', label: 'Your estimate' },
+];
+
+type Money = { id: string; step: string; label: string; hint?: string; unit?: string; placeholder?: string };
+const MONEY: Money[] = [
+  { id: 'income', step: 'you', label: 'Roughly what do you earn before tax each year?', hint: 'Optional. For couples, add both incomes together. It helps us pick your tax rate and keep the estimate realistic.', placeholder: 'e.g. 40,000' },
+  { id: 'rent', step: 'rent', label: 'Rent paid in a year', hint: 'Rent for your own home, a place you rent to get to work or college, or your child’s college accommodation. Leave out bills, meals and other charges.', placeholder: 'e.g. 12,000' },
+  { id: 'medical', step: 'health', label: 'Medical and non-routine dental costs', hint: 'What you paid that insurance, the HSE or anyone else didn’t pay back.', placeholder: 'e.g. 800' },
+  { id: 'nursing', step: 'health', label: 'Nursing home fees you paid', hint: 'Only your share, not the HSE’s Fair Deal part. Leave blank if none.', placeholder: 'e.g. 0' },
+  { id: 'wfhDays', step: 'wfh', label: 'Days you worked from home', unit: 'days', hint: 'Full working days at home. Not weekends, annual leave or evenings.', placeholder: 'e.g. 100' },
+  { id: 'wfhBills', step: 'wfh', label: 'Your share of electricity, heating and broadband', hint: 'The full year’s bills, or just the part you paid if you split them.', placeholder: 'e.g. 2,000' },
+  { id: 'wfhAllow', step: 'wfh', label: 'Remote working allowance from your employer, per day', hint: `Employers can pay up to €${ESTIMATOR.remoteWorking.employerTaxFreePerDay.toFixed(2)} a day tax-free. Leave blank if they pay nothing.`, placeholder: 'e.g. 0', },
+];
+const moneyFor = (step: string) => MONEY.filter((m) => m.step === step);
+
+const STATUS = [
+  { v: 'single', t: 'Single', d: 'Including widowed or separated' },
+  { v: 'singleParent', t: 'Single parent', d: 'Single, with a child living with you' },
+  { v: 'marriedOne', t: 'Married, one income', d: 'Or civil partners, one of you earns' },
+  { v: 'marriedTwo', t: 'Married, two incomes', d: 'Or civil partners, you both earn' },
+];
+
+const OTHER = [
+  { id: 'homeCarer', label: 'Home Carer Tax Credit', d: 'Married or civil partners, jointly assessed, with one of you caring for a child, someone 65+ or someone incapacitated at home.', href: '/services/home-carer-tax-credit/', show: 'married' },
+  { id: 'spccc', label: 'Single Person Child Carer Credit', d: 'You’re single and a child lives with you for most of the year. Only one parent can claim.', href: '/services/single-parent-credit/', show: 'single' },
+  { id: 'dr', label: 'Dependent Relative Tax Credit', d: 'You support a relative who can’t support themselves because of age or illness, or a widowed parent.', href: '/services/dependent-relative-age-credits/', show: 'all' },
+  { id: 'age65', label: 'Age Tax Credit', d: 'You (or your spouse or civil partner) were 65 or over in that year.', href: '/services/dependent-relative-age-credits/', show: 'all' },
+];
+
+const faq = [
+  { q: 'How accurate is this estimate?', a: 'It uses Revenue’s published rates and caps for each year, but it only knows what you tell it. We confirm the real figure after checking your Revenue record, and a full review can find more (or occasionally show tax owed).' },
+  { q: 'Why isn’t emergency tax or USC included?', a: 'Emergency tax, USC (Universal Social Charge) overpayments and year-of-marriage refunds depend on your payslips and Revenue record, so a quick tool can’t estimate them. We check all of them in a full review.' },
+  { q: `Why can’t I pick ${CUR}?`, a: `You can claim credits for ${CUR} during the year through myAccount, or on your ${CUR} return from January ${CUR + 1}. This estimator looks at the four closed years Revenue can still repay: ${range}.` },
+  { q: 'Do I need receipts?', a: 'For rent and health expenses, yes: keep your records for six years. Flat Rate Expenses don’t need receipts.' },
+  { q: 'Is anything I type here sent to you?', a: 'No. The estimate is worked out in your browser. Nothing is sent unless you choose to start a claim.' },
+];
+---
+<Base
+  title={`Tax refund estimator, ${range}`}
+  description="Estimate your Irish tax refund in two minutes: rent, medical bills, working from home, flat rate expenses and college fees, using Revenue's published rates."
+>
+  <PageHero
+    title="See what Revenue could owe you."
+    tag="Refund estimator"
+    lede={`Answer a few friendly questions about ${range}. We’ll add up the credits and reliefs you may have missed, year by year, using Revenue’s published rates.`}
+    crumbs={[{ label: 'Refund estimator' }]}
+  >
+    <ul class="hero-points">
+      <li>About two minutes</li><li>Nothing is sent to us</li><li>Rates last checked {fmtDate(ESTIMATOR.lastChecked)}</li>
+    </ul>
+  </PageHero>
+
+  <section class="tool-sec bg-2" id="estimator" aria-label="Refund estimator">
+    <div class="wrap">
+      {banner && (
+        <p class="deadline" data-deadline><strong>{banner.year} refunds close on {fmtDate(banner.date)}.</strong> After that, Revenue can’t repay {banner.year}.</p>
+      )}
+      <p class="disc-top"><strong>Estimate only.</strong> {DISCLAIMER.replace('Estimate only. ', '')}</p>
+
+      <noscript>
+        <div class="nojs card">
+          <h2>The estimator needs JavaScript</h2>
+          <p>It works everything out in your browser, so it can’t run with JavaScript switched off. You can still start a claim and we’ll check every credit and relief for you.</p>
+          <a class="link" href={CTA.href}>{CTA.label}</a>
+        </div>
+      </noscript>
+
+      <form class="tool" id="est" hidden novalidate aria-describedby="est-help" data-years={JSON.stringify(YEARS)} data-cur={CUR}>
+        <p id="est-help" class="sr-only">Eight short steps. Your estimate updates as you type.</p>
+        <div class="main">
+          <nav class="steps" aria-label="Estimator steps">
+            <ol>
+              {STEPS.map((s, i) => (
+                <li><button type="button" class="st" data-go={i} aria-current={i === 0 ? 'step' : undefined}><span class="n">{i + 1}</span><span class="t">{s.label}</span></button></li>
+              ))}
+            </ol>
+            <div class="bar" aria-hidden="true"><i></i></div>
+          </nav>
+
+          <div class="panes">
+            <!-- 1. You -->
+            <section class="pane" data-pane="0" aria-labelledby="h-you">
+              <p class="kick">Step 1 of 8</p>
+              <h2 id="h-you" tabindex="-1">Which years, and a little about you</h2>
+              <fieldset class="grp">
+                <legend>Years to check</legend>
+                <div class="chips">
+                  {YEARS.map((y) => (
+                    <label class="chip" data-year={y} hidden={!OPEN.includes(y)}><input type="checkbox" name="years" value={y} checked={OPEN.includes(y)} /><span>{y}</span></label>
+                  ))}
+                </div>
+                <p class="hint">Revenue can repay the last four closed years. <span data-curnote>{CUR} can be claimed during the year in myAccount, or on your {CUR} return from January {CUR + 1}.</span></p>
+              </fieldset>
+
+              <fieldset class="grp">
+                <legend>Your situation</legend>
+                <div class="cards">
+                  {STATUS.map((s, i) => (
+                    <label class="opt"><input type="radio" name="status" value={s.v} checked={i === 0} /><span><strong>{s.t}</strong><small>{s.d}</small></span></label>
+                  ))}
+                </div>
+              </fieldset>
+
+              {moneyFor('you').map((m) => (
+                <div class="field money" data-money={m.id}>
+                  <label for={`f-${m.id}`}>{m.label}</label>
+                  <div class="eur"><span aria-hidden="true">€</span><input id={`f-${m.id}`} name={m.id} inputmode="decimal" autocomplete="off" placeholder={m.placeholder} aria-describedby={`f-${m.id}-h`} /></div>
+                  <p class="hint" id={`f-${m.id}-h`}>{m.hint}</p>
+                </div>
+              ))}
+
+              <div class="field money" data-show="marriedTwo" hidden>
+                <label for="f-lower">And the lower earner’s yearly income?</label>
+                <div class="eur"><span aria-hidden="true">€</span><input id="f-lower" name="lower" inputmode="decimal" autocomplete="off" placeholder="e.g. 25,000" /></div>
+                <p class="hint">Two-income couples get a bigger 20% band, up to the lower earner’s income.</p>
+              </div>
+
+              <fieldset class="grp" data-show="noIncome">
+                <legend>Do you pay tax at 40% on any of your income?</legend>
+                <div class="seg">
+                  <label><input type="radio" name="answer40" value="yes" /><span>Yes</span></label>
+                  <label><input type="radio" name="answer40" value="no" /><span>No</span></label>
+                  <label><input type="radio" name="answer40" value="unsure" checked /><span>Not sure</span></label>
+                </div>
+                <p class="hint">Not sure? We’ll assume 20%, which keeps the estimate on the cautious side.</p>
+              </fieldset>
+
+              <details class="py">
+                <summary>Did your situation change between years?</summary>
+                <div class="py-body">
+                  <p class="hint">Only fill in what was different. Anything blank uses your answers above.</p>
+                  <div class="py-table">
+                    {YEARS.map((y) => (
+                      <div class="py-row" data-year={y} hidden={!OPEN.includes(y)}>
+                        <strong>{y}</strong>
+                        <label><span>Situation</span>
+                          <select name={`status_${y}`}><option value="">Same as above</option>{STATUS.map((s) => <option value={s.v}>{s.t}</option>)}</select>
+                        </label>
+                        <label><span>Income</span><input name={`income_${y}`} inputmode="decimal" placeholder="€" autocomplete="off" /></label>
+                        <label><span>Income tax paid <em>(if you know it)</em></span><input name={`tax_${y}`} inputmode="decimal" placeholder="€" autocomplete="off" /></label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </details>
+            </section>
+
+            <!-- 2. Rent -->
+            <section class="pane" data-pane="1" aria-labelledby="h-rent" hidden>
+              <p class="kick">Step 2 of 8</p>
+              <h2 id="h-rent" tabindex="-1">Did you pay rent?</h2>
+              <p class="intro">The Rent Tax Credit gives back 20% of the rent you paid, up to a yearly maximum. Parents paying for a student’s college accommodation can often claim it too.</p>
+              <div class="field money" data-money="rent">
+                <label for="f-rent">{MONEY[1].label}</label>
+                <div class="eur"><span aria-hidden="true">€</span><input id="f-rent" name="rent" inputmode="decimal" autocomplete="off" placeholder={MONEY[1].placeholder} aria-describedby="f-rent-h" /></div>
+                <p class="hint" id="f-rent-h">{MONEY[1].hint}</p>
+                <details class="py"><summary>Different each year?</summary><div class="py-grid">{YEARS.map((y) => <label data-year={y} hidden={!OPEN.includes(y)}><span>{y}</span><input name={`rent_${y}`} inputmode="decimal" placeholder="€" autocomplete="off" /></label>)}</div></details>
+              </div>
+              <fieldset class="grp" data-show="married" hidden>
+                <legend>Are you jointly assessed as a couple?</legend>
+                <div class="seg">
+                  <label><input type="radio" name="rentCouple" value="yes" checked /><span>Yes</span></label>
+                  <label><input type="radio" name="rentCouple" value="no" /><span>No</span></label>
+                </div>
+                <p class="hint">Jointly assessed couples share a higher yearly maximum.</p>
+              </fieldset>
+              <aside class="mini-note">
+                <strong>Yearly maximum</strong>
+                <ul class="caps">{OPEN.map((y) => <li><span>{y}</span> €{pick(ESTIMATOR.rentCap.single, y).toLocaleString('en-IE')} single · €{pick(ESTIMATOR.rentCap.couple, y).toLocaleString('en-IE')} couple</li>)}</ul>
+                <p>You can’t claim if you get HAP, Rent Supplement or RAS, or rent from a housing association, or from a relative.</p>
+              </aside>
+            </section>
+
+            <!-- 3. Health -->
+            <section class="pane" data-pane="2" aria-labelledby="h-health" hidden>
+              <p class="kick">Step 3 of 8</p>
+              <h2 id="h-health" tabindex="-1">Doctors, dentists and prescriptions</h2>
+              <p class="intro">You get 20% back on qualifying health costs you paid for yourself or anyone else. Nursing home fees get relief at your highest rate.</p>
+              {moneyFor('health').map((m) => (
+                <div class="field money" data-money={m.id}>
+                  <label for={`f-${m.id}`}>{m.label}</label>
+                  <div class="eur"><span aria-hidden="true">€</span><input id={`f-${m.id}`} name={m.id} inputmode="decimal" autocomplete="off" placeholder={m.placeholder} aria-describedby={`f-${m.id}-h`} /></div>
+                  <p class="hint" id={`f-${m.id}-h`}>{m.hint}</p>
+                  <details class="py"><summary>Different each year?</summary><div class="py-grid">{YEARS.map((y) => <label data-year={y} hidden={!OPEN.includes(y)}><span>{y}</span><input name={`${m.id}_${y}`} inputmode="decimal" placeholder="€" autocomplete="off" /></label>)}</div></details>
+                </div>
+              ))}
+              <div class="two-col">
+                <div><strong class="ok">Usually counts</strong><ul class="ticks"><li>GP and consultant fees</li><li>Prescriptions</li><li>Physio when referred</li><li>Crowns, root canals, braces</li><li>Hearing aids, IVF</li></ul></div>
+                <div><strong class="no">Doesn’t count</strong><ul class="ticks x"><li>Fillings, cleaning, extractions</li><li>Routine eye tests</li><li>Cosmetic treatment</li><li>Anything paid back to you</li></ul></div>
+              </div>
+            </section>
+
+            <!-- 4. WFH -->
+            <section class="pane" data-pane="3" aria-labelledby="h-wfh" hidden>
+              <p class="kick">Step 4 of 8</p>
+              <h2 id="h-wfh" tabindex="-1">Did you work from home?</h2>
+              <p class="intro">Remote Working Relief covers 30% of your electricity, heating and broadband for the days you worked from home, less any allowance your employer paid.</p>
+              {moneyFor('wfh').map((m) => (
+                <div class="field money" data-money={m.id}>
+                  <label for={`f-${m.id}`}>{m.label}</label>
+                  <div class:list={['eur', { days: m.unit }]}>{!m.unit && <span aria-hidden="true">€</span>}<input id={`f-${m.id}`} name={m.id} inputmode={m.unit ? 'numeric' : 'decimal'} autocomplete="off" placeholder={m.placeholder} aria-describedby={`f-${m.id}-h`} />{m.unit && <span class="unit" aria-hidden="true">{m.unit}</span>}</div>
+                  <p class="hint" id={`f-${m.id}-h`}>{m.hint}</p>
+                  {m.id !== 'wfhAllow' && <details class="py"><summary>Different each year?</summary><div class="py-grid">{YEARS.map((y) => <label data-year={y} hidden={!OPEN.includes(y)}><span>{y}</span><input name={`${m.id}_${y}`} inputmode="decimal" placeholder={m.unit ? 'days' : '€'} autocomplete="off" /></label>)}</div></details>}
+                </div>
+              ))}
+            </section>
+
+            <!-- 5. Job -->
+            <section class="pane" data-pane="4" aria-labelledby="h-job" hidden>
+              <p class="kick">Step 5 of 8</p>
+              <h2 id="h-job" tabindex="-1">What do you do for work?</h2>
+              <p class="intro">Many jobs have a Flat Rate Expense agreed with Revenue, for things like uniforms, tools or registration fees. It comes off your taxable income every year, and you don’t need receipts.</p>
+              <div class="field">
+                <label for="f-job">Your job</label>
+                <select id="f-job" name="job">
+                  <option value="">Other / not listed</option>
+                  {ESTIMATOR.fre.map((f) => <option value={f.id}>{f.label}</option>)}
+                </select>
+                <p class="hint">Not on the list? There are many more on Revenue’s list. We check your exact role when we review your claim.</p>
+              </div>
+              <fieldset class="grp" data-show="job" hidden>
+                <legend>Is this already on your Tax Credit Certificate?</legend>
+                <div class="seg">
+                  <label><input type="radio" name="freCert" value="no" /><span>No</span></label>
+                  <label><input type="radio" name="freCert" value="yes" /><span>Yes</span></label>
+                  <label><input type="radio" name="freCert" value="unsure" checked /><span>Not sure</span></label>
+                </div>
+                <p class="hint">If it’s already there, you’re getting it, so we leave it out.</p>
+              </fieldset>
+              <p class="fre-amt" data-fre-amt aria-live="polite"></p>
+            </section>
+
+            <!-- 6. College -->
+            <section class="pane" data-pane="5" aria-labelledby="h-college" hidden>
+              <p class="kick">Step 6 of 8</p>
+              <h2 id="h-college" tabindex="-1">Did you pay college fees?</h2>
+              <p class="intro">Tuition fees relief gives 20% back on approved third-level courses, for you or anyone you paid for. The first part of the fees in each year doesn’t count, so a student contribution on its own usually gets nothing back.</p>
+              <div class="courses" data-courses></div>
+              <button type="button" class="add" data-add-course><span aria-hidden="true">+</span> Add a course</button>
+              <p class="hint" data-tuition-note></p>
+              <template id="course-tpl">
+                <div class="course">
+                  <label><span>Year paid</span><select data-c="year">{YEARS.map((y) => <option value={y} data-year={y} hidden={!OPEN.includes(y)}>{y}</option>)}</select></label>
+                  <label><span>Fees you paid</span><span class="eur sm"><span aria-hidden="true">€</span><input data-c="fee" inputmode="decimal" placeholder="e.g. 8,500" autocomplete="off" /></span></label>
+                  <label><span>Course type</span><select data-c="ft"><option value="1">Full-time</option><option value="0">Part-time</option></select></label>
+                  <button type="button" class="rm" data-rm aria-label="Remove this course">Remove</button>
+                </div>
+              </template>
+            </section>
+
+            <!-- 7. Family & more -->
+            <section class="pane" data-pane="6" aria-labelledby="h-family" hidden>
+              <p class="kick">Step 7 of 8</p>
+              <h2 id="h-family" tabindex="-1">Family, and anything else that happened</h2>
+              <fieldset class="grp">
+                <legend>Credits you think you might have missed</legend>
+                <div class="checkcards">
+                  {OTHER.map((o) => (
+                    <label class="opt chk" data-only={o.show}><input type="checkbox" name={o.id} value="yes" /><span><strong>{o.label}</strong><small>{o.d} <a href={o.href} target="_blank" rel="noopener">Conditions apply</a></small></span></label>
+                  ))}
+                  <div class="count">
+                    <span><strong id="icc-l">Incapacitated Child Tax Credit</strong><small>A child with a lasting physical or mental incapacity. <a href="/services/incapacitated-child-credit/" target="_blank" rel="noopener">Conditions apply</a></small></span>
+                    <label class="cnt"><span>Children</span><input type="number" name="icc" min="0" max="9" step="1" value="0" inputmode="numeric" aria-labelledby="icc-l" /></label>
+                  </div>
+                </div>
+                <p class="hint">We count these for every year you picked. We check each year properly when we review your record.</p>
+              </fieldset>
+              <fieldset class="grp">
+                <legend>Did any of these happen since {OPEN[0]}? <span class="opt-l">(we can’t estimate them, but we check them)</span></legend>
+                <div class="checkcards slim">
+                  <label class="opt chk"><input type="checkbox" name="emerg" value="yes" /><span><strong>Emergency tax, or a new job</strong></span></label>
+                  <label class="opt chk"><input type="checkbox" name="outOfWork" value="yes" /><span><strong>Time out of work</strong></span></label>
+                  <label class="opt chk"><input type="checkbox" name="leftIE" value="yes" /><span><strong>Left Ireland, or leaving soon</strong></span></label>
+                  <label class="opt chk"><input type="checkbox" name="married" value="yes" /><span><strong>Got married or entered a civil partnership</strong></span></label>
+                </div>
+              </fieldset>
+            </section>
+
+            <!-- 8. Result -->
+            <section class="pane res-pane" data-pane="7" aria-labelledby="h-result" hidden>
+              <p class="kick">Step 8 of 8</p>
+              <h2 id="h-result" tabindex="-1" data-headline>Your estimate</h2>
+              <p class="disc-in">{DISCLAIMER}</p>
+              <div class="years" data-years-out></div>
+              <p class="zero" data-zero hidden>We couldn’t estimate a refund from these answers, but there may be things this tool can’t see, like emergency tax or USC (Universal Social Charge). Want us to take a proper look? No refund, no fee.</p>
+              <p class="fee" data-fee hidden></p>
+              <h3 class="cav-h">Good to know</h3>
+              <ul class="cav">
+                <li>Credits can’t be more than the income tax you paid in a year, so we cap each year where we can.</li>
+                <li>Rent and health relief need records. Keep receipts for six years.</li>
+                <li>Emergency tax, USC and year-of-marriage refunds aren’t estimated here, but we check them.</li>
+                <li>A review can sometimes show tax owed. If it does, we tell you before anything is filed.</li>
+                <li data-couple-note hidden>For couples we can’t cap the estimate without your tax figures, so it may be on the high side.</li>
+              </ul>
+              <p class="confirm">We’ll confirm the real figure after checking your Revenue record.</p>
+              <div class="btns">
+                <Button href={CTA.href} variant="green" data-cta>{CTA.label}</Button>
+                <button type="button" class="btn ghost plain" data-go="0">Change my answers</button>
+              </div>
+            </section>
+          </div>
+
+          <div class="nav-btns">
+            <button type="button" class="btn ghost plain" data-prev disabled>Back</button>
+            <Button data-next variant="">Next</Button>
+          </div>
+        </div>
+
+        <aside class="panel" aria-labelledby="p-h">
+          <div class="panel-in">
+            <p class="p-label" id="p-h">You could be owed around</p>
+            <p class="big" aria-hidden="true"><span data-total>€0</span></p>
+            <p class="sr-only" aria-live="polite" data-live></p>
+            <p class="p-sub" data-sub>across 4 years</p>
+            <ul class="rel" data-rel></ul>
+            <p class="p-empty" data-empty>Start answering and your estimate builds here.</p>
+            <p class="p-disc">{DISCLAIMER}</p>
+            <a class="btn green p-cta" href={CTA.href} data-cta><span>{CTA.label}</span><span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+          </div>
+        </aside>
+
+        <div class="mbar off" data-mbar aria-hidden="true">
+          <div><small>Estimate</small><strong data-total-m>€0</strong></div>
+          <button type="button" class="btn white sm plain" data-go="7" tabindex="-1">See breakdown</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="sec how">
+    <div class="wrap how-in">
+      <div>
+        <h2 class="split">What the estimator counts, and what it can’t see</h2>
+        <p class="lede rv">It uses each year’s published rates: the Rent Tax Credit at 20% up to the yearly maximum, health expenses at 20%, Remote Working Relief and Flat Rate Expenses at your tax rate, tuition fees at 20% after the yearly disregard, and the main family credits.</p>
+        <p class="rv">A full review goes further. We look at your actual Revenue record for every open year, including emergency tax, USC, joint assessment in the year you married and any jobs that overlapped.</p>
+        <div class="btns rv"><Button href="/how-it-works/" variant="ghost">How a claim works</Button></div>
+      </div>
+      <Pic src="hero-woman-smiling-phone.jpg" alt="Young woman in glasses smiling as she reads good news on her phone" ratio="4/5" />
+    </div>
+  </section>
+
+  <section class="sec-s bg-2">
+    <div class="wrap faq-wrap">
+      <h2 class="split">Estimator questions</h2>
+      <Faq items={faq} />
+    </div>
+  </section>
+
+  <CtaBand title="Want the real figure?" text={`Start your claim and we’ll check every open year (${range}) against your Revenue record. Revenue pays any refund straight into your own bank account. No refund, no fee.`} />
+</Base>
+
+<style>
+  .hero-points{display:flex;flex-wrap:wrap;gap:10px;list-style:none;padding:0;margin:0}
+  .hero-points li{padding:8px 14px;border-radius:var(--r-pill);background:var(--green-50);color:var(--green-ink);font:600 var(--fs-sm)/1.2 var(--f-body)}
+  .tool-sec{padding-block:clamp(40px,5vw,80px)}
+  .deadline{margin:0 0 var(--s4);padding:14px 20px;border-radius:var(--r-md);background:var(--indigo);color:#fff;font-size:var(--fs-sm)}
+  .deadline strong{color:var(--green-bright)}
+  .disc-top{margin:0 0 var(--s5);font-size:var(--fs-sm);color:var(--ink-2);max-width:90ch}
+  .nojs{max-width:640px}
+  .nojs h2{font-size:var(--fs-h3);margin-bottom:var(--s3)}
+
+  .tool{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:clamp(20px,2.5vw,36px);align-items:start}
+  .tool[hidden]{display:none}
+  .main{background:#fff;border-radius:var(--r-xl);padding:clamp(20px,3vw,44px);box-shadow:var(--sh-1);min-width:0}
+
+  /* stepper */
+  .steps ol{display:flex;gap:6px;list-style:none;margin:0;padding:0;overflow-x:auto;scrollbar-width:none}
+  .steps ol::-webkit-scrollbar{display:none}
+  .st{display:flex;align-items:center;gap:8px;border:0;background:none;padding:8px 10px 8px 6px;border-radius:var(--r-pill);cursor:pointer;color:var(--ink-3);font:500 var(--fs-xs)/1 var(--f-body);white-space:nowrap;transition:background .2s,color .2s}
+  .st .n{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--bg-2);font:600 .75rem/1 var(--f-display);transition:background .25s,color .25s}
+  .st:hover{background:var(--indigo-50);color:var(--indigo)}
+  .st.done .n{background:var(--green-50);color:var(--green-ink)}
+  .st[aria-current] {color:var(--indigo);background:var(--indigo-50)}
+  .st[aria-current] .n{background:var(--indigo);color:#fff}
+  .bar{height:4px;background:var(--bg-2);border-radius:4px;margin:12px 0 0;overflow:hidden}
+  .bar i{display:block;height:100%;width:100%;background:var(--green);transform-origin:0 50%;transform:scaleX(var(--p,.125));transition:transform .6s var(--ease-out)}
+
+  .panes{margin-top:clamp(24px,3vw,40px);min-height:420px}
+  .pane{display:grid;gap:var(--s5)}
+  .pane[hidden]{display:none}
+  .pane.enter{animation:pane-in .55s var(--ease-out)}
+  .pane.enter.back{animation-name:pane-back}
+  @keyframes pane-in{from{opacity:0;transform:translate3d(28px,0,0)}}
+  @keyframes pane-back{from{opacity:0;transform:translate3d(-28px,0,0)}}
+  @media (prefers-reduced-motion:reduce){.pane.enter{animation:none}}
+  .kick{margin:0;font:600 var(--fs-xs)/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--green-ink)}
+  .pane h2{font-size:clamp(1.5rem,1.1rem + 1.4vw,2.25rem);margin-top:-8px;outline:none}
+  .intro{margin:0;color:var(--ink-2);max-width:62ch}
+  .grp{border:0;margin:0;padding:0;display:grid;gap:12px;min-width:0}
+  .grp[hidden],.field[hidden]{display:none}
+  legend{font:600 var(--fs-sm)/1.3 var(--f-body);color:var(--ink);padding:0;margin-bottom:12px}
+  .opt-l{font-weight:400;color:var(--ink-3)}
+  .hint{margin:0;font-size:var(--fs-xs);color:var(--ink-3);max-width:70ch}
+
+  .chips{display:flex;flex-wrap:wrap;gap:10px}
+  .chip input,.opt input,.seg input{position:absolute;opacity:0;width:1px;height:1px}
+  .chip span{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 22px;border-radius:var(--r-pill);border:1.5px solid var(--line-2);font:600 1rem/1 var(--f-display);color:var(--ink-2);cursor:pointer;transition:all .2s}
+  .chip span::before{content:"";width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line-2);transition:all .2s}
+  .chip input:checked+span{background:var(--indigo);border-color:var(--indigo);color:#fff}
+  .chip input:checked+span::before{border-color:#fff;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23322783' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/12px no-repeat}
+  :is(.chip,.opt,.seg label) input:focus-visible+span{outline:3px solid var(--green);outline-offset:3px}
+
+  .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .opt{position:relative;display:block;cursor:pointer}
+  .opt>span{display:grid;gap:4px;align-content:start;height:100%;padding:16px 18px 16px 50px;border:1.5px solid var(--line);border-radius:var(--r-md);background:#fff;transition:border-color .2s,background .2s}
+  .opt>span::before{content:"";position:absolute;left:18px;top:18px;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line-2);background:#fff;transition:all .2s}
+  .opt strong{font:600 1rem/1.25 var(--f-display)}
+  .opt small{font-size:var(--fs-xs);color:var(--ink-3);line-height:1.45}
+  .opt small a{color:var(--indigo)}
+  .opt:hover>span{border-color:var(--indigo-100)}
+  .opt input:checked+span{border-color:var(--indigo);background:var(--indigo-50)}
+  .opt input:checked+span::before{border:6px solid var(--indigo)}
+  .opt.chk>span::before{border-radius:6px}
+  .opt.chk input:checked+span::before{border:0;background:var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/13px no-repeat}
+  .opt.chk input:checked+span{border-color:var(--green);background:var(--green-50)}
+  .opt[hidden]{display:none}
+  .checkcards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .checkcards.slim .opt>span{padding-block:14px}
+  .count{display:flex;align-items:center;gap:12px;padding:16px 18px;border:1.5px solid var(--line);border-radius:var(--r-md);cursor:default}
+  .count>span{display:grid;gap:4px;flex:1}
+  .count strong{font:600 1rem/1.25 var(--f-display);color:var(--ink)}
+  .count small{font-size:var(--fs-xs);color:var(--ink-3);line-height:1.45}
+  .count small a{color:var(--indigo)}
+  .cnt{display:grid;gap:4px;font-size:var(--fs-xs);color:var(--ink-3)}
+  .cnt input{width:72px;min-height:46px;border:1.5px solid var(--line-2);border-radius:var(--r-sm);padding:8px 10px;text-align:center;font-weight:600}
+  .cnt input:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 4px var(--indigo-50)}
+
+  .seg{display:inline-flex;flex-wrap:wrap;gap:6px;padding:5px;border-radius:var(--r-pill);background:var(--bg-2);width:fit-content}
+  .seg label{position:relative;cursor:pointer}
+  .seg span{display:inline-flex;align-items:center;min-height:42px;padding:0 20px;border-radius:var(--r-pill);font:600 var(--fs-sm)/1 var(--f-body);color:var(--ink-2);transition:all .2s}
+  .seg input:checked+span{background:#fff;color:var(--indigo);box-shadow:var(--sh-1)}
+
+  .money label{font-size:1rem}
+  .eur{position:relative;display:flex;align-items:center}
+  .eur>span:first-child{position:absolute;left:18px;font:600 1.15rem/1 var(--f-display);color:var(--ink-3);pointer-events:none}
+  .eur input{padding-left:40px!important;font:600 1.2rem/1 var(--f-display)!important;letter-spacing:-.01em;min-height:58px!important;max-width:340px}
+  .eur.days input{padding-left:18px!important;max-width:200px}
+  .eur .unit{margin-left:12px;color:var(--ink-3);font-weight:500}
+  .eur.sm input{min-height:48px!important;font-size:1rem!important;max-width:none}
+  .eur.sm>span:first-child{font-size:1rem;left:14px}
+  .eur.sm input{padding-left:32px!important}
+
+  .py{margin-top:4px}
+  .py summary{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font:600 var(--fs-sm)/1.3 var(--f-body);color:var(--indigo);list-style:none;padding:6px 0}
+  .py summary::-webkit-details-marker{display:none}
+  .py summary::after{content:"";width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;rotate:45deg;translate:0 -2px;transition:rotate .3s}
+  .py[open] summary::after{rotate:225deg;translate:0 2px}
+  .py-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px;max-width:560px}
+  .py-grid label,.py-row label,.course label{display:grid;gap:4px;font-size:var(--fs-xs);font-weight:600;color:var(--ink-2)}
+  .py-grid label[hidden],.py-row[hidden]{display:none}
+  :is(.py-grid,.py-row,.course) :is(input,select){width:100%;min-height:46px;padding:10px 12px;border:1.5px solid var(--line-2);border-radius:var(--r-sm);background:#fff;font:500 var(--fs-sm)/1.2 var(--f-body);color:var(--ink)}
+  :is(.py-grid,.py-row,.course) :is(input,select):focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 4px var(--indigo-50)}
+  .py-body{display:grid;gap:12px;margin-top:10px}
+  .py-table{display:grid;gap:10px}
+  .py-row{display:grid;grid-template-columns:52px repeat(3,minmax(0,1fr));gap:10px;align-items:end;padding:12px;border-radius:var(--r-md);background:var(--bg-2)}
+  .py-row>strong{font:600 1rem/1 var(--f-display);padding-bottom:14px}
+  .py-row em{font-style:normal;font-weight:400;color:var(--ink-3)}
+
+  .mini-note{padding:18px 20px;border-radius:var(--r-md);background:var(--indigo-50);font-size:var(--fs-sm);color:var(--ink-2)}
+  .mini-note p{margin:10px 0 0}
+  .caps{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:4px}
+  .caps span{display:inline-block;width:48px;font-weight:600;color:var(--indigo)}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .two-col>div{padding:18px 20px;border-radius:var(--r-md);background:var(--bg-2);font-size:var(--fs-sm)}
+  .ok{color:var(--green-ink)} .no{color:var(--err)}
+  .ticks{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:6px}
+  .ticks li{padding-left:22px;position:relative}
+  .ticks li::before{content:"";position:absolute;left:2px;top:.45em;width:9px;height:5px;border-left:2px solid var(--green-ink);border-bottom:2px solid var(--green-ink);rotate:-45deg}
+  .ticks.x li::before{width:10px;height:2px;border:0;background:var(--err);rotate:45deg;top:.7em;box-shadow:none}
+  .ticks.x li::after{content:"";position:absolute;left:2px;top:.7em;width:10px;height:2px;background:var(--err);rotate:-45deg}
+  .fre-amt{margin:0;font:600 1rem/1.4 var(--f-display);color:var(--indigo)}
+  .fre-amt:empty{display:none}
+
+  .courses{display:grid;gap:10px}
+  .course{display:grid;grid-template-columns:110px minmax(0,1fr) 150px auto;gap:10px;align-items:end;padding:14px;border-radius:var(--r-md);background:var(--bg-2);animation:pane-in .4s var(--ease-out)}
+  .rm{min-height:46px;padding:0 14px;border:0;background:none;color:var(--err);font:600 var(--fs-sm)/1 var(--f-body);cursor:pointer;border-radius:var(--r-sm)}
+  .rm:hover{background:#fff}
+  .add{justify-self:start;display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 20px 0 8px;border-radius:var(--r-pill);border:1.5px dashed var(--line-2);background:#fff;color:var(--indigo);font:600 var(--fs-sm)/1 var(--f-display);cursor:pointer}
+  .add span{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--indigo);color:#fff;font-size:1.2rem}
+  .add:hover{border-color:var(--indigo);background:var(--indigo-50)}
+
+  .nav-btns{display:flex;justify-content:space-between;gap:12px;margin-top:clamp(28px,3vw,40px);padding-top:24px;border-top:1px solid var(--line)}
+  .nav-btns [disabled]{opacity:.35;cursor:default}
+  .nav-btns .btn{flex:0 0 auto}
+
+  /* result step */
+  .disc-in{margin:0;padding:14px 18px;border-radius:var(--r-md);background:var(--indigo-50);color:var(--ink);font-size:var(--fs-sm)}
+  .years{display:grid;gap:12px}
+  .years :global(.yr){border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px}
+  .years :global(.yr-h){display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:8px}
+  .years :global(.yr-h h3){font-size:1.15rem}
+  .years :global(.yr-h strong){font:600 1.2rem/1 var(--f-display);color:var(--indigo)}
+  .years :global(.yr ul){list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:var(--fs-sm)}
+  .years :global(.yr li){display:flex;justify-content:space-between;gap:12px;border-top:1px dashed var(--line);padding-top:6px}
+  .years :global(.yr li span:last-child){font-variant-numeric:tabular-nums;color:var(--ink)}
+  .years :global(.yr .capn){margin:8px 0 0;font-size:var(--fs-xs);color:var(--ink-3)}
+  .years :global(.yr.cur){background:var(--bg-2);border-style:dashed}
+  .years :global(.yr .none){color:var(--ink-3);font-size:var(--fs-sm);margin:0}
+  .zero{margin:0;padding:16px 18px;border-radius:var(--r-md);background:var(--green-50);color:var(--ink)}
+  .fee{margin:0;font-weight:600;color:var(--ink)}
+  .cav-h{font-size:1.1rem;margin-top:8px}
+  .cav{margin:0;padding-left:1.2em;display:grid;gap:6px;font-size:var(--fs-sm)}
+  .cav li[hidden]{display:none}
+  .confirm{margin:0;font-weight:600;color:var(--ink)}
+
+  /* panel */
+  .panel{position:sticky;top:calc(var(--header-h) + 20px)}
+  .panel-in{background:var(--indigo);color:var(--on-dark-2);border-radius:var(--r-xl);padding:clamp(24px,2.6vw,36px);display:grid;gap:12px;box-shadow:var(--sh-2)}
+  .p-label{margin:0;font:600 var(--fs-sm)/1.2 var(--f-body);color:#fff}
+  .big{margin:0;font:700 clamp(3.4rem,2.4rem + 3vw,5.2rem)/.95 var(--f-display);letter-spacing:-.045em;color:var(--green-bright);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .big.pop{animation:pop .5s var(--ease-out)}
+  @keyframes pop{40%{transform:scale(1.04)}}
+  .p-sub{margin:0;color:#fff;font-weight:500}
+  .rel{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:10px}
+  .rel :global(li){display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:var(--fs-sm);color:#fff}
+  .rel :global(li b){font-weight:600;font-variant-numeric:tabular-nums}
+  .rel :global(li i){grid-column:1/-1;height:6px;border-radius:6px;background:rgba(255,255,255,.12);overflow:hidden}
+  .rel :global(li i::after){content:"";display:block;height:100%;width:100%;background:var(--green-bright);transform-origin:0 50%;transform:scaleX(var(--w,0));transition:transform .7s var(--ease-out)}
+  .p-empty{margin:0;font-size:var(--fs-sm)}
+  .p-empty[hidden]{display:none}
+  .p-disc{margin:8px 0 0;padding-top:14px;border-top:1px solid var(--line-dark);font-size:var(--fs-xs);line-height:1.5;color:var(--on-dark-2)}
+  .p-cta{justify-content:space-between;margin-top:6px}
+
+  .mbar{display:none}
+
+  .how-in{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(32px,5vw,80px);align-items:center}
+  .how-in h2{margin-bottom:var(--s5)}
+  .how-in :global(.pic){max-width:460px;justify-self:end;width:100%;border-radius:var(--r-xl)}
+  .faq-wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(24px,4vw,64px);align-items:start}
+
+  @media (max-width:1080px){
+    .tool{grid-template-columns:minmax(0,1fr) 340px}
+  }
+  @media (max-width:980px){
+    .tool{grid-template-columns:1fr}
+    .panel{position:static}
+    .mbar{position:fixed;left:12px;right:12px;bottom:12px;z-index:90;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 10px 10px 20px;border-radius:var(--r-pill);background:var(--indigo);color:#fff;box-shadow:var(--sh-3);transition:transform .45s var(--ease-out),opacity .3s}
+    .mbar small{display:block;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--on-dark-2)}
+    .mbar strong{font:700 1.35rem/1 var(--f-display);color:var(--green-bright)}
+    .mbar.off{transform:translateY(140%);opacity:0;pointer-events:none}
+    .how-in,.faq-wrap{grid-template-columns:1fr}
+    .how-in :global(.pic){justify-self:start;max-width:420px}
+  }
+  @media (max-width:640px){
+    .cards,.checkcards,.two-col{grid-template-columns:1fr}
+    .main{padding:20px 16px;border-radius:var(--r-lg)}
+    .st .t{display:none}
+    .st[aria-current] .t{display:inline}
+    .py-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .py-row{grid-template-columns:1fr 1fr}
+    .py-row>strong{grid-column:1/-1;padding:0}
+    .py-row label:first-of-type{grid-column:1/-1}
+    .course{grid-template-columns:1fr 1fr}
+    .course label:nth-child(2){grid-column:1/-1;order:-1}
+    .course .rm{grid-column:1/-1;justify-self:start;min-height:36px;padding:0}
+    .eur input{max-width:none}
+    .panes{min-height:0}
+    .nav-btns .btn{flex:1 1 0;justify-content:center}
+    .nav-btns .btn[data-next]{justify-content:space-between}
+  }
+</style>
+
+<script>
+  import { ESTIMATOR, calculate, openYears, euro, freAmount, pick, type YearInput, type Status, type Course } from '../lib/estimator';
+
+  const form = document.getElementById('est') as HTMLFormElement;
+  form.hidden = false;
+  const ALL: number[] = JSON.parse(form.dataset.years!);
+  const OPEN = openYears();
+  const CUR = OPEN[OPEN.length - 1] + 1;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $ = <T extends Element = HTMLElement>(s: string, r: ParentNode = form) => r.querySelector<T>(s)!;
+  const $$ = <T extends Element = HTMLElement>(s: string, r: ParentNode = form) => Array.from(r.querySelectorAll<T>(s));
+  const KEY = 'tr-estimator-v1';
+
+  // Roll the year list over to the visitor's date (page may have been built last year).
+  $$<HTMLElement>('[data-year]').forEach((el) => {
+    const y = +el.dataset.year!;
+    const open = OPEN.includes(y);
+    if (el instanceof HTMLOptionElement) { el.hidden = !open; el.disabled = !open; } else el.hidden = !open;
+    const cb = el.querySelector<HTMLInputElement>('input[name=years]');
+    if (cb && !open) cb.checked = false;
+  });
+  const curNote = $('[data-curnote]');
+  if (curNote) curNote.textContent = `${CUR} can be claimed during the year in myAccount, or on your ${CUR} return from January ${CUR + 1}.`;
+
+  const num = (v: string | null | undefined) => {
+    const x = parseFloat(String(v ?? '').replace(/[€,\s]/g, ''));
+    return isFinite(x) && x > 0 ? x : 0;
+  };
+  const val = (name: string) => (form.elements.namedItem(name) as HTMLInputElement | RadioNodeList | null)?.value ?? '';
+  const checked = (name: string) => !!form.querySelector<HTMLInputElement>(`[name="${name}"]:checked`);
+  const perYear = (name: string, y: number) => { const v = val(`${name}_${y}`); return v.trim() ? num(v) : num(val(name)); };
+
+  // ---- courses ----
+  const coursesBox = $('[data-courses]');
+  const tpl = document.getElementById('course-tpl') as HTMLTemplateElement;
+  function addCourse(c?: { year?: number; fee?: string; ft?: string }) {
+    const node = tpl.content.firstElementChild!.cloneNode(true) as HTMLElement;
+    const sel = node.querySelector<HTMLSelectElement>('[data-c=year]')!;
+    Array.from(sel.options).forEach((o) => { const open = OPEN.includes(+o.value); o.hidden = !open; o.disabled = !open; });
+    sel.value = String(c?.year && OPEN.includes(c.year) ? c.year : OPEN[OPEN.length - 1]);
+    if (c?.fee) node.querySelector<HTMLInputElement>('[data-c=fee]')!.value = c.fee;
+    if (c?.ft) node.querySelector<HTMLSelectElement>('[data-c=ft]')!.value = c.ft;
+    coursesBox.appendChild(node);
+    return node;
+  }
+  const readCourses = () => $$('.course', coursesBox).map((el) => ({
+    year: +el.querySelector<HTMLSelectElement>('[data-c=year]')!.value,
+    fee: el.querySelector<HTMLInputElement>('[data-c=fee]')!.value,
+    ft: el.querySelector<HTMLSelectElement>('[data-c=ft]')!.value,
+  }));
+  $('[data-add-course]').addEventListener('click', () => { const n = addCourse(); n.querySelector<HTMLInputElement>('[data-c=fee]')!.focus(); update(); });
+  coursesBox.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest('[data-rm]'); if (!b) return;
+    b.closest('.course')!.remove(); update(); $('[data-add-course]').focus();
+  });
+
+  // ---- inputs → model ----
+  function selectedYears() { return $$<HTMLInputElement>('input[name=years]:checked').map((i) => +i.value).filter((y) => OPEN.includes(y)).sort(); }
+  function inputFor(y: number): YearInput {
+    const status = ((val(`status_${y}`) || val('status')) as Status) || 'single';
+    const married = status === 'marriedOne' || status === 'marriedTwo';
+    const single = !married;
+    const incY = val(`income_${y}`).trim() ? num(val(`income_${y}`)) : num(val('income'));
+    const courses: Course[] = readCourses().filter((c) => c.year === y).map((c) => ({ fee: num(c.fee), fullTime: c.ft === '1' }));
+    return {
+      status,
+      income: incY || null,
+      lowerEarnerIncome: num(val('lower')) || null,
+      answer40: (val('answer40') as any) || 'unsure',
+      rent: perYear('rent', y),
+      rentCouple: married && val('rentCouple') === 'yes',
+      medical: perYear('medical', y),
+      nursingHome: perYear('nursing', y),
+      wfhDays: Math.min(perYear('wfhDays', y), pick(ESTIMATOR.daysInYear, y)),
+      wfhBills: perYear('wfhBills', y),
+      wfhAllowancePerDay: num(val('wfhAllow')),
+      job: val('job'),
+      freOnCertificate: (val('freCert') as any) || 'unsure',
+      courses,
+      homeCarer: married && checked('homeCarer'),
+      singleParentCredit: single && checked('spccc'),
+      incapacitatedChildren: Math.min(9, Math.floor(num(val('icc')))),
+      dependentRelative: checked('dr'),
+      age65: checked('age65'),
+      taxPaid: num(val(`tax_${y}`)) || null,
+    };
+  }
+
+  // ---- count-up ----
+  const totalEl = $('[data-total]'); const totalM = $('[data-total-m]'); const big = $('.big');
+  let shown = 0; let raf = 0;
+  const fmt0 = (e: number) => '€' + Math.round(e).toLocaleString('en-IE');
+  function animateTo(target: number) {
+    cancelAnimationFrame(raf);
+    if (reduce) { shown = target; totalEl.textContent = totalM.textContent = fmt0(target); return; }
+    const from = shown; const t0 = performance.now(); const dur = Math.min(1400, 500 + Math.abs(target - from) * 0.6);
+    if (target > from) { big.classList.remove('pop'); void big.offsetWidth; big.classList.add('pop'); }
+    const tick = (t: number) => {
+      const k = Math.min(1, (t - t0) / dur); const e = 1 - Math.pow(1 - k, 3);
+      shown = from + (target - from) * e;
+      totalEl.textContent = totalM.textContent = fmt0(shown);
+      if (k < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+  }
+
+  // ---- render ----
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+  let liveT = 0; let last: ReturnType<typeof calculate> | null = null;
+  function update() {
+    const status = val('status');
+    const married = status === 'marriedOne' || status === 'marriedTwo';
+    $$('[data-show]').forEach((el) => {
+      const k = el.dataset.show;
+      el.hidden = k === 'marriedTwo' ? status !== 'marriedTwo' : k === 'married' ? !married : k === 'noIncome' ? num(val('income')) > 0 : k === 'job' ? !val('job') : false;
+    });
+    $$('[data-only]').forEach((el) => {
+      const k = el.dataset.only; const hide = (k === 'married' && !married) || (k === 'single' && married);
+      el.hidden = hide;
+    });
+
+    const years = selectedYears();
+    const res = calculate(years, inputFor);
+    last = res;
+
+    // FRE amount note
+    const job = val('job'); const freNote = $('[data-fre-amt]');
+    if (job) {
+      const f = ESTIMATOR.fre.find((x) => x.id === job)!;
+      const ys = years.length ? years : OPEN;
+      const amts = Array.from(new Set(ys.map((y) => freAmount(job, y))));
+      freNote.textContent = `${f.label}: €${amts.join(' / €')} a year off your taxable income (${ys[0]}${ys.length > 1 ? '–' + ys[ys.length - 1] : ''}).`;
+    } else freNote.textContent = '';
+
+    // Tuition note
+    const ys = years.length ? years : OPEN;
+    const tn = $('[data-tuition-note]');
+    const ft = Array.from(new Set(ys.map((y) => pick(ESTIMATOR.tuition.disregardFullTime, y))));
+    const pt = Array.from(new Set(ys.map((y) => pick(ESTIMATOR.tuition.disregardPartTime, y))));
+    tn.textContent = `Up to €${ESTIMATOR.tuition.maxPerCourse.toLocaleString('en-IE')} of fees per course counts. The first €${ft.map((x) => x.toLocaleString('en-IE')).join(' / €')} (full-time) or €${pt.map((x) => x.toLocaleString('en-IE')).join(' / €')} (part-time) each year doesn’t.` + (ys.some((y) => y >= ESTIMATOR.tuition.announcedFrom) ? ` The ${ESTIMATOR.tuition.announcedFrom}+ figures were announced in Budget ${ESTIMATOR.tuition.announcedFrom + 1}.` : '');
+
+    // Panel
+    const euroTotal = res.displayEuro;
+    animateTo(euroTotal);
+    $('[data-sub]').textContent = years.length ? `across ${years.length} year${years.length > 1 ? 's' : ''} (${years.length > 1 ? years[0] + '–' + years[years.length - 1] : years[0]})` : 'Pick at least one year';
+    const byRel = new Map<string, { label: string; cents: number }>();
+    res.years.forEach((r) => {
+      // scale lines down proportionally when a year is capped
+      const k = r.rawCents ? r.estimateCents / r.rawCents : 0;
+      r.lines.forEach((l) => { const key = l.key === 'spcccBand' ? 'spccc' : l.key; const cur = byRel.get(key) || { label: key === 'spccc' ? 'Single Person Child Carer Credit' : l.label, cents: 0 }; cur.cents += l.cents * k; byRel.set(key, cur); });
+    });
+    const rel = Array.from(byRel.values()).filter((r) => r.cents >= 1).sort((a, b) => b.cents - a.cents);
+    const max = Math.max(1, ...rel.map((r) => r.cents));
+    $('[data-rel]').innerHTML = rel.map((r) => `<li><span>${esc(r.label)}</span><b>${euro(Math.round(r.cents), 0)}</b><i style="--w:${(r.cents / max).toFixed(3)}"></i></li>`).join('');
+    $('[data-empty]').hidden = rel.length > 0;
+    clearTimeout(liveT);
+    liveT = window.setTimeout(() => { $('[data-live]').textContent = `Estimate: around ${fmt0(euroTotal)} across ${years.length} years.`; }, 900);
+
+    // Result step
+    $('[data-headline]').innerHTML = res.totalCents > 0
+      ? `You could be owed around <span class="hl">${fmt0(euroTotal)}</span> across ${years.length} year${years.length > 1 ? 's' : ''}.`
+      : 'Your estimate';
+    $('[data-zero]').hidden = res.totalCents > 0;
+    $('[data-years-out]').innerHTML = res.years.map((r) => `
+      <div class="yr"><div class="yr-h"><h3>${r.year}</h3><strong>${euro(r.estimateCents)}</strong></div>
+      ${r.lines.length ? `<ul>${r.lines.map((l) => `<li><span>${esc(l.label)}</span><span>${euro(l.cents)}</span></li>`).join('')}</ul>` : '<p class="none">Nothing estimated for this year from your answers.</p>'}
+      ${r.capped ? `<p class="capn">Capped at the income tax we think you paid (${euro(r.capCents!)}), because credits can’t be more than that.</p>` : ''}
+      <p class="capn">Worked out at ${Math.round(r.rate * 100)}% for reliefs given at your tax rate.</p></div>`).join('')
+      + `<div class="yr cur"><div class="yr-h"><h3>${CUR}</h3></div><p class="none">Not included. You can claim ${CUR} credits during the year in myAccount, or on your ${CUR} return from January ${CUR + 1}. We can help with that too.</p></div>`;
+    $('[data-couple-note]').hidden = !res.coupleUncapped;
+    const feeEl = $('[data-fee]');
+    if (ESTIMATOR.feePercent != null && res.totalCents > 0) {
+      const feeE = Math.round(euroTotal * ESTIMATOR.feePercent) / 100;
+      feeEl.textContent = `Our fee (${ESTIMATOR.feePercent}%${ESTIMATOR.feeVat ? ' + VAT' : ''}): €${feeE.toLocaleString('en-IE')} · You’d keep: €${(euroTotal - feeE).toLocaleString('en-IE')}. No refund, no fee.`;
+      feeEl.hidden = false;
+    } else feeEl.hidden = true;
+
+    save();
+  }
+
+  // ---- hand-off to /start ----
+  function handoff() {
+    const years = selectedYears();
+    const y0 = years.length ? years : OPEN;
+    const data: Record<string, any> = {
+      total: last?.displayEuro ?? 0, years: y0, status: val('status'), job: val('job'),
+      jobLabel: ESTIMATOR.fre.find((f) => f.id === val('job'))?.label || '',
+      emergencyTax: checked('emerg'), outOfWork: checked('outOfWork'), leftIreland: checked('leftIE'), married: checked('married'),
+      singleParent: checked('spccc') || val('status') === 'singleParent', incapacitatedChild: num(val('icc')) > 0, relative: checked('dr'), age65: checked('age65'),
+      costs: Object.fromEntries(y0.map((y) => {
+        const i = inputFor(y);
+        const tu = (i.courses || []).reduce((s, c) => s + c.fee, 0);
+        return [y, { rent: i.rent, medical: i.medical, nursing: i.nursingHome, wfhDays: i.wfhDays, wfhBills: i.wfhBills, tuition: tu, tuitionType: (i.courses || []).some((c) => c.fullTime) ? 'full-time' : (i.courses || []).length ? 'part-time' : '' }];
+      })),
+    };
+    try { sessionStorage.setItem('tr-estimate', JSON.stringify(data)); } catch {}
+    const q = new URLSearchParams({ from: 'estimator', est: String(data.total), years: y0.join(','), status: data.status });
+    if (data.job) q.set('job', data.job);
+    return `/start/?${q}`;
+  }
+  $$<HTMLAnchorElement>('[data-cta]').forEach((a) => a.addEventListener('click', () => { a.href = handoff(); }));
+
+  // ---- persistence (session only) ----
+  function save() {
+    const o: Record<string, any> = {};
+    $$<HTMLInputElement>('input[name],select[name]').forEach((el) => {
+      if (el.type === 'checkbox') { if (el.name === 'years') (o.years ||= []).push(...(el.checked ? [el.value] : [])); else o[el.name] = el.checked; }
+      else if (el.type === 'radio') { if (el.checked) o[el.name] = el.value; }
+      else o[el.name] = el.value;
+    });
+    o.__courses = readCourses();
+    try { sessionStorage.setItem(KEY, JSON.stringify(o)); } catch {}
+  }
+  function restore() {
+    let o: any; try { o = JSON.parse(sessionStorage.getItem(KEY) || 'null'); } catch {}
+    if (!o) return;
+    $$<HTMLInputElement>('input[name],select[name]').forEach((el) => {
+      if (el.name === 'years') { if (Array.isArray(o.years)) el.checked = o.years.includes(el.value) && OPEN.includes(+el.value); }
+      else if (el.type === 'checkbox') el.checked = !!o[el.name];
+      else if (el.type === 'radio') { if (o[el.name] != null) el.checked = o[el.name] === el.value; }
+      else if (o[el.name] != null) el.value = o[el.name];
+    });
+    (o.__courses || []).forEach((c: any) => addCourse(c));
+  }
+
+  // ---- stepper ----
+  const panes = $$('[data-pane]');
+  const tabs = $$<HTMLButtonElement>('.st');
+  const prev = $<HTMLButtonElement>('[data-prev]'); const next = $<HTMLButtonElement>('[data-next]');
+  const mbar = $('[data-mbar]');
+  let cur = 0;
+  function go(i: number, focus = true) {
+    i = Math.max(0, Math.min(panes.length - 1, i));
+    const back = i < cur;
+    panes.forEach((p, k) => { p.hidden = k !== i; p.classList.remove('enter', 'back'); });
+    const p = panes[i];
+    if (!reduce) { void p.offsetWidth; p.classList.add('enter'); if (back) p.classList.add('back'); }
+    tabs.forEach((t, k) => { if (k === i) t.setAttribute('aria-current', 'step'); else t.removeAttribute('aria-current'); t.classList.toggle('done', k < i); });
+    $('.bar i').style.setProperty('--p', String((i + 1) / panes.length));
+    prev.disabled = i === 0;
+    next.hidden = i === panes.length - 1;
+    (next.querySelector('span') as HTMLElement).textContent = i === panes.length - 2 ? 'See my estimate' : 'Next';
+    cur = i;
+    syncBar();
+    tabs[i].scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduce ? 'auto' : 'smooth' });
+    if (focus) {
+      const top = form.getBoundingClientRect().top;
+      if (top < 0 || top > innerHeight * 0.5) {
+        const lenis = (window as any).__lenis;
+        if (lenis) lenis.scrollTo(form, { offset: -96 }); else form.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+      }
+      p.querySelector<HTMLElement>('h2')?.focus({ preventScroll: true });
+    }
+  }
+  form.addEventListener('click', (e) => {
+    const t = (e.target as HTMLElement).closest<HTMLElement>('[data-go]');
+    if (t) go(+t.dataset.go!);
+  });
+  prev.addEventListener('click', () => go(cur - 1));
+  next.addEventListener('click', () => go(cur + 1));
+  form.addEventListener('submit', (e) => { e.preventDefault(); go(cur + 1); });
+  form.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.target as HTMLElement).matches('input:not([type=checkbox]):not([type=radio])')) { e.preventDefault(); go(cur + 1); }
+  });
+  form.addEventListener('input', update);
+  form.addEventListener('change', update);
+
+  // mobile bar: shown while the steps are on screen, hidden when the real panel is visible or on the result step
+  let inTool = false; let panelVis = false; let navVis = false;
+  const syncBar = () => mbar.classList.toggle('off', !inTool || panelVis || navVis || cur === panes.length - 1);
+  new IntersectionObserver(([en]) => { navVis = en.isIntersecting; syncBar(); }).observe($('.nav-btns'));
+  new IntersectionObserver(([en]) => { panelVis = en.isIntersecting; syncBar(); }).observe($('.panel'));
+  new IntersectionObserver(([en]) => { inTool = en.isIntersecting; syncBar(); }, { rootMargin: '-20% 0px -20% 0px' }).observe($('.main'));
+
+  restore();
+  update();
+  go(0, false);
+</script>

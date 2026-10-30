@@ -1,0 +1,160 @@
+---
+// CONFIRM: placeholder fee rate for the example + slider only. NOT TaxRoots' confirmed fee.
+const FEE_PERCENT = 10; // CONFIRM fee % with owner (and whether VAT is added)
+
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Button from '../components/Button.astro';
+import Pic from '../components/Pic.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { CTA } from '../data/site';
+
+const eur = (n: number) => '€' + Math.round(n).toLocaleString('en-IE');
+const exRefund = 1000;
+const exFee = exRefund * FEE_PERCENT / 100;
+---
+<Base
+  title="Our fees — no refund, no fee"
+  description="TaxRoots' fee is agreed in writing before we start. No refund, no fee. Revenue pays your refund straight to you and we invoice afterwards. See a worked example."
+>
+  <PageHero
+    title="One clear fee. Agreed before we start."
+    tag="Fees"
+    crumbs={[{ label: 'Fees' }]}
+    lede="Our fee is a percentage of the refund we secure for you. You’ll see it in writing in your engagement letter before we do any work, and if there’s no refund, there’s no fee."
+  >
+    <div class="btns"><Button href={CTA.href} variant="green">{CTA.label}</Button><Button href="#calculator" variant="ghost">Try the fee calculator</Button></div>
+  </PageHero>
+
+  <section class="sec-s fe-top">
+    <div class="wrap">
+      <div class="fe-trio stg">
+        <div class="fe-t fe-t1"><p class="fe-k">Agreed upfront</p><p>Our fee is <strong>[FEE %] [+ VAT, CONFIRM]</strong> of the refund we secure. It’s in your engagement letter before we start.</p></div>
+        <div class="fe-t fe-t2"><p class="fe-k">No refund, no fee</p><p>If we don’t find you a refund, you pay nothing. No sign-up charge, no hidden extras.</p></div>
+        <div class="fe-t fe-t3"><p class="fe-k">Paid to you, invoiced after</p><p>Revenue pays your refund directly into your own bank account. Then we send our invoice.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec fe-pay">
+    <div class="wrap fe-pay-in">
+      <div>
+        <h2 class="split">Why we invoice you afterwards</h2>
+        <p class="lede rv">Since the end of 2025, Revenue no longer pays PAYE refunds into an agent’s bank account. Every refund goes straight to you.</p>
+        <p class="rv">That’s good news: your money never passes through us. It also means we can’t simply take our fee out of the refund, so we invoice you once Revenue has confirmed it.</p>
+      </div>
+      <ol class="fe-steps stg">
+        <li><span>1</span><div><h3>Revenue confirms your refund</h3><p>You get a Statement of Liability, usually about five days after we file.</p></div></li>
+        <li><span>2</span><div><h3>The money lands in your account</h3><p>Revenue usually pays within three to five working days, or by cheque if it has no bank account for you.</p></div></li>
+        <li><span>3</span><div><h3>We send our invoice</h3><p>For the fee agreed in your engagement letter. Payment terms: [CONFIRM, e.g. within 14 days by card or bank transfer].</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec bg-2" id="calculator">
+    <div class="wrap fe-calc-in">
+      <div class="fe-calc-copy">
+        <p class="tag rv">Worked example</p>
+        <h2 class="split">Your refund, our fee, what you keep</h2>
+        <p class="rv">If we secure a refund of {eur(exRefund)}, our fee is {eur(exFee)} [+ VAT, CONFIRM] and you keep {eur(exRefund - exFee)}.</p>
+        <p class="note rv"><strong>Example only.</strong> The {FEE_PERCENT}% used here is a placeholder, not our confirmed fee. Your actual fee is set out in writing before we start.</p>
+      </div>
+      <div class="card fe-calc rv rv-s" data-fee={FEE_PERCENT}>
+        <label for="fe-r" class="fe-lab">Your refund</label>
+        <output id="fe-out" for="fe-r" class="fe-big">{eur(exRefund)}</output>
+        <input id="fe-r" type="range" min="100" max="5000" step="50" value={exRefund} aria-describedby="fe-hint" />
+        <p id="fe-hint" class="muted fe-hint"><span>€100</span><span>€5,000</span></p>
+        <div class="fe-bar" aria-hidden="true"><i class="fe-bar-keep" style={`width:${100 - FEE_PERCENT}%`}></i><i class="fe-bar-fee" style={`width:${FEE_PERCENT}%`}></i></div>
+        <dl class="fe-res">
+          <div><dt>Our fee <span class="muted">({FEE_PERCENT}% placeholder)</span></dt><dd id="fe-fee">{eur(exFee)}</dd></div>
+          <div class="fe-keep"><dt>You keep</dt><dd id="fe-keep">{eur(exRefund - exFee)}</dd></div>
+        </dl>
+        <p class="muted fe-small">Excludes VAT [CONFIRM]. If there is no refund, the fee is €0.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap fe-diy">
+      <Pic src="hero-cafe-remote-worker.jpg" alt="Woman smiling as she works on a laptop in a bright café" ratio="4/3" reveal="rv-i" class="fe-diy-pic" />
+      <div>
+        <h2 class="split">Prefer to do it yourself?</h2>
+        <p class="lede rv">You can. Every credit and relief we claim can be claimed free of charge through Revenue’s myAccount.</p>
+        <p class="rv">We’re here for people who want an expert to check every open year and every relief that applies, do the paperwork, and deal with Revenue if questions come up. If you’d rather do it yourself, our <a class="link" href="/insights/">guides</a> are free to read.</p>
+        <div class="note rv fe-conf">
+          <strong>Still to be confirmed:</strong> what counts as a “refund” for fee purposes (for example, in-year credits that reduce future tax rather than a repayment), any minimum fee, and any separate fee for Form 11 or landlord returns. [CONFIRM]
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand title="See what you could be owed, then decide" />
+</Base>
+
+<script>
+  const box = document.querySelector<HTMLElement>('.fe-calc');
+  if (box) {
+    const pct = Number(box.dataset.fee) || 0;
+    const r = box.querySelector<HTMLInputElement>('#fe-r')!;
+    const out = box.querySelector('#fe-out')!, fee = box.querySelector('#fe-fee')!, keep = box.querySelector('#fe-keep')!;
+    const eur = (n: number) => '€' + Math.round(n).toLocaleString('en-IE');
+    const upd = () => {
+      const v = Number(r.value), f = v * pct / 100;
+      out.textContent = eur(v); fee.textContent = eur(f); keep.textContent = eur(v - f);
+      r.style.setProperty('--p', ((v - Number(r.min)) / (Number(r.max) - Number(r.min)) * 100) + '%');
+    };
+    r.addEventListener('input', upd); upd();
+  }
+</script>
+
+<style>
+  .fe-top{padding-top:0}
+  .fe-trio{display:grid;grid-template-columns:repeat(3,1fr);border-radius:var(--r-xl);overflow:hidden}
+  .fe-t{padding:clamp(24px,3vw,40px)}
+  .fe-t p{margin:0}
+  .fe-k{font:600 clamp(1.3rem,1.1rem + .8vw,1.8rem)/1.15 var(--f-display);margin-bottom:var(--s4)!important;letter-spacing:-.02em}
+  .fe-t1{background:var(--indigo);color:var(--on-dark-2)}.fe-t1 .fe-k,.fe-t1 strong{color:#fff}
+  .fe-t2{background:var(--green-50)}.fe-t2 .fe-k{color:var(--green-ink)}
+  .fe-t3{background:var(--indigo-50)}.fe-t3 .fe-k{color:var(--indigo)}
+
+  .fe-pay-in{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,104px);align-items:start}
+  .fe-pay-in h2{margin-bottom:var(--s5)}
+  .fe-steps{list-style:none;margin:0;padding:0;display:grid;gap:0}
+  .fe-steps li{display:grid;grid-template-columns:56px 1fr;gap:var(--s4);padding:var(--s5) 0;border-bottom:1px solid var(--line)}
+  .fe-steps li:first-child{padding-top:0}
+  .fe-steps span{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;border:1.5px solid var(--indigo);color:var(--indigo);font:600 1rem/1 var(--f-display)}
+  .fe-steps h3{font-size:1.2rem;margin:8px 0 6px}
+  .fe-steps p{margin:0}
+
+  .fe-calc-in{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,5vw,96px);align-items:center}
+  .fe-calc-copy h2{margin-bottom:var(--s5)}
+  .fe-calc{padding:clamp(24px,3.4vw,44px);border-radius:var(--r-xl);box-shadow:var(--sh-2)}
+  .fe-lab{display:block;font-weight:600;color:var(--ink);font-size:var(--fs-sm)}
+  .fe-big{display:block;font:600 clamp(2.6rem,2rem + 2.4vw,4rem)/1.1 var(--f-display);color:var(--indigo);letter-spacing:-.03em;margin:6px 0 var(--s5);font-variant-numeric:tabular-nums}
+  input[type=range]{--p:18%;width:100%;height:28px;appearance:none;-webkit-appearance:none;background:transparent;cursor:pointer;margin:0}
+  input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:99px;background:linear-gradient(90deg,var(--indigo) var(--p),var(--indigo-100) var(--p))}
+  input[type=range]::-moz-range-track{height:8px;border-radius:99px;background:var(--indigo-100)}
+  input[type=range]::-moz-range-progress{height:8px;border-radius:99px;background:var(--indigo)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:#fff;border:3px solid var(--green);margin-top:-10px;box-shadow:var(--sh-1)}
+  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--green)}
+  .fe-hint{display:flex;justify-content:space-between;font-size:var(--fs-xs);margin:6px 0 var(--s5)}
+  .fe-bar{display:flex;height:14px;border-radius:99px;overflow:hidden;gap:3px;margin-bottom:var(--s5)}
+  .fe-bar-keep{background:var(--green)}.fe-bar-fee{background:var(--indigo)}
+  .fe-res{margin:0;display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)}
+  .fe-res>div{background:var(--bg-2);border-radius:var(--r-md);padding:16px 18px}
+  .fe-res dt{font-size:var(--fs-sm);color:var(--ink-2)}
+  .fe-res dd{margin:4px 0 0;font:600 1.6rem/1.2 var(--f-display);color:var(--indigo);font-variant-numeric:tabular-nums}
+  .fe-res .fe-keep{background:var(--green-50)}
+  .fe-res .fe-keep dd{color:var(--green-ink)}
+  .fe-small{font-size:var(--fs-xs);margin:var(--s4) 0 0}
+
+  .fe-diy{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(32px,5vw,96px);align-items:center}
+  .fe-diy h2{margin-bottom:var(--s5)}
+  :global(.fe-diy-pic){border-radius:var(--r-xl)}
+  .fe-conf{margin-top:var(--s6)}
+
+  @media (max-width:900px){
+    .fe-trio,.fe-pay-in,.fe-calc-in,.fe-diy{grid-template-columns:1fr}
+  }
+  @media (max-width:420px){.fe-res{grid-template-columns:1fr}}
+</style>

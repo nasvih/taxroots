@@ -1,0 +1,95 @@
+/* =====================================================================
+   TaxRoots motion layer. SHARED CONTRACT — page agents must NOT edit.
+   Driver: src/scripts/motion.ts (loaded once by Base.astro).
+   Gate: everything that hides/moves sits behind html.mo, set only when JS runs
+   and prefers-reduced-motion is not "reduce". No JS = everything visible.
+
+   QUICK REFERENCE
+   Reveal on enter (IntersectionObserver adds .in, once):
+     .rv            fade + rise (text blocks also un-blur)
+     .rv.rv-l / .rv-r   slide in from left / right
+     .rv.rv-s       scale up from .9
+     .rv.rv-c       curtain opens downward + inner image zoom 1.2 -> 1 (photos)
+     .rv.rv-i       circle iris opens (photos)
+     data-delay="160"   delay in ms
+     .stg           parent: children reveal one after another (90ms, max 12)
+     .split         words rise out of a mask (H1/H2). Wrap with <Split> or add class; JS splits words.
+     data-count     first number in the text counts up when it enters ("€1,000" -> counts 0..1000)
+   Scroll-linked (native animation-timeline, ignored where unsupported):
+     .sd-clip   rounded inset un-clips to full + inner zoom (big photo bands)
+     .sd-par    parallax drift; set style="--depth:.3" (negative = opposite)
+     .sd-fill   per-word opacity fill as it scrolls (statement text; use with .split)
+     .sd-out    hero visual recedes on exit
+     .sd-band   indigo band grows from inset card to full bleed
+   CSS-only:
+     .marquee > .marquee-track (duplicate the content twice inside the track)
+     .stack-cards > .stack-card   sticky stacking cards (process steps)
+   ===================================================================== */
+
+@keyframes rv-up{from{opacity:0;transform:translate3d(0,48px,0)}}
+@keyframes rv-blur{from{opacity:0;transform:translate3d(0,36px,0);filter:blur(10px)}60%{filter:blur(0)}}
+@keyframes rv-l{from{opacity:0;transform:translate3d(-72px,0,0)}}
+@keyframes rv-r{from{opacity:0;transform:translate3d(72px,0,0)}}
+@keyframes rv-s{from{opacity:0;transform:scale(.9)}}
+@keyframes rv-c{from{clip-path:inset(0 0 100% 0 round var(--r-lg))}to{clip-path:inset(0 0 0 0 round var(--r-lg))}}
+@keyframes rv-cz{from{transform:scale(1.2)}}
+@keyframes rv-i{from{clip-path:circle(6% at 50% 55%)}to{clip-path:circle(75% at 50% 50%)}}
+@keyframes sx-up{from{transform:translate3d(0,110%,0) rotate(4deg)}}
+
+html.mo .rv:not(.in),html.mo .stg:not(.in)>*{opacity:0}
+html.mo :is(.rv-c,.rv-i):not(.in){opacity:1;clip-path:inset(0 0 100% 0)}
+html.mo .rv.in{animation:rv-up var(--t-rv) var(--ease-out) backwards;animation-delay:var(--d,0ms)}
+html.mo .rv.in:is(p,.lede,blockquote){animation-name:rv-blur}
+html.mo .rv.rv-l.in{animation-name:rv-l}
+html.mo .rv.rv-r.in{animation-name:rv-r}
+html.mo .rv.rv-s.in{animation-name:rv-s}
+html.mo .rv.rv-c.in{animation:rv-c var(--t-enter) var(--ease-out) backwards var(--d,0ms)}
+html.mo .rv.rv-c.in>*{animation:rv-cz 1.6s var(--ease-out) backwards var(--d,0ms)}
+.rv-c{overflow:clip}
+html.mo .rv.rv-i.in{animation:rv-i var(--t-enter) var(--ease-out) backwards var(--d,0ms)}
+html.mo .stg.in>*{animation:rv-up var(--t-rv) var(--ease-out) backwards;animation-delay:calc(min(var(--i,0),12) * var(--stagger) + var(--d,0ms))}
+html.mo .in.now,html.mo .in.now>*,html.mo .in.now .w>span{animation:none!important}
+
+/* Split words */
+.split .w{display:inline-block;overflow:clip;overflow-clip-margin:.12em;vertical-align:top;padding-bottom:.06em;margin-bottom:-.06em}
+.split .w>span{display:inline-block}
+html.mo .split:not(.in) .w>span{transform:translate3d(0,110%,0)}
+html.mo .split.in .w>span{transform-origin:0 100%;animation:sx-up var(--t-enter) var(--ease-out) backwards;animation-delay:calc(var(--d,0ms) + min(var(--i,0),24) * 55ms)}
+html.mo .split.sd-fill:not(.in) .w>span{transform:none}
+html.mo .split.sd-fill .w>span{animation:none}
+
+/* Scroll-linked */
+@keyframes sd-clip{from{clip-path:inset(12% 10% 12% 10% round 40px)}to{clip-path:inset(0 0 0 0 round var(--r-lg))}}
+@keyframes sd-zoom{from{transform:scale(1.25)}to{transform:none}}
+@keyframes sd-par{from{transform:translate3d(0,calc(var(--depth,.2) * 140px),0)}to{transform:translate3d(0,calc(var(--depth,.2) * -140px),0)}}
+@keyframes sd-fill{from{opacity:.18}to{opacity:1}}
+@keyframes sd-out{to{opacity:.3;transform:translate3d(0,-5vh,0) scale(.94)}}
+@keyframes sd-band{from{clip-path:inset(0 4% 0 4% round 48px 48px 0 0)}to{clip-path:inset(0 0 0 0 round 0)}}
+@supports (animation-timeline:view()){
+  html.mo .sd-clip{animation:sd-clip linear both;animation-timeline:view();animation-range:entry 0% cover 45%}
+  html.mo .sd-clip>img,html.mo .sd-clip>picture{animation:sd-zoom linear both;animation-timeline:view();animation-range:entry 0% cover 50%}
+  html.mo .sd-par{animation:sd-par linear both;animation-timeline:view();animation-range:cover 0% cover 100%}
+  html.mo .sd-fill .w>span{animation:sd-fill linear both;animation-timeline:view();animation-range:cover 10% cover 45%}
+  html.mo .sd-out{animation:sd-out linear both;animation-timeline:view();animation-range:exit 0% exit 100%}
+  html.mo .sd-band{animation:sd-band linear both;animation-timeline:view();animation-range:entry 0% entry 60vh}
+}
+
+/* Marquee */
+.marquee{overflow:clip;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.marquee-track{display:flex;width:max-content;gap:var(--s7);animation:mq 38s linear infinite}
+.marquee:hover .marquee-track{animation-play-state:paused}
+@keyframes mq{to{transform:translate3d(-50%,0,0)}}
+
+/* Sticky stacking cards */
+.stack-cards{display:grid;gap:var(--s5)}
+@media (min-width:900px) and (min-height:640px){
+  .stack-card{position:sticky;top:calc(var(--header-h) + 24px + var(--i,0) * 22px)}
+}
+
+/* Scroll progress bar (header) */
+.progress{position:fixed;left:0;top:0;height:3px;width:100%;background:var(--green);transform-origin:0 50%;transform:scaleX(var(--p,0));z-index:120;pointer-events:none}
+
+@media (prefers-reduced-motion:reduce){
+  .marquee-track{animation:none}
+  *{scroll-behavior:auto!important}
+}

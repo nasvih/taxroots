@@ -1,0 +1,193 @@
+---
+import Base from '../../layouts/Base.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Arrow from '../../components/Arrow.astro';
+import Button from '../../components/Button.astro';
+import { ARTICLES, TAGS, fmtDate } from '../../data/articles';
+import { SITE } from '../../data/site';
+
+// Taxpert-style listing: 1 featured, 3 text teasers, 2 photo cards (+ estimator card). No duplicates.
+const [featured, ...rest] = ARTICLES;
+const teasers = rest.slice(0, 3);
+const photos = rest.slice(3);
+const usedTags = TAGS.filter((t) => ARTICLES.some((x) => x.tag === t));
+
+const ld = [
+  {
+    '@context': 'https://schema.org', '@type': 'Blog', name: 'TaxRoots Insights', url: `${SITE.url}/insights/`,
+    publisher: { '@type': 'Organization', name: SITE.legal },
+    blogPost: ARTICLES.map((x) => ({ '@type': 'BlogPosting', headline: x.title, url: `${SITE.url}/insights/${x.slug}/`, datePublished: x.date })),
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.url}/` },
+      { '@type': 'ListItem', position: 2, name: 'Insights', item: `${SITE.url}/insights/` },
+    ],
+  },
+];
+---
+<Base
+  title="Insights: Irish tax tips and refund guides"
+  description="Plain-English guides to Irish tax refunds: the 2022 deadline, Rent Tax Credit, medical expenses, remote working relief, emergency tax and Budget 2027 changes."
+  jsonld={ld}
+>
+  <section class="ih">
+    <div class="wrap">
+      <ol class="crumbs"><li><a href="/">Home</a></li><li><span aria-current="page">Insights</span></li></ol>
+      <div class="ih-grid">
+        <div>
+          <p class="tag rv">Insights</p>
+          <h1 class="split">Tax tips for Ireland, <span class="hl">stay ahead.</span></h1>
+        </div>
+        <div class="ih-side">
+          <p class="lede rv" data-delay="200">Short, plain-English guides to the credits and reliefs PAYE workers most often miss, and the deadlines that matter. Every figure is checked against Revenue, with the tax year beside it.</p>
+          <div class="chips rv" data-delay="320" role="group" aria-label="Filter articles by topic">
+            <button type="button" class="chip" aria-pressed="true" data-f="all">All</button>
+            {usedTags.map((t) => <button type="button" class="chip" aria-pressed="false" data-f={t}>{t}</button>)}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec-s list" aria-label="Articles">
+    <div class="wrap">
+      <!-- Featured -->
+      <article class="feat" data-tag={featured.tag}>
+        <div class="feat-copy">
+          <p class="meta rv"><span class="mtag">{featured.tag}</span><span class="dot" aria-hidden="true">•</span><time datetime={featured.date}>{fmtDate(featured.date)}</time></p>
+          <h2 class="feat-title split"><a href={`/insights/${featured.slug}/`} class="stretch">{featured.title}</a></h2>
+          <p class="feat-ex rv" data-delay="200">{featured.excerpt}</p>
+          <span class="btn sm rv" data-delay="300" aria-hidden="true"><span>Read more</span><span class="disc"><Arrow /></span></span>
+        </div>
+        <figure class="pic rv rv-c feat-pic" data-delay="120">
+          <img src={`/photos/${featured.photo}`} alt={featured.alt} loading="eager" />
+        </figure>
+      </article>
+
+      <!-- Text teasers -->
+      <h2 class="sr-only">Latest guides</h2>
+      <div class="teasers stg">
+        {teasers.map((x) => (
+          <article class="tz" data-tag={x.tag}>
+            <p class="meta"><span class="mtag">{x.tag}</span><span class="dot" aria-hidden="true">•</span><time datetime={x.date}>{fmtDate(x.date)}</time></p>
+            <h3><a href={`/insights/${x.slug}/`} class="stretch">{x.title}</a></h3>
+            <p class="tz-ex">{x.excerpt}</p>
+            <span class="btn ghost sm" aria-hidden="true"><span>Read more</span><span class="disc"><Arrow /></span></span>
+          </article>
+        ))}
+      </div>
+
+      <!-- Photo cards -->
+      <h2 class="sr-only">More guides</h2>
+      <div class="photos stg">
+        {photos.map((x) => (
+          <article class="pc" data-tag={x.tag}>
+            <figure class="pic pc-pic"><img src={`/photos/${x.photo}`} alt={x.alt} loading="lazy" /></figure>
+            <p class="meta"><span class="mtag">{x.tag}</span><span class="dot" aria-hidden="true">•</span><time datetime={x.date}>{fmtDate(x.date)}</time><span class="dot" aria-hidden="true">•</span><span>{x.readingTime} min read</span></p>
+            <h3><a href={`/insights/${x.slug}/`} class="stretch">{x.title}</a></h3>
+          </article>
+        ))}
+        <aside class="est band" aria-label="Refund estimator">
+          <p class="est-k">Refund estimator</p>
+          <p class="est-t">Not sure what you could be owed?</p>
+          <p class="est-p">Answer a few questions about 2022 to 2025 and get a rough idea in a couple of minutes.</p>
+          <Button href="/refund-estimator/" variant="white" size="sm">Estimate my refund</Button>
+        </aside>
+      </div>
+
+      <p class="empty muted" hidden>No articles in this topic yet.</p>
+    </div>
+  </section>
+
+  <CtaBand title="2022 refunds close on 31 December 2026." text="We check every credit and relief across your four open years, file the returns and keep you posted until Revenue pays you directly." />
+</Base>
+
+<script>
+  const chips = Array.from(document.querySelectorAll<HTMLButtonElement>('.chip'));
+  const items = Array.from(document.querySelectorAll<HTMLElement>('.list [data-tag]'));
+  const empty = document.querySelector<HTMLElement>('.empty')!;
+  chips.forEach((c) => c.addEventListener('click', () => {
+    const f = c.dataset.f!;
+    chips.forEach((x) => x.setAttribute('aria-pressed', String(x === c)));
+    let n = 0;
+    items.forEach((el) => {
+      const show = f === 'all' || el.dataset.tag === f;
+      el.hidden = !show;
+      if (show) { n++; el.querySelectorAll('.rv,.split').forEach((r) => r.classList.add('in', 'now')); }
+    });
+    document.querySelector('.list')!.classList.toggle('filtered', f !== 'all');
+    empty.hidden = n > 0;
+  }));
+</script>
+
+<style>
+  .ih{padding:clamp(40px,5vw,80px) 0 clamp(8px,2vw,24px)}
+  .ih-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:clamp(28px,5vw,80px);align-items:end}
+  .ih .tag{margin:0 0 var(--s5)}
+  h1{font-size:var(--fs-mega);line-height:1.02;letter-spacing:-.035em;font-weight:600;max-width:12ch}
+  .ih-side .lede{margin:0 0 var(--s5);font-size:var(--fs-body)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{min-height:40px;padding:0 16px;border-radius:var(--r-pill);border:1px solid var(--line-2);background:#fff;color:var(--ink);font:500 var(--fs-sm)/1 var(--f-body);cursor:pointer;transition:background var(--t-fast),border-color var(--t-fast),color var(--t-fast)}
+  .chip:hover{border-color:var(--indigo)}
+  .chip[aria-pressed="true"]{background:var(--indigo);border-color:var(--indigo);color:#fff}
+
+  .meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 var(--s4);font:500 var(--fs-xs)/1.4 var(--f-body);color:var(--ink-3);letter-spacing:.02em}
+  .mtag{font-weight:600;color:var(--green-ink);text-transform:uppercase;letter-spacing:.08em}
+  .dot{color:var(--line-2)}
+  .stretch{color:inherit;text-decoration:none}
+  .stretch::after{content:"";position:absolute;inset:0;border-radius:inherit;z-index:1}
+  .stretch:focus-visible{outline:none}
+  article:has(.stretch:focus-visible){outline:3px solid var(--green);outline-offset:4px}
+  article{position:relative}
+
+  /* Featured */
+  .feat{display:grid;grid-template-columns:1fr 1fr;background:var(--bg-2);border-radius:var(--r-xl);overflow:hidden;min-height:clamp(420px,38vw,540px)}
+  .feat-copy{padding:clamp(28px,4vw,64px);display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
+  .feat-title{font-size:clamp(1.9rem,1.1rem + 2.3vw,3.2rem);line-height:1.08;letter-spacing:-.03em;margin:0 0 var(--s5);max-width:16ch}
+  .feat-ex{max-width:44ch;margin-bottom:var(--s6)}
+  .feat-pic{margin:12px;border-radius:calc(var(--r-xl) - 8px);min-height:280px}
+  .feat:hover .feat-pic img,.pc:hover .pc-pic img{transform:scale(1.04)}
+  .feat-pic img,.pc-pic img{transition:transform .9s var(--ease-out)}
+
+  /* Text teasers */
+  .teasers{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s5);margin-top:var(--s5)}
+  .tz{display:flex;flex-direction:column;align-items:flex-start;border:1px solid var(--line);border-radius:var(--r-xl);padding:clamp(24px,2.4vw,36px);background:#fff;transition:border-color var(--t-fast)}
+  .tz:hover{border-color:var(--indigo)}
+  .tz h3{font-size:clamp(1.25rem,1.1rem + .5vw,1.55rem);line-height:1.2;margin:0 0 var(--s3)}
+  .tz-ex{font-size:var(--fs-sm);margin-bottom:var(--s6)}
+  .tz .btn{margin-top:auto}
+  .tz:hover .btn{--bg:var(--indigo-50);border-color:var(--indigo)}
+  .feat:hover .btn{--bg:var(--indigo-700)}
+
+  /* Photo cards */
+  .photos{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s5);margin-top:clamp(40px,5vw,72px)}
+  .pc-pic{aspect-ratio:4/3;margin:0 0 var(--s5);border-radius:var(--r-xl)}
+  .pc h3{font-size:clamp(1.2rem,1.05rem + .5vw,1.45rem);line-height:1.25}
+  .pc:hover h3{color:var(--indigo)}
+  .est{border-radius:var(--r-xl);padding:clamp(28px,3vw,40px);display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;min-height:100%}
+  .est-k{font:600 var(--fs-xs)/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--green-bright);margin-bottom:var(--s5)}
+  .est-t{font:600 clamp(1.5rem,1.2rem + 1vw,2rem)/1.15 var(--f-display);color:#fff;letter-spacing:-.02em;margin-bottom:var(--s3)}
+  .est-p{color:var(--on-dark-2);font-size:var(--fs-sm);margin-bottom:var(--s6)}
+
+  .filtered .teasers,.filtered .photos{margin-top:var(--s5)}
+  .filtered .est{display:none}
+  .empty{margin-top:var(--s6)}
+  .list [hidden]{display:none!important}
+
+  @media (max-width:1000px){
+    .teasers{grid-template-columns:1fr 1fr}
+    .photos{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:860px){
+    .ih-grid{grid-template-columns:1fr;align-items:start}
+    .feat{grid-template-columns:1fr}
+    .feat-pic{order:-1;aspect-ratio:4/3;min-height:0;margin:10px 10px 0}
+  }
+  @media (max-width:640px){
+    .teasers,.photos{grid-template-columns:1fr}
+    .photos{row-gap:var(--s7)}
+    .tz-ex{margin-bottom:var(--s5)}
+  }
+</style>

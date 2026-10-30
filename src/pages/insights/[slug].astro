@@ -1,0 +1,268 @@
+---
+import Base from '../../layouts/Base.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Arrow from '../../components/Arrow.astro';
+import Button from '../../components/Button.astro';
+import { ARTICLES, SOURCES, LAST_CHECKED, LAST_CHECKED_ISO, fmtDate, withToc, type Article } from '../../data/articles';
+import { SITE, SERVICE_LINKS, CTA } from '../../data/site';
+
+export function getStaticPaths() {
+  return ARTICLES.map((article, i) => ({
+    params: { slug: article.slug },
+    props: { article, newer: ARTICLES[i - 1] ?? null, older: ARTICLES[i + 1] ?? null },
+  }));
+}
+
+interface Props { article: Article; newer: Article | null; older: Article | null }
+const { article: x, newer, older } = Astro.props;
+const { html, toc } = withToc(x.body);
+const tocAll = [...toc, { id: 'sources', text: 'Sources' }];
+const services = x.related
+  .map((s) => SERVICE_LINKS.find((l) => l.href === `/services/${s}/`))
+  .filter(Boolean) as typeof SERVICE_LINKS;
+const url = `${SITE.url}/insights/${x.slug}/`;
+
+const ld = [
+  {
+    '@context': 'https://schema.org', '@type': 'Article',
+    headline: x.title, description: x.description, image: [`${SITE.url}/photos/${x.photo}`],
+    datePublished: x.date, dateModified: LAST_CHECKED_ISO, articleSection: x.tag, inLanguage: 'en-IE',
+    author: { '@type': 'Organization', name: SITE.name, url: SITE.url },
+    publisher: { '@type': 'Organization', name: SITE.legal, logo: { '@type': 'ImageObject', url: `${SITE.url}/icon-512.png` } },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE.url}/` },
+      { '@type': 'ListItem', position: 2, name: 'Insights', item: `${SITE.url}/insights/` },
+      { '@type': 'ListItem', position: 3, name: x.title, item: url },
+    ],
+  },
+];
+---
+<Base title={x.seoTitle} description={x.description} image={`/photos/${x.photo}`} jsonld={ld}>
+  <section class="ah">
+    <div class="wrap">
+      <ol class="crumbs"><li><a href="/">Home</a></li><li><a href="/insights/">Insights</a></li><li><span aria-current="page">{x.tag}</span></li></ol>
+      <p class="meta rv"><a class="mtag" href="/insights/">{x.tag}</a><span class="dot" aria-hidden="true">•</span><time datetime={x.date}>{fmtDate(x.date)}</time><span class="dot" aria-hidden="true">•</span><span>{x.readingTime} min read</span></p>
+      <h1 class="split">{x.title}</h1>
+      <div class="ah-foot">
+        <p class="lede rv" data-delay="200">{x.excerpt}</p>
+        <p class="by rv" data-delay="300">By {SITE.name}<br /><span class="muted">Last checked {LAST_CHECKED}</span></p>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <figure class="pic sd-clip hero-pic"><img src={`/photos/${x.photo}`} alt={x.alt} loading="eager" /></figure>
+  </div>
+
+  <div class="wrap body-grid">
+    <aside class="toc" aria-label="Table of contents">
+      <div class="toc-in">
+        <p class="toc-h">On this page</p>
+        <div class="prog" aria-hidden="true"><span></span></div>
+        <ol>
+          {tocAll.map((t) => <li><a href={`#${t.id}`} data-toc={t.id}>{t.text}</a></li>)}
+        </ol>
+        <Button href={CTA.href} variant="green" size="sm" class="toc-cta">{CTA.label}</Button>
+      </div>
+    </aside>
+
+    <div class="col">
+      <details class="toc-m">
+        <summary>On this page <span aria-hidden="true">+</span></summary>
+        <ol>{tocAll.map((t) => <li><a href={`#${t.id}`}>{t.text}</a></li>)}</ol>
+      </details>
+
+      <article class="prose art" id="art" set:html={html} />
+
+      <section class="prose srcs" aria-labelledby="sources">
+        <h2 id="sources">Sources</h2>
+        <ol>
+          {x.sources.map((k) => <li><a href={SOURCES[k].url} target="_blank" rel="noopener">{SOURCES[k].label}</a></li>)}
+        </ol>
+      </section>
+
+      <div class="note disc-note">
+        <strong>Last checked {LAST_CHECKED}.</strong> This article is general information about Irish tax for PAYE workers, not advice for your own circumstances. Rates and rules can change, and Budget 2027 measures are announced only until the Finance (No. 2) Bill 2026 is enacted. {SITE.legal} is an independent company and is not part of Revenue.
+      </div>
+
+      <div class="inline-cta">
+        <div>
+          <p class="ic-t">Want us to check your four open years?</p>
+          <p class="ic-p">Get a rough figure first, or start your claim now. {SITE.fee}</p>
+        </div>
+        <div class="btns">
+          <Button href="/refund-estimator/" variant="ghost" size="sm">Estimate my refund</Button>
+          <Button href={CTA.href} size="sm">{CTA.label}</Button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {services.length > 0 && (
+    <section class="sec-s bg-2 rel">
+      <div class="wrap">
+        <h2 class="split rel-h">Services related to this article</h2>
+        <div class="rel-grid stg">
+          {services.map((s) => (
+            <a class="rel-card" href={s.href}>
+              <span class="rel-g">{s.group}</span>
+              <span class="rel-t">{s.label}</span>
+              <span class="rel-d">{s.desc}</span>
+              <span class="rel-a" aria-hidden="true"><Arrow /></span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <nav class="sec-s pn" aria-label="More articles">
+    <div class="wrap pn-grid">
+      {older ? (
+        <a class="pn-card" href={`/insights/${older.slug}/`}>
+          <img src={`/photos/${older.photo}`} alt="" loading="lazy" />
+          <span><span class="pn-k">Previous article</span><span class="pn-t">{older.title}</span></span>
+        </a>
+      ) : null}
+      {newer ? (
+        <a class="pn-card next" href={`/insights/${newer.slug}/`}>
+          <img src={`/photos/${newer.photo}`} alt="" loading="lazy" />
+          <span><span class="pn-k">Next article</span><span class="pn-t">{newer.title}</span></span>
+        </a>
+      ) : null}
+    </div>
+    <div class="wrap pn-all"><a class="link" href="/insights/">All insights</a></div>
+  </nav>
+
+  <CtaBand title="See what you could be owed." />
+</Base>
+
+<script>
+  const art = document.getElementById('art');
+  const bar = document.querySelector<HTMLElement>('.prog span');
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-toc]'));
+  const heads = links.map((l) => document.getElementById(l.dataset.toc!)).filter(Boolean) as HTMLElement[];
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    if (art && bar) {
+      const r = art.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, (innerHeight * 0.35 - r.top) / Math.max(1, r.height)));
+      bar.style.transform = `scaleX(${p})`;
+    }
+    let cur = heads[0]?.id;
+    for (const h of heads) if (h.getBoundingClientRect().top < innerHeight * 0.3) cur = h.id;
+    links.forEach((l) => l.classList.toggle('on', l.dataset.toc === cur));
+  };
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  update();
+  // close mobile TOC after a jump
+  document.querySelectorAll('.toc-m a').forEach((a) => a.addEventListener('click', () => (a.closest('details') as HTMLDetailsElement).open = false));
+</script>
+
+<style>
+  .ah{padding:clamp(40px,5vw,80px) 0 clamp(32px,4vw,56px)}
+  .meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 var(--s5);font:500 var(--fs-sm)/1.4 var(--f-body);color:var(--ink-3)}
+  .mtag{font-weight:600;color:var(--green-ink);text-transform:uppercase;letter-spacing:.08em;font-size:var(--fs-xs);text-decoration:none;border:1px solid var(--green-100);background:var(--green-50);padding:6px 12px;border-radius:var(--r-pill)}
+  .mtag:hover{border-color:var(--green-ink)}
+  .dot{color:var(--line-2)}
+  h1{font-size:var(--fs-display);line-height:1.05;letter-spacing:-.03em;max-width:22ch}
+  .ah-foot{display:grid;grid-template-columns:1fr auto;gap:var(--s6);align-items:end;margin-top:var(--s6)}
+  .ah-foot .lede{margin:0}
+  .by{margin:0;font-size:var(--fs-sm);color:var(--ink);font-weight:600;text-align:right;line-height:1.5}
+  .by .muted{font-weight:400}
+  .hero-pic{aspect-ratio:21/9;border-radius:var(--r-xl);margin:0}
+
+  .body-grid{display:grid;grid-template-columns:260px minmax(0,1fr);gap:clamp(40px,6vw,96px);padding-block:clamp(48px,6vw,88px) clamp(48px,5vw,80px)}
+  .toc-in{position:sticky;top:calc(var(--header-h) + 36px)}
+  .toc-h{font:600 var(--fs-xs)/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);margin:0 0 var(--s3)}
+  .prog{height:4px;border-radius:4px;background:var(--line);overflow:hidden;margin-bottom:var(--s4)}
+  .prog span{display:block;height:100%;background:var(--green);transform-origin:0 50%;transform:scaleX(0)}
+  .toc ol{list-style:none;padding:0;margin:0 0 var(--s6);border-left:2px solid var(--line)}
+  .toc li a{display:block;padding:7px 0 7px 16px;margin-left:-2px;border-left:2px solid transparent;color:var(--ink-2);text-decoration:none;font-size:var(--fs-sm);line-height:1.4;transition:color var(--t-fast),border-color var(--t-fast)}
+  .toc li a:hover{color:var(--indigo)}
+  .toc li a.on{color:var(--indigo);border-left-color:var(--indigo);font-weight:600}
+  .toc-m{display:none}
+
+  .col{min-width:0;max-width:72ch}
+  .art{font-size:1.0938rem}
+  .art > :global(p:first-child){font-size:var(--fs-lede);color:var(--ink);line-height:1.6}
+  .art :global(h2){scroll-margin-top:calc(var(--header-h) + 32px)}
+  .art :global(h2:first-of-type){margin-top:1.4em}
+  .art :global(.tbl){overflow-x:auto;margin:1.4em 0;border:1px solid var(--line);border-radius:var(--r-lg)}
+  .art :global(.tbl table){margin:0;min-width:420px}
+  .art :global(.tbl tr:last-child td){border-bottom:0}
+  .art :global(.tbl th){font-weight:600;font-family:var(--f-display)}
+  .art :global(.tbl td:first-child){color:var(--ink)}
+  .art :global(.note){margin:1.6em 0}
+  .art :global(.ann){font-style:normal;font-size:.85em;color:var(--ink-3)}
+  .art :global(.formula){margin:1.2em 0}
+  .art :global(.formula code){display:inline-block;font:600 clamp(1.05rem,1rem + .5vw,1.35rem)/1.4 ui-monospace,"SF Mono",Menlo,monospace;color:var(--indigo);background:var(--indigo-50);padding:14px 22px;border-radius:var(--r-md)}
+  .art :global(ul.checks){padding-left:0;margin:1em 0}
+  .art :global(ul.checks li){margin:0}
+  .art :global(ul.checks.cols){grid-template-columns:1fr 1fr;column-gap:24px}
+  .art :global(ol){padding-left:1.4em}
+  .art :global(ol li::marker){color:var(--indigo);font-weight:600}
+
+  .srcs h2{scroll-margin-top:calc(var(--header-h) + 32px);font-size:var(--fs-h3);margin-top:2.4em}
+  .srcs ol{font-size:var(--fs-sm)}
+  .disc-note{margin-top:var(--s6)}
+  .inline-cta{margin-top:var(--s6);display:flex;flex-wrap:wrap;gap:var(--s5);align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:var(--r-xl);padding:clamp(22px,2.4vw,32px)}
+  .ic-t{font:600 var(--fs-h3)/1.25 var(--f-display);color:var(--ink);margin:0 0 6px;letter-spacing:-.01em}
+  .ic-p{margin:0;font-size:var(--fs-sm)}
+
+  .rel-h{font-size:var(--fs-h2);margin-bottom:var(--s6);max-width:18ch}
+  .rel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--s5)}
+  .rel-card{position:relative;display:flex;flex-direction:column;gap:8px;background:#fff;border-radius:var(--r-xl);padding:28px 28px 76px;text-decoration:none;border:1px solid transparent;transition:border-color var(--t-fast)}
+  .rel-card:hover{border-color:var(--indigo)}
+  .rel-g{font:600 var(--fs-xs)/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--green-ink)}
+  .rel-t{font:600 var(--fs-h3)/1.2 var(--f-display);color:var(--ink);letter-spacing:-.01em}
+  .rel-d{font-size:var(--fs-sm);color:var(--ink-2)}
+  .rel-a{position:absolute;left:28px;bottom:24px;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--indigo);color:#fff}
+  .rel-a :global(svg){width:18px;height:18px;transition:transform .45s var(--ease-out)}
+  .rel-card:hover .rel-a :global(svg){transform:translateX(3px)}
+
+  .pn-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5)}
+  .pn-card{display:flex;align-items:center;gap:var(--s5);padding:12px 24px 12px 12px;border:1px solid var(--line);border-radius:var(--r-xl);text-decoration:none;transition:border-color var(--t-fast)}
+  .pn-card:hover{border-color:var(--indigo)}
+  .pn-card img{width:112px;height:88px;object-fit:cover;border-radius:var(--r-lg);flex:none}
+  .pn-card.next{grid-column:2;flex-direction:row-reverse;text-align:right;padding:12px 12px 12px 24px}
+  .pn-k{display:block;font:600 var(--fs-xs)/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px}
+  .pn-t{display:block;font:600 1.05rem/1.3 var(--f-display);color:var(--ink)}
+  .pn-all{margin-top:var(--s5);text-align:center}
+
+  @media (max-width:1000px){
+    .body-grid{grid-template-columns:1fr;gap:0}
+    .toc{display:none}
+    .col{max-width:none}
+    .toc-m{display:block;border:1px solid var(--line);border-radius:var(--r-lg);margin-bottom:var(--s5)}
+    .toc-m summary{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;cursor:pointer;font:600 var(--fs-sm)/1 var(--f-display);color:var(--ink);list-style:none}
+    .toc-m summary::-webkit-details-marker{display:none}
+    .toc-m[open] summary span{rotate:45deg}
+    .toc-m summary span{font-size:1.3rem;transition:rotate var(--t-fast)}
+    .toc-m ol{margin:0;padding:0 18px 16px 38px;font-size:var(--fs-sm)}
+    .toc-m li{margin:6px 0}
+    .toc-m a{color:var(--ink-2)}
+  }
+  @media (max-width:760px){
+    .ah-foot{grid-template-columns:1fr;gap:var(--s4)}
+    .by{text-align:left}
+    .hero-pic{aspect-ratio:4/3}
+    .art :global(ul.checks.cols){grid-template-columns:1fr}
+    .art :global(.tbl.rows table){min-width:0}
+    .art :global(.tbl.rows thead){display:none}
+    .art :global(.tbl.rows td){display:block;border:0;padding:4px 18px}
+    .art :global(.tbl.rows td:first-child){padding-top:16px}
+    .art :global(.tbl.rows td:last-child){padding-bottom:16px}
+    .art :global(.tbl.rows tr+tr){border-top:1px solid var(--line)}
+    .art :global(.tbl.rows tr){display:block}
+    .pn-grid{grid-template-columns:1fr}
+    .pn-card.next{grid-column:auto}
+    .pn-card img{width:80px;height:68px}
+    .inline-cta .btns{width:100%}
+  }
+</style>

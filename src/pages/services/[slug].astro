@@ -1,0 +1,254 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Button from '../../components/Button.astro';
+import Faq from '../../components/Faq.astro';
+import LeadForm from '../../components/LeadForm.astro';
+import YearTable from '../../components/services/YearTable.astro';
+import { CTA, SITE } from '../../data/site';
+import { SERVICES, SOURCES, getService, type Service } from '../../data/services';
+
+export function getStaticPaths() {
+  return SERVICES.map((s) => ({ params: { slug: s.slug }, props: { s } }));
+}
+const { s } = Astro.props as { s: Service };
+const related = s.related.map(getService).filter(Boolean) as Service[];
+const url = `${SITE.url}/services/${s.slug}/`;
+const ld = {
+  '@context': 'https://schema.org', '@type': 'Service',
+  name: s.title, serviceType: s.title, description: s.summary, url,
+  provider: { '@type': 'Organization', name: SITE.legal, url: SITE.url },
+  areaServed: { '@type': 'Country', name: 'Ireland', identifier: 'IE' },
+  audience: { '@type': 'Audience', audienceType: 'PAYE taxpayers in Ireland' },
+};
+---
+<Base title={s.metaTitle} description={s.metaDescription} jsonld={ld}>
+  <PageHero
+    crumbs={[{ label: 'Services', href: '/services/' }, { label: s.title }]}
+    tag={s.group}
+    title={s.title}
+    lede={s.summary}
+    photo={s.photo}
+    alt={s.alt}>
+    <div class="btns">
+      <Button href={CTA.href} variant="green">{CTA.label}</Button>
+      <Button href="/refund-estimator/" variant="ghost">Estimate my refund</Button>
+    </div>
+    <p class="hero-dl"><span aria-hidden="true"></span>2022 refunds close on 31 December 2026</p>
+  </PageHero>
+
+  <!-- Who it's for + key figure -->
+  <section class="sec-s who" aria-labelledby="who-h">
+    <div class="wrap who-in">
+      <div>
+        <h2 id="who-h" class="split">Who it's for</h2>
+        <ul class="checks stg who-list">{s.whoFor.map((w) => <li>{w}</li>)}</ul>
+      </div>
+      <aside class="kf rv rv-s" aria-label="Key figure">
+        <p class="kf-tag">Key figure</p>
+        <p class="kf-num" data-count>{s.keyFigure.value}</p>
+        <p class="kf-label">{s.keyFigure.label}</p>
+        <p class="kf-year">{s.keyFigure.year}</p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- What you can claim -->
+  <section class="sec bg-2 claim" aria-labelledby="claim-h">
+    <div class="wrap claim-in">
+      <div class="claim-copy">
+        <h2 id="claim-h" class="split">What you can claim</h2>
+        <div class="claim-text">{s.canClaim.map((p) => <p class="rv" set:html={p} />)}</div>
+        {s.goodToKnow && (
+          <div class="gtk rv">
+            <h3>Good to know</h3>
+            <ul>{s.goodToKnow.map((g) => <li set:html={g} />)}</ul>
+          </div>
+        )}
+      </div>
+      <div class="claim-tables">{s.tables.map((t) => <YearTable table={t} />)}</div>
+    </div>
+  </section>
+
+  <!-- Documents -->
+  <section class="sec docs" aria-labelledby="docs-h">
+    <div class="wrap docs-in">
+      <div class="docs-card rv">
+        <div class="docs-head">
+          <h2 id="docs-h" class="split">What we'll need from you</h2>
+          <p class="muted">{s.documents.length} things. Most people have them to hand, and we'll ask for anything else as we go.</p>
+        </div>
+        <ol class="docs-list stg">
+          {s.documents.map((d, i) => (
+            <li><span class="box" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="docs-no">{String(i + 1).padStart(2, '0')}</span><span>{d}</span></li>
+          ))}
+        </ol>
+      </div>
+      <div class="docs-side">
+        <div class="pic sd-clip docs-pic"><img src="/photos/about-laptop-documents.jpg" alt="Laptop on a bright white desk with documents and a coffee cup" loading="lazy" /></div>
+        <ul class="promise stg">
+          <li><strong>We never ask for your myAccount password.</strong> You approve our link to your record in your own myAccount.</li>
+          <li><strong>Your refund goes straight to you.</strong> Revenue pays it into your own bank account.</li>
+          <li><strong>No surprises.</strong> We tell you what we've found before anything is filed.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQs -->
+  <section class="sec-s bg-tint" aria-labelledby="faq-h">
+    <div class="wrap faq-in">
+      <div>
+        <h2 id="faq-h" class="split">Questions people ask</h2>
+        <p class="rv">More answers on our <a class="link" href="/faq/">FAQ page</a>.</p>
+      </div>
+      <Faq items={s.faqs} />
+    </div>
+  </section>
+
+  <!-- Related -->
+  <section class="sec-s rel" aria-labelledby="rel-h">
+    <div class="wrap">
+      <h2 id="rel-h" class="split rel-h">Often claimed together</h2>
+      <ul class="rel-list stg">
+        {related.map((r) => (
+          <li>
+            <a href={`/services/${r.slug}/`} class="rel-item">
+              <span class="rel-pic"><img src={`/photos/${r.photo}`} alt="" loading="lazy" /></span>
+              <span class="rel-body">
+                <span class="rel-group">{r.group}</span>
+                <span class="rel-title">{r.title}</span>
+                <span class="rel-chip">{r.chip}</span>
+              </span>
+              <span class="rel-go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="rel-all rv"><a class="link" href="/services/">See all 14 services</a></p>
+    </div>
+  </section>
+
+  <!-- Lead form -->
+  <section class="sec-s" aria-labelledby="lead-h" id="start">
+    <div class="wrap">
+      <div class="lead-card band sd-band">
+        <div class="lead-copy">
+          <h2 id="lead-h" class="split">Start your claim</h2>
+          <p class="lede rv">Tell us a little about you and we'll start with {s.slug === 'paye-tax-review' ? 'your 4-Year PAYE Tax Review' : `your ${s.title} claim`}, then check the rest of your record while we're at it.</p>
+          <ul class="checks rv">
+            <li>{SITE.fee}</li>
+            <li>We check every open year, 2022 to 2025</li>
+            <li>TaxRoots is independent and not part of Revenue</li>
+          </ul>
+        </div>
+        <div class="lead-form"><LeadForm source={`service:${s.slug}`} service={s.label} compact /></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sources -->
+  <section class="srcs" aria-labelledby="src-h">
+    <div class="wrap">
+      <h2 id="src-h">Sources</h2>
+      <ol>
+        {s.sources.filter((k) => SOURCES[k]).map((k) => <li><a href={SOURCES[k].url} rel="noopener" target="_blank">{SOURCES[k].label}</a></li>)}
+      </ol>
+      <p>Figures checked on 30 October 2026. Budget 2027 measures are announced and subject to the Finance Bill. This page is general guidance, not advice on your own circumstances.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero-dl{display:inline-flex;align-items:center;gap:10px;margin:var(--s5) 0 0;font-size:var(--fs-sm);font-weight:600;color:var(--ink)}
+  .hero-dl span{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 5px var(--green-50)}
+
+  .who-in{display:grid;grid-template-columns:1.3fr .9fr;gap:clamp(32px,6vw,96px);align-items:center}
+  .who h2{margin-bottom:var(--s6)}
+  .who-list{gap:16px}
+  .who-list li{font-size:1.08rem}
+  .kf{background:var(--indigo);color:var(--on-dark-2);border-radius:var(--r-xl);padding:clamp(28px,3.4vw,44px);margin:0;position:relative;overflow:hidden}
+  .kf::after{content:"";position:absolute;right:-60px;top:-60px;width:180px;height:180px;border-radius:50%;background:var(--green);opacity:.95}
+  .kf p{margin:0;position:relative;z-index:1}
+  .kf-tag{font:600 var(--fs-xs)/1 var(--f-body);letter-spacing:.1em;text-transform:uppercase;color:#fff}
+  .kf-num{font:600 clamp(3.4rem,2rem + 5vw,5.6rem)/1 var(--f-display);color:#fff;letter-spacing:-.04em;margin:var(--s6) 0 var(--s4)!important;font-variant-numeric:tabular-nums}
+  .kf-label{font-size:1.05rem;line-height:1.5;max-width:30ch}
+  .kf-year{display:inline-block;margin-top:var(--s5)!important;padding:8px 14px;border-radius:var(--r-pill);background:rgba(255,255,255,.1);border:1px solid var(--line-dark);color:#fff;font:600 var(--fs-xs)/1.2 var(--f-body)}
+
+  .claim-in{display:grid;grid-template-columns:1fr 1.05fr;gap:clamp(32px,5vw,80px);align-items:start}
+  .claim h2{margin-bottom:var(--s6)}
+  .claim-text :global(p){color:var(--ink-2)}
+  .claim-tables{display:grid;gap:var(--s5)}
+  @media (min-width:901px) and (min-height:800px){.claim-copy{position:sticky;top:calc(var(--header-h) + 40px)}}
+  .gtk{margin-top:var(--s6);background:#fff;border-radius:var(--r-lg);padding:clamp(22px,2.4vw,30px);border-left:4px solid var(--green)}
+  .gtk h3{font-size:1.1rem;margin-bottom:var(--s4)}
+  .gtk ul{margin:0;padding-left:1.1em;display:grid;gap:10px;font-size:var(--fs-sm)}
+  .gtk li::marker{color:var(--green-ink)}
+
+  .docs-in{display:grid;grid-template-columns:1.25fr .75fr;gap:clamp(24px,4vw,56px);align-items:start}
+  .docs-card{background:#fff;border:1.5px solid var(--indigo-100);border-radius:var(--r-xl);padding:clamp(24px,3.4vw,48px);box-shadow:var(--sh-2)}
+  .docs-head{display:grid;gap:var(--s3);margin-bottom:var(--s6)}
+  .docs-head p{margin:0}
+  .docs-list{list-style:none;margin:0;padding:0;display:grid}
+  .docs-list li{display:grid;grid-template-columns:auto auto 1fr;gap:14px;align-items:start;padding:16px 0;border-top:1px dashed var(--line-2);color:var(--ink);font-weight:500}
+  .docs-list li:first-child{border-top:0}
+  .box{display:grid;place-items:center;width:26px;height:26px;border-radius:8px;border:2px solid var(--indigo);color:#fff;background:#fff;transition:background .3s .2s}
+  .box svg{width:15px;height:15px}
+  .docs-list.in .box{background:var(--green);border-color:var(--green)}
+  .docs-no{font:600 var(--fs-xs)/26px var(--f-display);color:var(--ink-3);letter-spacing:.06em}
+  .docs-side{display:grid;gap:var(--s5)}
+  .docs-pic{aspect-ratio:4/3;border-radius:var(--r-xl)}
+  .promise{list-style:none;margin:0;padding:0;display:grid;gap:var(--s4)}
+  .promise li{font-size:var(--fs-sm);padding:18px 20px;border-radius:var(--r-lg);background:var(--bg-2)}
+  .promise strong{display:block;margin-bottom:4px}
+
+  .faq-in{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(32px,5vw,80px);align-items:start}
+  .faq-in h2{margin-bottom:var(--s4)}
+
+  .rel-h{margin-bottom:var(--s6)}
+  .rel-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s4)}
+  .rel-item{display:grid;grid-template-columns:96px 1fr auto;gap:16px;align-items:center;padding:12px 16px 12px 12px;border-radius:var(--r-lg);border:1px solid var(--line);text-decoration:none;color:inherit;height:100%;transition:border-color .25s,background .25s}
+  .rel-pic{display:block;width:96px;height:96px;border-radius:var(--r-md);overflow:hidden}
+  .rel-pic img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease-out)}
+  .rel-body{display:grid;gap:4px}
+  .rel-group{font:600 .72rem/1.2 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+  .rel-title{font:600 1.05rem/1.3 var(--f-display);color:var(--ink)}
+  .rel-chip{font-size:var(--fs-xs);font-weight:600;color:var(--green-ink)}
+  .rel-go{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--indigo-50);color:var(--indigo);transition:background .25s,color .25s,transform .45s var(--ease-out)}
+  .rel-go svg{width:18px;height:18px}
+  .rel-item:hover{border-color:var(--indigo-100);background:var(--indigo-50)}
+  .rel-item:hover .rel-pic img{transform:scale(1.08)}
+  .rel-item:hover .rel-go{background:var(--indigo);color:#fff;transform:rotate(-45deg)}
+  .rel-all{margin:var(--s5) 0 0}
+
+  .lead-card{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(28px,4vw,64px);align-items:start;border-radius:var(--r-xl);padding:clamp(28px,5vw,72px)}
+  .lead-copy h2{margin-bottom:var(--s4)}
+  .lead-copy .lede{margin-bottom:var(--s5)}
+  .lead-form{background:#fff;border-radius:var(--r-lg);padding:clamp(20px,2.6vw,32px);color:var(--ink-2)}
+  .lead-form :global(strong){color:var(--ink)}
+
+  .srcs{padding:0 0 var(--sec-s)}
+  .srcs h2{font-size:1rem;margin-bottom:var(--s3)}
+  .srcs ol{margin:0 0 var(--s3);padding-left:1.3em;columns:2;column-gap:var(--s7);font-size:var(--fs-xs);color:var(--ink-3)}
+  .srcs li{margin:0 0 6px;break-inside:avoid}
+  .srcs a{color:var(--ink-2);text-underline-offset:3px;text-decoration-color:var(--line-2)}
+  .srcs a:hover{color:var(--indigo);text-decoration-color:var(--green)}
+  .srcs p{font-size:var(--fs-xs);color:var(--ink-3);max-width:80ch;margin:0}
+
+  @media (max-width:1060px){
+    .rel-list{grid-template-columns:1fr}
+    .rel-item{grid-template-columns:72px 1fr auto}
+    .rel-pic{width:72px;height:72px}
+  }
+  @media (max-width:900px){
+    .who-in,.claim-in,.docs-in,.faq-in,.lead-card{grid-template-columns:1fr}
+    .docs-pic{display:none}
+    .srcs ol{columns:1}
+  }
+  @media (max-width:560px){
+    .lead-card{padding:24px 18px;border-radius:var(--r-lg)}
+    .lead-form{padding:18px 16px}
+    .docs-list li{grid-template-columns:auto 1fr}
+    .docs-no{display:none}
+  }
+</style>

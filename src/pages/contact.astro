@@ -1,0 +1,92 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import LeadForm from '../components/LeadForm.astro';
+import Pic from '../components/Pic.astro';
+import { SITE } from '../data/site';
+
+const details = [
+  { k: 'Email', v: SITE.email, href: `mailto:${SITE.email}` },
+  { k: 'Phone', v: SITE.phone, href: SITE.phoneHref },
+  { k: 'WhatsApp', v: 'Message us on WhatsApp', href: SITE.whatsapp },
+  { k: 'Hours', v: SITE.hours },
+  { k: 'Address', v: SITE.address },
+];
+const next = [
+  { t: 'We reply', d: 'Usually within one working day [CONFIRM], by email or phone, whichever you prefer.' },
+  { t: 'A quick chat', d: 'We ask a few questions about your work, rent, health costs and family over the last four years.' },
+  { t: 'Your engagement letter', d: 'If we can help, you get our fee and terms in writing before any work starts.' },
+  { t: 'You approve our link', d: 'You approve our agent request inside your own myAccount. We never need your password.' },
+];
+---
+<Base
+  title="Contact TaxRoots"
+  description="Get in touch with TaxRoots in Dublin about an Irish tax refund. Send us a message, email or call, and we'll tell you honestly whether we can help."
+>
+  <PageHero
+    title="Talk to us about your tax"
+    tag="Contact"
+    crumbs={[{ label: 'Contact' }]}
+    lede="Send a message and tell us a little about your situation. We’ll come back to you, tell you honestly whether we think you’re owed anything, and explain the next steps."
+  />
+
+  <section class="sec-s ct-sec">
+    <div class="wrap ct">
+      <div class="card ct-form rv">
+        <h2>Send us a message</h2>
+        <p class="muted">Takes about two minutes. No obligation.</p>
+        <LeadForm source="contact" submit="Send message" />
+      </div>
+      <aside class="ct-side">
+        <div class="ct-det rv rv-r">
+          <h2 class="ct-h">Other ways to reach us</h2>
+          <dl>
+            {details.map((d) => (
+              <div><dt>{d.k}</dt><dd>{d.href ? <a href={d.href} rel={d.href.startsWith('http') ? 'noopener' : undefined}>{d.v}</a> : d.v}</dd></div>
+            ))}
+          </dl>
+        </div>
+        <Pic src="about-consultant-video-call.jpg" alt="Friendly advisor in glasses smiling at the camera during a video call" ratio="3/2" reveal="rv-c" class="ct-pic" />
+      </aside>
+    </div>
+  </section>
+
+  <section class="sec bg-2">
+    <div class="wrap">
+      <h2 class="split ct-nh">What happens next</h2>
+      <ol class="ct-next stg">
+        {next.map((n, i) => <li><span aria-hidden="true">{i + 1}</span><h3>{n.t}</h3><p>{n.d}</p></li>)}
+      </ol>
+      <p class="note ct-note rv"><strong>We will never ask for your myAccount or ROS password.</strong> If anyone claiming to be from TaxRoots asks for it, please don’t share it and let us know.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .ct-sec{padding-top:0}
+  .ct{display:grid;grid-template-columns:1.25fr .75fr;gap:clamp(24px,4vw,56px);align-items:start}
+  .ct-form{padding:clamp(24px,3.4vw,48px);border-radius:var(--r-xl);box-shadow:var(--sh-1)}
+  .ct-form h2{font-size:var(--fs-h3);margin-bottom:6px}
+  .ct-form>.muted{margin-bottom:var(--s5)}
+  .ct-side{display:grid;gap:var(--s5)}
+  .ct-det{background:var(--indigo);color:var(--on-dark-2);border-radius:var(--r-xl);padding:clamp(24px,3vw,36px)}
+  .ct-h{color:#fff;font-size:var(--fs-h3);margin-bottom:var(--s4)}
+  .ct-det dl{margin:0}
+  .ct-det dl>div{padding:12px 0;border-bottom:1px solid var(--line-dark)}
+  .ct-det dl>div:last-child{border-bottom:0}
+  .ct-det dt{font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--on-dark-2);margin-bottom:4px}
+  .ct-det dd{margin:0;color:#fff;font-weight:600;overflow-wrap:anywhere}
+  .ct-det a{color:#fff;text-decoration:underline;text-decoration-color:var(--green-bright);text-underline-offset:4px}
+  .ct-det a:hover{color:var(--green-bright)}
+  :global(.ct-pic){border-radius:var(--r-xl)}
+  .ct-nh{margin-bottom:var(--s7)}
+  .ct-next{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s5);counter-reset:n}
+  .ct-next li{position:relative;padding-top:var(--s6);border-top:2px solid var(--indigo-100)}
+  .ct-next li:first-child{border-top-color:var(--green)}
+  .ct-next span{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--indigo);color:#fff;font:600 1.05rem/1 var(--f-display);margin-bottom:var(--s4)}
+  .ct-next h3{font-size:1.2rem;margin-bottom:8px}
+  .ct-next p{margin:0}
+  .ct-note{margin-top:var(--s7);max-width:72ch}
+  @media (max-width:980px){.ct{grid-template-columns:1fr}.ct-next{grid-template-columns:1fr 1fr}}
+  @media (max-width:560px){.ct-next{grid-template-columns:1fr}}
+</style>

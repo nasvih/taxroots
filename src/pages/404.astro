@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import Button from '../components/Button.astro';
+import Pic from '../components/Pic.astro';
+import { CTA, SERVICE_LINKS } from '../data/site';
+const links = [
+  { label: 'All services', href: '/services/' },
+  { label: 'How it works', href: '/how-it-works/' },
+  { label: 'Fees', href: '/fees/' },
+  { label: 'FAQ', href: '/faq/' },
+  { label: 'Insights', href: '/insights/' },
+  { label: 'Contact', href: '/contact/' },
+];
+---
+<Base
+  title="Page not found"
+  description="Sorry, we couldn’t find that page on the TaxRoots website. Try one of these links to our services, fees, FAQs or guides to claiming your Irish tax refund."
+  noindex
+>
+  <section class="sec nf">
+    <div class="wrap nf-in">
+      <div>
+        <p class="nf-code rv" aria-hidden="true">404</p>
+        <h1 class="split">This page seems to have wandered off</h1>
+        <p class="lede rv" data-delay="200">The link may be old or mistyped. Your refund, though, could still be out there. Try one of these instead.</p>
+        <div class="btns rv nf-btns">
+          <Button href="/" >Back to home</Button>
+          <Button href={CTA.href} variant="green">{CTA.label}</Button>
+        </div>
+        <ul class="nf-links stg">
+          {links.map((l) => <li><a class="pill" href={l.href}>{l.label}</a></li>)}
+          {SERVICE_LINKS.slice(0, 3).map((l) => <li><a class="pill" href={l.href}>{l.label}</a></li>)}
+        </ul>
+      </div>
+      <Pic src="about-irish-coastline.jpg" alt="Rugged green clifftop above the turquoise sea on the Irish coast" ratio="1/1" reveal="rv-i" class="nf-pic" eager />
+    </div>
+  </section>
+</Base>
+<style>
+  .nf-in{display:grid;grid-template-columns:1.2fr .8fr;gap:clamp(32px,5vw,96px);align-items:center}
+  .nf-code{font:700 clamp(4rem,3rem + 5vw,8rem)/1 var(--f-display);color:var(--indigo-100);letter-spacing:-.05em;margin:0 0 var(--s4)}
+  h1{font-size:var(--fs-display);line-height:1.04;letter-spacing:-.03em;margin-bottom:var(--s5);max-width:15ch}
+  .nf-btns{margin:var(--s6) 0}
+  .nf-links{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:10px}
+  :global(.nf-pic){border-radius:50%}
+  @media (max-width:900px){.nf-in{grid-template-columns:1fr}:global(.nf-pic){max-width:320px}}
+</style>

@@ -1,0 +1,48 @@
+---
+const promises = [
+  { t: 'A clear fee, agreed before we start', d: 'You know exactly what you’ll pay before we do any work. If there is no refund, there is no fee.' },
+  { t: 'Every open year, not just the obvious claims', d: 'We look at all four years Revenue still lets you claim, and every credit and relief that could apply to you.' },
+  { t: 'We tell you first if a year could show tax owed', d: 'Now and then a review shows an underpayment. You hear about it from us before anything is filed, and you decide.' },
+  { t: 'Plain-English updates at every step', d: 'No jargon. You’ll always know where your claim is, what Revenue has said and what happens next.' },
+];
+---
+<section class="why sec" aria-labelledby="why-h">
+  <div class="wrap">
+    <div class="hd">
+      <p class="tag rv">Why TaxRoots</p>
+      <h2 id="why-h" class="split display">Rooted in Ireland. <span class="hl">Honest about the details.</span></h2>
+    </div>
+    <div class="body">
+      <figure class="pic sd-clip ph"><img src="/photos/hero-couple-kitchen-paperwork.jpg" alt="Couple laughing together while reading a letter at their kitchen counter" loading="lazy" /></figure>
+      <ol class="list">
+        {promises.map((p, i) => (
+          <li class="rv" data-delay={i * 90}>
+            <span class="n">{i + 1}</span>
+            <div><h3>{p.t}</h3><p>{p.d}</p></div>
+          </li>
+        ))}
+      </ol>
+    </div>
+    <p class="diy rv">Good to know: you can claim credits yourself, for free, in Revenue’s myAccount. We save you the time and the guesswork, and we deal with Revenue if questions come up.</p>
+  </div>
+</section>
+
+<style>
+  .hd{max-width:900px;margin-bottom:clamp(36px,5vw,64px)}
+  .hd .tag{margin-bottom:var(--s5)}
+  .body{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(28px,5vw,72px);align-items:stretch}
+  .ph{margin:0;min-height:560px;border-radius:var(--r-xl)}
+  .list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;justify-content:center}
+  .list li{display:grid;grid-template-columns:56px 1fr;gap:18px;padding:26px 0;border-bottom:1px solid var(--line)}
+  .list li:first-child{padding-top:0}
+  .list li:last-child{border-bottom:0}
+  .n{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:var(--green-50);color:var(--green-ink);font:600 1.1rem/1 var(--f-display)}
+  .list li:nth-child(even) .n{background:var(--indigo-50);color:var(--indigo)}
+  h3{font-size:clamp(1.15rem,1rem + .6vw,1.45rem);margin-bottom:8px}
+  .list p{margin:0;font-size:var(--fs-sm)}
+  .diy{margin:clamp(32px,4vw,56px) 0 0;padding:20px 24px;border-radius:var(--r-lg);background:var(--bg-2);color:var(--ink);font-size:var(--fs-sm);max-width:none}
+  @media (max-width:900px){
+    .body{grid-template-columns:1fr}
+    .ph{min-height:0;aspect-ratio:4/3}
+  }
+</style>

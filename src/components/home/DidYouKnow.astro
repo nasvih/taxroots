@@ -1,0 +1,87 @@
+---
+// Revenue press release, 11 March 2026 (2025 PAYE returns, figures to 6 March 2026) — CONTENT.md S51
+const SRC = 'https://www.revenue.ie/en/corporate/press-office/press-releases/2026/pr-031126-paye-filing.aspx';
+const most = [
+  { k: 'Health expenses', n: 260995 },
+  { k: 'Rent Tax Credit', n: 216839 },
+  { k: 'Flat rate expenses', n: 202115 },
+  { k: 'Remote working relief', n: 85247 },
+];
+const max = most[0].n;
+---
+<section class="dyk sec bg-2" aria-labelledby="dyk-h">
+  <div class="wrap">
+    <div class="head">
+      <h2 id="dyk-h" class="tag rv">Did you know?</h2>
+      <p class="src rv">Source: <a class="link" href={SRC} rel="noopener" target="_blank">Revenue press release, 11 March 2026</a></p>
+    </div>
+    <p class="statement split sd-fill">According to Revenue, about <em>82%</em> of the 2025 PAYE returns it had processed by early March 2026 showed an overpayment, and more than <em>€637 million</em> had already been refunded.</p>
+
+    <div class="nums">
+      <div class="n rv">
+        <span class="big" data-count>82%</span>
+        <span class="cap">of processed 2025 returns showed an overpayment</span>
+      </div>
+      <div class="n rv" data-delay="120">
+        <span class="big"><span data-count>€637</span>m+</span>
+        <span class="cap">refunded for 2025 by 6 March 2026</span>
+      </div>
+      <div class="n rv" data-delay="240">
+        <span class="big"><span data-count>806,000</span>+</span>
+        <span class="cap">PAYE returns for 2025 processed</span>
+      </div>
+    </div>
+
+    <div class="most">
+      <h3 class="rv">What people claimed most on 2025 returns</h3>
+      <ul class="bars stg">
+        {most.map((m) => (
+          <li style={`--w:${(m.n / max).toFixed(3)}`}>
+            <span class="k">{m.k}</span>
+            <span class="track" aria-hidden="true"><span class="fill"></span></span>
+            <span class="v" data-count>{m.n.toLocaleString('en-IE')}</span>
+          </li>
+        ))}
+      </ul>
+      <p class="fine rv">Number of taxpayers claiming each item, according to Revenue. Every claim is different and a review can occasionally show tax owed. We always tell you before anything is filed.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:clamp(28px,4vw,48px)}
+  h2.tag{font-size:var(--fs-xs);letter-spacing:.08em;line-height:1}
+  .src{margin:0;font-size:var(--fs-sm);color:var(--ink-3)}
+  .statement{font:600 clamp(1.7rem,1rem + 2.9vw,3.6rem)/1.14 var(--f-display);letter-spacing:-.03em;color:var(--ink);max-width:24ch;margin:0 0 clamp(48px,6vw,88px)}
+  .statement em{font-style:normal;color:var(--indigo)}
+  .statement :global(em .w>span){color:var(--indigo)}
+  .nums{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line-2)}
+  .n{display:grid;align-content:start;gap:10px;padding:28px 28px 8px 0}
+  .n+.n{padding-left:28px;border-left:1px solid var(--line-2)}
+  .big{font:600 clamp(2.6rem,1.6rem + 3vw,4.6rem)/1 var(--f-display);letter-spacing:-.04em;color:var(--indigo);font-variant-numeric:tabular-nums}
+  .n:nth-child(2) .big{color:var(--green)}
+  .cap{font-size:var(--fs-sm);color:var(--ink-2);max-width:26ch}
+  .most{margin-top:clamp(56px,6vw,96px);display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);gap:18px clamp(32px,5vw,80px);align-items:start}
+  .most h3{font-size:clamp(1.3rem,1.1rem + .8vw,1.9rem);max-width:16ch}
+  .bars{list-style:none;margin:0;padding:0;display:grid;gap:18px}
+  .bars li{display:grid;grid-template-columns:180px 1fr 90px;align-items:center;gap:16px}
+  .k{font:500 var(--fs-sm)/1.3 var(--f-body);color:var(--ink)}
+  .track{height:14px;border-radius:var(--r-pill);background:#fff;overflow:hidden}
+  .fill{display:block;height:100%;width:calc(var(--w) * 100%);border-radius:inherit;background:var(--indigo);transform-origin:0 50%;transition:transform 1.4s var(--ease-out) .2s}
+  .bars li:nth-child(2) .fill{background:var(--green)}
+  :global(html.mo) .bars:not(.in) .fill{transform:scaleX(0)}
+  .v{font:600 var(--fs-sm)/1 var(--f-display);color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
+  .fine{grid-column:2;margin:6px 0 0;font-size:var(--fs-xs);color:var(--ink-3);max-width:60ch}
+  @media (max-width:860px){
+    .nums{grid-template-columns:1fr}
+    .n,.n+.n{padding:22px 0;border-left:0;border-bottom:1px solid var(--line-2);grid-template-columns:auto 1fr;align-items:center;gap:20px}
+    .big{min-width:5.2ch}
+    .most{grid-template-columns:1fr}
+    .fine{grid-column:1}
+  }
+  @media (max-width:520px){
+    .bars li{grid-template-columns:1fr auto;gap:8px 12px}
+    .track{grid-column:1/-1;grid-row:2}
+    .n,.n+.n{grid-template-columns:1fr;gap:6px}
+  }
+</style>

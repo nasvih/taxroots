@@ -1,0 +1,580 @@
+---
+import Base from '../layouts/Base.astro';
+import Button from '../components/Button.astro';
+import Pic from '../components/Pic.astro';
+import { SITE } from '../data/site';
+import { ESTIMATOR, openYears } from '../lib/estimator';
+
+const OPEN = openYears(new Date());
+const CUR = OPEN[OPEN.length - 1] + 1;
+const YEARS = [...OPEN, CUR];
+const FROM = OPEN[0];
+
+const STEPS = [
+  { id: 'a', label: 'About you' },
+  { id: 'b', label: 'Your work' },
+  { id: 'c', label: 'Your costs' },
+  { id: 'd', label: 'Family' },
+  { id: 'e', label: 'Agree & sign' },
+  { id: 'r', label: 'Review' },
+];
+
+const COSTS = [
+  { id: 'rent', label: 'Rent for your home', hint: 'Rent only, not bills. Include a place you rent to get to work or college.' },
+  { id: 'studentRent', label: 'Rent for a student child', hint: 'College accommodation or digs you paid for your son or daughter.' },
+  { id: 'medical', label: 'Medical and non-routine dental', hint: 'What you paid that wasn’t paid back by insurance or the HSE.' },
+  { id: 'nursing', label: 'Nursing home fees', hint: 'Your share only, not the Fair Deal part.' },
+  { id: 'tuition', label: 'College tuition fees', hint: 'Fees you paid for an approved third-level course, for you or someone else.' },
+  { id: 'wfhDays', label: 'Days worked from home', hint: 'Roughly how many full working days at home.', unit: 'days' },
+  { id: 'wfhBills', label: 'Home bills while working from home', hint: 'Your share of electricity, heating and broadband for the year.' },
+  { id: 'rentalIncome', label: 'Rental income you received', hint: 'Rent from a property or a room you let.' },
+];
+const GROUPS = [
+  { id: 'rent', label: 'Rent', costs: ['rent'] },
+  { id: 'studentRent', label: 'Student child’s rent', costs: ['studentRent'] },
+  { id: 'medical', label: 'Medical or dental', costs: ['medical'] },
+  { id: 'nursing', label: 'Nursing home', costs: ['nursing'] },
+  { id: 'tuition', label: 'College fees', costs: ['tuition'] },
+  { id: 'wfh', label: 'Working from home', costs: ['wfhDays', 'wfhBills'] },
+  { id: 'rentalIncome', label: 'Rental income', costs: ['rentalIncome'] },
+];
+const cost = (id: string) => COSTS.find((c) => c.id === id)!;
+
+const yn = (name: string, opts: [string, string][] = [['yes', 'Yes'], ['no', 'No']]) => ({ name, opts });
+const FAMILY = [
+  { q: 'Do you get Child Benefit for any children?', ...yn('childBenefit') },
+  { q: 'Are you a single parent with a child living with you?', ...yn('singleParent') },
+  { q: 'Do you care for a child with a lasting physical or mental incapacity?', ...yn('incapacitatedChild') },
+  { q: 'Do you support a relative who can’t support themselves?', ...yn('relative') },
+  { q: `Were you or your spouse or civil partner 65 or over at any time since ${FROM}?`, ...yn('over65') },
+];
+const WORK = [
+  { q: `Were you on emergency tax at any point since ${FROM}?`, ...yn('emergencyTax', [['yes', 'Yes'], ['no', 'No'], ['unsure', 'Not sure']]) },
+  { q: `Any time out of work since ${FROM}?`, ...yn('outOfWork') },
+  { q: 'Have you left Ireland, or are you leaving?', ...yn('leftIreland', [['no', 'No'], ['left', 'I’ve left'], ['leaving', 'Leaving soon']]) },
+];
+const FRE_LABELS = ESTIMATOR.fre.map((f) => f.label);
+---
+<Base
+  title="Start my claim"
+  description="Start your Irish tax refund claim in a few short steps. We check every open year, file with Revenue for you, and your refund goes straight to your bank."
+>
+  <section class="st-hero">
+    <div class="wrap">
+      <ol class="crumbs"><li><a href="/">Home</a></li><li><span aria-current="page">Start my claim</span></li></ol>
+      <h1 class="split">Start my claim</h1>
+      <p class="lede rv" data-delay="150">A few short steps, about five minutes <span class="ph">[CONFIRM]</span>. Ballpark figures are fine: we check the exact numbers on your Revenue record.</p>
+    </div>
+  </section>
+
+  <section class="sf-sec bg-2">
+    <div class="wrap sf-grid">
+      <div class="sf-card">
+        <form class="sf" id="sf" method="get" action={SITE.whatsapp} target="_blank">
+          <script is:inline>document.getElementById('sf').classList.add('js');</script>
+          <input type="hidden" name="source" value="start" />
+          <input type="hidden" name="fromEstimator" value="" />
+          <input type="hidden" name="estimateTotal" value="" />
+          <input type="hidden" name="estimateYears" value="" />
+          <div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off" /></label></div>
+
+          <div class="prog" aria-hidden="true">
+            <div class="prog-top"><span data-prog-label>Step 1 of {STEPS.length}: {STEPS[0].label}</span><span data-prog-pct>17%</span></div>
+            <div class="prog-bar"><i></i></div>
+            <ol class="prog-dots">{STEPS.map((s, i) => <li data-dot={i} class:list={{ on: i === 0 }}><span>{s.label}</span></li>)}</ol>
+          </div>
+          <p class="estnote" data-estnote hidden></p>
+
+          <!-- A -->
+          <fieldset class="step" data-step="0">
+            <legend><span class="sn">A</span><span tabindex="-1" class="sh">About you</span></legend>
+            <div class="row">
+              <div class="field"><label for="s-first">First name</label><input id="s-first" name="name" autocomplete="given-name" required /></div>
+              <div class="field"><label for="s-sur">Surname</label><input id="s-sur" name="surname" autocomplete="family-name" required /></div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="s-email">Email</label><input id="s-email" name="email" type="email" autocomplete="email" required /></div>
+              <div class="field"><label for="s-phone">Mobile</label><input id="s-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required placeholder="08x xxx xxxx" /></div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="s-dob">Date of birth</label><input id="s-dob" name="dob" type="date" autocomplete="bday" max={new Date().toISOString().slice(0, 10)} /></div>
+              <div class="field">
+                <p class="hint" style="margin-top:28px">We'll ask for your PPSN later, on a call or through a secure link, when we set up the agent link with Revenue. Please don't type it here.</p>
+              </div>
+            </div>
+            <div class="field"><label for="s-addr">Address</label><textarea id="s-addr" name="address" rows="2" autocomplete="street-address" placeholder="Street, town, county, Eircode"></textarea></div>
+            <div class="row">
+              <div class="field">
+                <label for="s-marital">Marital status</label>
+                <select id="s-marital" name="maritalStatus" required>
+                  <option value="">Choose one</option>
+                  <option value="single">Single</option>
+                  <option value="married">Married</option>
+                  <option value="civil-partnership">In a civil partnership</option>
+                  <option value="cohabiting">Living with a partner (not married)</option>
+                  <option value="separated">Separated or divorced</option>
+                  <option value="widowed">Widowed</option>
+                </select>
+              </div>
+              <div class="field" data-if="married"><label for="s-wed">Wedding or civil partnership date <span class="opt">(if married)</span></label><input id="s-wed" name="weddingDate" type="date" /></div>
+            </div>
+            <fieldset class="q" data-if="married">
+              <legend>Are you jointly assessed for tax?</legend>
+              <div class="seg">
+                <label><input type="radio" name="jointlyAssessed" value="yes" /><span>Yes</span></label>
+                <label><input type="radio" name="jointlyAssessed" value="no" /><span>No</span></label>
+                <label><input type="radio" name="jointlyAssessed" value="unsure" /><span>Not sure</span></label>
+              </div>
+            </fieldset>
+            <p class="pw"><strong>We will never ask for your myAccount or ROS password.</strong> Don’t share it with anyone, including us. You approve our access inside your own myAccount instead.</p>
+          </fieldset>
+
+          <!-- B -->
+          <fieldset class="step" data-step="1">
+            <legend><span class="sn">B</span><span tabindex="-1" class="sh">Your work</span></legend>
+            <div class="row">
+              <div class="field"><label for="s-emp">Current employer</label><input id="s-emp" name="employer" autocomplete="organization" placeholder="Or “not working” / “retired”" /></div>
+              <div class="field">
+                <label for="s-job">Job title</label>
+                <input id="s-job" name="jobTitle" list="fre-list" autocomplete="organization-title" placeholder="e.g. Staff nurse" aria-describedby="s-job-h" />
+                <datalist id="fre-list">{FRE_LABELS.map((l) => <option value={l} />)}</datalist>
+                <p class="hint" id="s-job-h">We check it against Revenue’s list of Flat Rate Expenses.</p>
+              </div>
+            </div>
+            <div class="field"><label for="s-other">Other employers since {FROM} <span class="opt">(optional)</span></label><textarea id="s-other" name="otherEmployers" rows="2" placeholder={`e.g. Dunnes Stores, ${FROM}–${FROM + 1}`}></textarea></div>
+            {WORK.map((w) => (
+              <fieldset class="q">
+                <legend>{w.q}</legend>
+                <div class="seg">{w.opts.map(([v, t]) => <label><input type="radio" name={w.name} value={v} /><span>{t}</span></label>)}</div>
+              </fieldset>
+            ))}
+          </fieldset>
+
+          <!-- C -->
+          <fieldset class="step" data-step="2">
+            <legend><span class="sn">C</span><span tabindex="-1" class="sh">Your costs</span></legend>
+            <p class="intro">Tick what applies, then add rough yearly amounts. Leave a year blank if you don’t know: we can still check it.</p>
+            <fieldset class="q">
+              <legend>Since {FROM}, did you have any of these?</legend>
+              <div class="chips">{GROUPS.map((g) => <label class="chip"><input type="checkbox" name={`has_${g.id}`} value="yes" data-group={g.id} /><span>{g.label}</span></label>)}</div>
+            </fieldset>
+            <div class="costs">
+              {GROUPS.map((g) => (
+                <div class="cost" data-cost={g.id}>
+                  {g.costs.map((cid) => { const c = cost(cid); return (
+                    <fieldset class="cost-f">
+                      <legend>{c.label}</legend>
+                      <p class="hint">{c.hint}</p>
+                      <div class="yrs">
+                        {YEARS.map((y) => (
+                          <label><span>{y}{y === CUR ? ' so far' : ''}</span><span class:list={['in', { days: c.unit }]}>{!c.unit && <b aria-hidden="true">€</b>}<input name={`${cid}_${y}`} inputmode="decimal" autocomplete="off" aria-label={`${c.label}, ${y}`} /></span></label>
+                        ))}
+                      </div>
+                      {cid === 'tuition' && (
+                        <div class="field tt"><label for="s-tt">Full-time or part-time?</label>
+                          <select id="s-tt" name="tuitionType"><option value="">Choose</option><option value="full-time">Full-time</option><option value="part-time">Part-time</option><option value="both">A mix of both</option></select></div>
+                      )}
+                    </fieldset>
+                  ); })}
+                </div>
+              ))}
+            </div>
+          </fieldset>
+
+          <!-- D -->
+          <fieldset class="step" data-step="3">
+            <legend><span class="sn">D</span><span tabindex="-1" class="sh">Family</span></legend>
+            <div class="field"><label for="s-kids">Children and their ages <span class="opt">(optional)</span></label><input id="s-kids" name="children" placeholder="e.g. two, aged 4 and 9" /></div>
+            {FAMILY.map((f) => (
+              <fieldset class="q">
+                <legend>{f.q}</legend>
+                <div class="seg">{f.opts.map(([v, t]) => <label><input type="radio" name={f.name} value={v} /><span>{t}</span></label>)}</div>
+              </fieldset>
+            ))}
+            <div class="field"><label for="s-msg">Anything else we should know? <span class="opt">(optional)</span></label><textarea id="s-msg" name="message" rows="3" placeholder="e.g. I started a new job in March 2024 and was on emergency tax for two months."></textarea></div>
+          </fieldset>
+
+          <!-- E -->
+          <fieldset class="step" data-step="4">
+            <legend><span class="sn">E</span><span tabindex="-1" class="sh">Agree and sign</span></legend>
+            <p class="draft">Draft wording, to be confirmed with our solicitor <span class="ph">[CONFIRM]</span>.</p>
+            <label class="consent"><input type="checkbox" name="termsAccepted" value="yes" required /> <span>I’ve read the <a href="/terms/" target="_blank" rel="noopener">terms of engagement</a> and agree to TaxRoots’ fee of <span class="ph">[FEE %]</span> of any refund secured. No refund, no fee.</span></label>
+            <label class="consent"><input type="checkbox" name="consent" value="yes" required /> <span>I’ve read the <a href="/privacy/" target="_blank" rel="noopener">privacy notice</a> and agree that TaxRoots can use my details to handle my claim and contact me about it.</span></label>
+            <label class="consent"><input type="checkbox" name="coolingOffConsent" value="yes" required /> <span>I ask TaxRoots to start work now, within the 14-day cooling-off period. I understand I can still cancel within 14 days <span class="ph">[CONFIRM]</span>.</span></label>
+            <div class="field sig">
+              <label for="s-sig">Type your full name to sign</label>
+              <input id="s-sig" name="signature" autocomplete="name" required aria-describedby="s-sig-h" />
+              <p class="hint" id="s-sig-h">Typing your name here is your electronic signature. We’ll record today’s date with it.</p>
+            </div>
+            <input type="hidden" name="signedOn" value="" />
+            <div class="nojs-submit">
+              <Button type="submit" variant="green">Send on WhatsApp</Button>
+              <p class="hint">Opens a WhatsApp chat with us. Tell us your name and we’ll take it from there.</p>
+            </div>
+          </fieldset>
+
+          <!-- Review (JS only) -->
+          <section class="step review" data-step="5" aria-labelledby="rv-h">
+            <h2 class="sh" id="rv-h" tabindex="-1">Check your details</h2>
+            <p class="intro">Make sure everything looks right. You can go back and change anything.</p>
+            <div class="rv-list" data-review></div>
+          </section>
+
+          <div class="sf-nav">
+            <button type="button" class="btn ghost plain" data-prev>Back</button>
+            <Button data-next>Continue</Button>
+            <Button type="submit" variant="green" data-submit>Send on WhatsApp</Button>
+          </div>
+          <p class="status" role="status" aria-live="polite"></p>
+        </form>
+
+        <div class="done" data-done hidden>
+          <p class="tick" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></p>
+          <h2 tabindex="-1" data-done-h>Thanks.</h2>
+          <p class="lede">WhatsApp has opened with your claim details filled in. <strong>Press send</strong> and we’ll reply there. Didn’t open? <a class="link" href={SITE.whatsapp} target="_blank" rel="noopener">Open WhatsApp</a>.</p>
+          <p>Next: look out for an <strong>“Agent-Client Link”</strong> request in your myAccount <strong>MyEnquiries</strong> inbox in the next <span class="ph">[CONFIRM]</span> working days, and approve it so we can start.</p>
+          <ul class="checks">
+            <li>We’ll reply on WhatsApp to confirm we’ve got your details.</li>
+            <li>We never ask for your myAccount password.</li>
+            <li>Any refund is paid by Revenue straight into your own bank account.</li>
+          </ul>
+          <div class="btns"><Button href="/how-it-works/" variant="ghost">How it works</Button></div>
+        </div>
+      </div>
+
+      <aside class="sf-aside">
+        <Pic src="hero-cafe-remote-worker.jpg" alt="Woman smiling as she works on a laptop in a bright café" ratio="4/3" eager />
+        <div class="aside-card">
+          <h2>What happens next</h2>
+          <ol class="next">
+            <li><strong>We send an agent link request.</strong> You approve it in myAccount under MyEnquiries, “Agent-Client Link”.</li>
+            <li><strong>We review every open year</strong> ({OPEN[0]}–{OPEN[OPEN.length - 1]}) and tell you before filing if anything could show tax owed.</li>
+            <li><strong>Revenue pays you directly.</strong> Then we invoice our agreed fee. No refund, no fee.</li>
+          </ol>
+          <p class="pw sm"><strong>No passwords, ever.</strong> We never ask for your myAccount or ROS password.</p>
+          <p class="q-help">Questions first? Call <a class="link" href={SITE.phoneHref}>{SITE.phone}</a> or email <a class="link" href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .st-hero{padding:clamp(40px,5vw,72px) 0 clamp(28px,3vw,44px)}
+  .st-hero h1{font-size:var(--fs-display);letter-spacing:-.03em}
+  .st-hero .lede{margin-top:var(--s4)}
+  .ph{display:inline-block;padding:0 6px;border-radius:6px;background:#FFF4D6;color:#6B4E00;font:600 .8em/1.6 var(--f-body)}
+  .sf-sec{padding-block:clamp(32px,4vw,64px) clamp(64px,7vw,112px)}
+  .sf-grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:clamp(20px,3vw,44px);align-items:start}
+  .sf-card{background:#fff;border-radius:var(--r-xl);padding:clamp(20px,3.4vw,48px);box-shadow:var(--sh-1);min-width:0}
+  .sf{display:grid;gap:var(--s6)}
+  .sf[hidden]{display:none}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+  .prog{display:none}
+  .sf.js .prog{display:grid;gap:10px}
+  .prog-top{display:flex;justify-content:space-between;font:600 var(--fs-sm)/1.2 var(--f-body);color:var(--ink)}
+  .prog-top span:last-child{color:var(--green-ink)}
+  .prog-bar{height:8px;border-radius:8px;background:var(--bg-2);overflow:hidden}
+  .prog-bar i{display:block;height:100%;width:100%;background:var(--green);border-radius:8px;transform-origin:0 50%;transform:scaleX(var(--p,.1667));transition:transform .6s var(--ease-out)}
+  .prog-dots{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;list-style:none;margin:0;padding:0;font-size:.72rem;color:var(--ink-3)}
+  .prog-dots li{display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .prog-dots li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--line-2);transition:background .3s}
+  .prog-dots li.on{color:var(--indigo);font-weight:600}
+  .prog-dots li.on::before,.prog-dots li.past::before{background:var(--green)}
+  .estnote{margin:0;padding:14px 18px;border-radius:var(--r-md);background:var(--green-50);color:var(--ink);font-size:var(--fs-sm)}
+  .estnote[hidden]{display:none}
+
+  .step{border:0;margin:0;padding:0;display:grid;gap:var(--s5);min-width:0}
+  .step>legend{display:flex;align-items:center;gap:14px;padding:0;margin-bottom:var(--s5);font:600 clamp(1.4rem,1.1rem + 1vw,2rem)/1.15 var(--f-display);color:var(--ink);letter-spacing:-.02em}
+  .sf:not(.js) .step+.step{padding-top:var(--s7);border-top:1px solid var(--line)}
+  .sn{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:var(--indigo);color:#fff;font-size:1rem;flex:none}
+  .sh{outline:none}
+  .sf.js .step{display:none}
+  .sf.js .step.on{display:grid;animation:st-in .5s var(--ease-out)}
+  .sf.js .step.on.back{animation-name:st-back}
+  @keyframes st-in{from{opacity:0;transform:translate3d(24px,0,0)}}
+  @keyframes st-back{from{opacity:0;transform:translate3d(-24px,0,0)}}
+  @media (prefers-reduced-motion:reduce){.sf.js .step.on{animation:none}}
+  .review{display:none}
+  .review h2{font-size:clamp(1.4rem,1.1rem + 1vw,2rem)}
+  .intro{margin:0;color:var(--ink-2)}
+
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4);align-items:start}
+  .sf textarea{min-height:84px}
+  .opt{font-weight:400;color:var(--ink-3)}
+  .hint{margin:0;font-size:var(--fs-xs);color:var(--ink-3)}
+  .sf.js [data-if="married"]:not(.show){display:none}
+  .q{border:0;margin:0;padding:0;display:grid;gap:10px;min-width:0}
+  .q legend{font:600 var(--fs-sm)/1.35 var(--f-body);color:var(--ink);padding:0;margin-bottom:10px}
+  .seg{display:inline-flex;flex-wrap:wrap;gap:6px;padding:5px;border-radius:var(--r-pill);background:var(--bg-2);width:fit-content;max-width:100%}
+  .seg label{position:relative;cursor:pointer}
+  .seg input,.chip input{position:absolute;opacity:0;width:1px;height:1px}
+  .seg span{display:inline-flex;align-items:center;min-height:42px;padding:0 18px;border-radius:var(--r-pill);font:600 var(--fs-sm)/1 var(--f-body);color:var(--ink-2);transition:all .2s}
+  .seg input:checked+span{background:#fff;color:var(--indigo);box-shadow:var(--sh-1)}
+  :is(.seg,.chip) input:focus-visible+span{outline:3px solid var(--green);outline-offset:2px}
+  .pw{margin:0;padding:16px 18px;border-radius:var(--r-md);background:var(--indigo-50);color:var(--ink);font-size:var(--fs-sm)}
+  .pw strong{color:var(--indigo)}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip span{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px 0 14px;border-radius:var(--r-pill);border:1.5px solid var(--line-2);font:600 var(--fs-sm)/1 var(--f-body);color:var(--ink-2);cursor:pointer;transition:all .2s;background:#fff}
+  .chip span::before{content:"+";font-size:1.1rem;color:var(--indigo)}
+  .chip input:checked+span{background:var(--indigo);border-color:var(--indigo);color:#fff}
+  .chip input:checked+span::before{content:"✓";color:var(--green-bright)}
+  .costs{display:grid;gap:12px}
+  .sf.js .cost:not(.show){display:none}
+  .cost{display:grid;gap:12px;padding:18px;border-radius:var(--r-lg);background:var(--bg-2);animation:st-in .4s var(--ease-out)}
+  .cost-f{border:0;margin:0;padding:0;display:grid;gap:8px;min-width:0}
+  .cost-f legend{font:600 1rem/1.3 var(--f-display);color:var(--ink);padding:0;margin-bottom:4px}
+  .yrs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+  .yrs label{display:grid;gap:4px;font:600 var(--fs-xs)/1.2 var(--f-body);color:var(--ink-2)}
+  .yrs .in{position:relative;display:block}
+  .yrs .in b{position:absolute;left:11px;top:50%;translate:0 -50%;font-weight:600;color:var(--ink-3)}
+  .yrs input{width:100%;min-height:46px;padding:10px 10px 10px 26px;border:1.5px solid var(--line-2);border-radius:var(--r-sm);background:#fff;font:500 var(--fs-sm)/1.2 var(--f-body);color:var(--ink)}
+  .yrs .days input{padding-left:12px}
+  .yrs input:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 4px var(--indigo-50)}
+  .tt{max-width:280px;margin-top:6px}
+
+  .draft{margin:0;font-size:var(--fs-sm);color:var(--ink-3)}
+  .consent{display:flex;gap:12px;align-items:flex-start;font-size:var(--fs-sm);color:var(--ink-2);cursor:pointer;padding:14px 16px;border:1.5px solid var(--line);border-radius:var(--r-md);transition:border-color .2s,background .2s}
+  .consent:has(input:checked){border-color:var(--green);background:var(--green-50)}
+  .consent input{width:20px;height:20px;margin-top:2px;accent-color:var(--green);flex:none}
+  .consent a{color:var(--indigo)}
+  .sig input{font:500 1.3rem/1 var(--f-display)!important;letter-spacing:.01em}
+  .sf.js .nojs-submit{display:none}
+  .nojs-submit{display:grid;gap:10px;justify-items:start}
+
+  .sf-nav{display:none}
+  .sf.js .sf-nav{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-top:24px;border-top:1px solid var(--line)}
+  .sf-nav [hidden]{display:none}
+  .status{margin:0;font-size:var(--fs-sm);font-weight:600}
+  .status:empty{display:none}
+  .status.err{color:var(--err)}
+
+  .rv-list{display:grid;gap:12px}
+  .rv-list :global(.rv-sec){border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 20px}
+  .rv-list :global(.rv-h){display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:6px}
+  .rv-list :global(.rv-h h3){font-size:1.05rem}
+  .rv-list :global(.rv-h button){border:0;background:var(--indigo-50);color:var(--indigo);font:600 var(--fs-xs)/1 var(--f-body);padding:8px 14px;border-radius:var(--r-pill);cursor:pointer}
+  .rv-list :global(dl){display:grid;grid-template-columns:minmax(120px,38%) 1fr;gap:6px 16px;margin:0;font-size:var(--fs-sm)}
+  .rv-list :global(dt){color:var(--ink-3)}
+  .rv-list :global(dd){margin:0;color:var(--ink);overflow-wrap:anywhere}
+  .rv-list :global(.empty){margin:0;color:var(--ink-3);font-size:var(--fs-sm)}
+
+  .done{display:grid;gap:var(--s5);justify-items:start;animation:st-in .6s var(--ease-out)}
+  .done[hidden]{display:none}
+  .done h2{font-size:var(--fs-h2);outline:none}
+  .tick{display:grid;place-items:center;width:72px;height:72px;margin:0;border-radius:50%;background:var(--green);color:#fff}
+  .tick svg{width:36px;height:36px}
+
+  .sf-aside{position:sticky;top:calc(var(--header-h) + 20px);display:grid;gap:16px}
+  .sf-aside :global(.pic){border-radius:var(--r-xl)}
+  .aside-card{background:#fff;border-radius:var(--r-xl);padding:28px;box-shadow:var(--sh-1);display:grid;gap:14px}
+  .aside-card h2{font-size:1.3rem}
+  .next{margin:0;padding:0;list-style:none;counter-reset:n;display:grid;gap:14px;font-size:var(--fs-sm)}
+  .next li{counter-increment:n;position:relative;padding-left:40px}
+  .next li::before{content:counter(n);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;background:var(--green-50);color:var(--green-ink);display:grid;place-items:center;font:600 .8rem/1 var(--f-display)}
+  .pw.sm{padding:12px 14px}
+  .q-help{margin:0;font-size:var(--fs-sm)}
+
+  @media (max-width:1000px){
+    .sf-grid{grid-template-columns:1fr}
+    .sf-aside{position:static;grid-template-columns:1fr 1fr;align-items:start}
+  }
+  @media (max-width:700px){
+    .row{grid-template-columns:1fr}
+    .yrs{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .prog-dots{display:none}
+    .sf-aside{grid-template-columns:1fr}
+    .sf-aside :global(.pic){display:none}
+    .sf-card{padding:22px 16px;border-radius:var(--r-lg)}
+    .sf.js .sf-nav .btn{flex:1 1 auto;justify-content:center}
+    .sf.js .sf-nav [data-next],.sf.js .sf-nav [data-submit]{justify-content:space-between}
+    .rv-list :global(dl){grid-template-columns:1fr;gap:0}
+    .rv-list :global(dd){margin-bottom:8px}
+  }
+</style>
+
+<script>
+  import { ESTIMATOR } from '../lib/estimator';
+  import { openWhatsApp } from '../scripts/whatsapp';
+
+  const form = document.getElementById('sf') as HTMLFormElement;
+  form.classList.add("js");
+  form.noValidate = true;
+  const $ = <T extends Element = HTMLElement>(s: string, r: ParentNode = form) => r.querySelector<T>(s)!;
+  const $$ = <T extends Element = HTMLElement>(s: string, r: ParentNode = form) => Array.from(r.querySelectorAll<T>(s));
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const steps = $$('[data-step]');
+  const dots = $$('[data-dot]');
+  const prev = $<HTMLButtonElement>('[data-prev]'); const next = $<HTMLButtonElement>('[data-next]'); const submit = $<HTMLButtonElement>('[data-submit]');
+  const status = $('.status');
+  const LABELS = ['About you', 'Your work', 'Your costs', 'Family', 'Agree & sign', 'Review'];
+  let cur = 0;
+  let estShown = false;
+
+  // ---- conditional fields ----
+  function sync() {
+    const m = (form.elements.namedItem('maritalStatus') as HTMLSelectElement).value;
+    const married = m === 'married' || m === 'civil-partnership';
+    $$('[data-if="married"]').forEach((el) => el.classList.toggle('show', married));
+    $$<HTMLInputElement>('[data-group]').forEach((cb) => $(`[data-cost="${cb.dataset.group}"]`).classList.toggle('show', cb.checked));
+  }
+  form.addEventListener('change', sync);
+  // typing an amount ticks its chip
+  $$<HTMLInputElement>('.cost input').forEach((i) => i.addEventListener('input', () => {
+    const g = i.closest<HTMLElement>('[data-cost]')!.dataset.cost!; const cb = $<HTMLInputElement>(`[data-group="${g}"]`);
+    if (i.value.trim()) cb.checked = true;
+  }));
+
+  // ---- prefill from the estimator ----
+  function prefill() {
+    let d: any = null;
+    try { d = JSON.parse(sessionStorage.getItem('tr-estimate') || 'null'); } catch {}
+    const q = new URLSearchParams(location.search);
+    if (!d && q.get('from') === 'estimator') {
+      d = { total: +(q.get('est') || 0), years: (q.get('years') || '').split(',').filter(Boolean).map(Number), status: q.get('status') || '', job: q.get('job') || '' };
+      d.jobLabel = ESTIMATOR.fre.find((f) => f.id === d.job)?.label || '';
+    }
+    if (!d) return;
+    const set = (name: string, v: string) => { const el = form.elements.namedItem(name) as any; if (!el || !v) return; if (el instanceof RadioNodeList) { (Array.from(el) as HTMLInputElement[]).forEach((r) => (r.checked = r.value === v)); } else if (!el.value) el.value = v; };
+    set('fromEstimator', 'yes');
+    set('estimateTotal', d.total ? `€${Number(d.total).toLocaleString('en-IE')}` : '');
+    set('estimateYears', (d.years || []).join(', '));
+    if (d.status === 'single' || d.status === 'singleParent') set('maritalStatus', 'single');
+    if (d.status === 'marriedOne' || d.status === 'marriedTwo') set('maritalStatus', 'married');
+    if (d.status === 'singleParent' || d.singleParent) set('singleParent', 'yes');
+    if (d.jobLabel) set('jobTitle', d.jobLabel);
+    if (d.emergencyTax) set('emergencyTax', 'yes');
+    if (d.outOfWork) set('outOfWork', 'yes');
+    if (d.leftIreland) set('leftIreland', 'left');
+    if (d.incapacitatedChild) set('incapacitatedChild', 'yes');
+    if (d.relative) set('relative', 'yes');
+    if (d.age65) set('over65', 'yes');
+    const groupOf: Record<string, string> = { rent: 'rent', medical: 'medical', nursing: 'nursing', tuition: 'tuition', wfhDays: 'wfh', wfhBills: 'wfh' };
+    let tt = '';
+    for (const [y, c] of Object.entries<any>(d.costs || {})) {
+      for (const k of Object.keys(groupOf)) {
+        const v = Math.round(c[k] || 0);
+        if (v > 0) { set(`${k}_${y}`, String(v)); ($(`[data-group="${groupOf[k]}"]`) as HTMLInputElement).checked = true; }
+      }
+      if (c.tuitionType) tt = tt && tt !== c.tuitionType ? 'both' : c.tuitionType;
+    }
+    if (tt) set('tuitionType', tt);
+    const note = $('[data-estnote]');
+    note.textContent = d.total > 0
+      ? `We’ve brought over your estimator answers (an estimate of around €${Number(d.total).toLocaleString('en-IE')}). Check them as you go.`
+      : 'We’ve brought over your estimator answers. Check them as you go.';
+    note.hidden = false;
+    estShown = true;
+  }
+
+  // ---- steps ----
+  function go(i: number, focus = true) {
+    const back = i < cur;
+    cur = Math.max(0, Math.min(steps.length - 1, i));
+    steps.forEach((s, k) => { s.classList.toggle('on', k === cur); s.classList.toggle('back', back); });
+    dots.forEach((d, k) => { d.classList.toggle('on', k === cur); d.classList.toggle('past', k < cur); });
+    $('.prog-bar i').style.setProperty('--p', String((cur + 1) / steps.length));
+    $('[data-prog-label]').textContent = `Step ${cur + 1} of ${steps.length}: ${LABELS[cur]}`;
+    $('[data-prog-pct]').textContent = Math.round(((cur + 1) / steps.length) * 100) + '%';
+    prev.hidden = cur === 0;
+    next.hidden = cur === steps.length - 1;
+    submit.hidden = cur !== steps.length - 1;
+    (next.querySelector('span') as HTMLElement).textContent = cur === steps.length - 2 ? 'Review my details' : 'Continue';
+    status.textContent = '';
+    if (estShown) $('[data-estnote]').hidden = cur !== 0;
+    if (cur === steps.length - 1) buildReview();
+    if (focus) {
+      const card = form.closest('.sf-card') as HTMLElement;
+      const top = card.getBoundingClientRect().top;
+      if (top < 0) { const l = (window as any).__lenis; if (l) l.scrollTo(card, { offset: -96, immediate: reduce }); else card.scrollIntoView(); }
+      steps[cur].querySelector<HTMLElement>('.sh')?.focus({ preventScroll: true });
+    }
+  }
+  function valid(i: number) {
+    const bad = $$<HTMLInputElement>('input,select,textarea', steps[i]).find((el) => !el.closest('.hp') && el.offsetParent !== null && !el.checkValidity());
+    if (bad) { bad.reportValidity(); bad.focus(); return false; }
+    return true;
+  }
+  prev.addEventListener('click', () => go(cur - 1));
+  next.addEventListener('click', () => { if (valid(cur)) go(cur + 1); });
+  form.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && cur < steps.length - 1 && (e.target as HTMLElement).matches('input')) { e.preventDefault(); next.click(); }
+  });
+
+  // ---- review ----
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+  function labelFor(el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) {
+    if (el.type === 'radio') return el.closest('fieldset')!.querySelector('legend')!.textContent!.trim();
+    if (el.getAttribute('aria-label')) return el.getAttribute('aria-label')!;
+    return (form.querySelector(`label[for="${el.id}"]`)?.textContent || el.name).replace(/\(.*?\)/g, '').trim();
+  }
+  function buildReview() {
+    const out = steps.slice(0, 5).map((s, i) => {
+      const rows: [string, string][] = [];
+      const seen = new Set<string>();
+      $$<HTMLInputElement>('input,select,textarea', s).forEach((el) => {
+        if (el.type === 'hidden' || el.closest('.hp') || seen.has(el.name) || !el.name || el.name.startsWith('has_')) return;
+        if (el.closest('[data-if]') && !el.closest('[data-if]')!.classList.contains('show')) return;
+        if (el.closest('[data-cost]') && !el.closest('[data-cost]')!.classList.contains('show')) return;
+        let v = '';
+        if (el.type === 'radio') { seen.add(el.name); const c = s.querySelector<HTMLInputElement>(`[name="${el.name}"]:checked`); v = c ? c.nextElementSibling!.textContent! : ''; }
+        else if (el.type === 'checkbox') { v = el.checked ? 'Agreed' : 'Not ticked'; rows.push([el.parentElement!.querySelector('span')!.textContent!.replace(/\s+/g, ' ').trim().slice(0, 60) + '…', v]); return; }
+        else if (el instanceof HTMLSelectElement) v = el.value ? el.selectedOptions[0].textContent! : '';
+        else v = el.value.trim();
+        if (el.name === 'ppsn' && v) v = v.slice(0, 2) + '•••••' + v.slice(-2);
+        if (/_\d{4}$/.test(el.name)) {
+          if (!v) return;
+          const label = el.closest('fieldset')!.querySelector('legend')!.textContent!.trim();
+          const n = parseFloat(v.replace(/[€,\s]/g, ''));
+          const shown = (el.closest('.days') ? '' : '€') + (isFinite(n) ? n.toLocaleString('en-IE') : v);
+          const yr = el.name.slice(-4);
+          const row = rows.find((r) => r[0] === label);
+          if (row) row[1] += ` · ${yr}: ${shown}`; else rows.push([label, `${yr}: ${shown}`]);
+          return;
+        }
+        if (v) rows.push([labelFor(el), v]);
+      });
+      return `<div class="rv-sec"><div class="rv-h"><h3>${LABELS[i]}</h3><button type="button" data-edit="${i}">Edit<span class="sr-only"> ${LABELS[i]}</span></button></div>${rows.length ? `<dl>${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : '<p class="empty">Nothing added.</p>'}</div>`;
+    });
+    $('[data-review]').innerHTML = out.join('');
+  }
+  $('[data-review]').addEventListener('click', (e) => { const b = (e.target as HTMLElement).closest<HTMLElement>('[data-edit]'); if (b) go(+b.dataset.edit!); });
+
+  // ---- submit ----
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (cur !== steps.length - 1) { next.click(); return; }
+    for (let i = 0; i < 5; i++) { if (!$$<HTMLInputElement>('input,select,textarea', steps[i]).every((el) => el.closest('.hp') || el.checkValidity())) { go(i); setTimeout(() => valid(i), 50); return; } }
+    (form.elements.namedItem('signedOn') as HTMLInputElement).value = new Date().toISOString();
+    const fd = new FormData(form);
+    const first = String(fd.get('name') || '').trim(); const sur = String(fd.get('surname') || '').trim();
+    fd.set('firstName', first); fd.set('name', `${first} ${sur}`.trim());
+    // drop empty fields to keep the lead tidy
+    for (const [k, v] of Array.from(fd.entries())) if (typeof v === 'string' && !v.trim()) fd.delete(k);
+    // Static site: hand the claim over to WhatsApp, pre-filled from the review screen.
+    buildReview();
+    const text = ['Hi TaxRoots, I would like to start my tax refund claim.', '']
+      .concat(Array.from(document.querySelectorAll<HTMLElement>('[data-review] .rv-sec')).flatMap((sec) => {
+        const rows = Array.from(sec.querySelectorAll('dt')).map((dt) => `${dt.textContent}: ${dt.nextElementSibling?.textContent || ''}`)
+          .filter((r) => !/…:/.test(r));
+        return rows.length ? [`*${sec.querySelector('h3')?.textContent}*`, ...rows, ''] : [];
+      }))
+      .concat(['(Sent from taxrootsirl.com/start)']).join('\n');
+    openWhatsApp(text);
+    try { sessionStorage.removeItem('tr-estimate'); } catch {}
+    form.hidden = true;
+    const done = document.querySelector<HTMLElement>('[data-done]')!;
+    done.hidden = false;
+    const h = done.querySelector<HTMLElement>('[data-done-h]')!;
+    h.textContent = `Thanks, ${first}. Press send in WhatsApp.`;
+    h.focus();
+    const card = done.closest('.sf-card') as HTMLElement; const l = (window as any).__lenis;
+    if (l) l.scrollTo(card, { offset: -96 }); else card.scrollIntoView();
+  });
+
+  prefill();
+  sync();
+  go(0, false);
+</script>

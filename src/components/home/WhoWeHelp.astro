@@ -1,0 +1,116 @@
+---
+import Arrow from '../Arrow.astro';
+const people = [
+  { k: 'Nurses and healthcare staff', p: 'hero-nurse-portrait.jpg', alt: 'Smiling nurse in teal scrubs', note: 'Uniform and registration costs are often covered by flat rate expenses, and health costs on top.', href: '/services/flat-rate-expenses/', cta: 'Flat rate expenses' },
+  { k: 'Teachers and lecturers', p: 'service-teacher-classroom.jpg', alt: 'Teacher speaking to students in a classroom', note: 'Teachers and third-level lecturers have their own flat rate expense on Revenue’s list.', href: '/services/flat-rate-expenses/', cta: 'Flat rate expenses' },
+  { k: 'Retail and hospitality', p: 'service-hospitality-barista.jpg', alt: 'Smiling barista behind a café counter', note: 'Shop, hotel and bar staff can have flat rate expenses, and job changes often mean emergency tax.', href: '/services/emergency-tax-refund/', cta: 'Emergency tax refunds' },
+  { k: 'Renters', p: 'service-irish-terrace-house.jpg', alt: 'Brick terraced houses with coloured front doors in Sandymount, Dublin', note: 'The Rent Tax Credit is open for every year from 2022, and many renters still haven’t claimed it.', href: '/services/rent-tax-credit/', cta: 'Rent Tax Credit' },
+  { k: 'Parents of students', p: 'blog-student-studying.jpg', alt: 'Student concentrating on his laptop', note: 'Paying college fees or student rent? Tuition relief and the Rent Tax Credit can both apply.', href: '/services/tuition-fees-relief/', cta: 'Tuition fees relief' },
+  { k: 'Newcomers to Ireland', p: 'hero-dublin-street.jpg', alt: 'People walking down a colourful Dublin street', note: 'A first job here often starts on emergency tax until Revenue has your PPSN (Personal Public Service Number).', href: '/services/emergency-tax-refund/', cta: 'Emergency tax refunds' },
+  { k: 'Anyone leaving Ireland', p: 'service-airport-leaving-ireland.jpg', alt: 'Airport departure lounge with a plane outside', note: 'Leave mid-year and you may have paid tax as if you were staying. We can claim it back after you go.', href: '/services/leaving-ireland-refund/', cta: 'Leaving Ireland refunds' },
+  { k: 'Newly married couples', p: 'service-wedding-rings-joint.jpg', alt: 'Married couple’s hands with wedding rings', note: 'Joint assessment lets couples share credits and rate bands, which can mean a refund for the year you married.', href: '/services/marriage-joint-assessment/', cta: 'Marriage & joint assessment' },
+  { k: 'People caring for family', p: 'service-elderly-couple.jpg', alt: 'Older couple on a windswept beach', note: 'Caring at home for a child, a parent or a relative can bring extra credits for you or your household.', href: '/services/home-carer-tax-credit/', cta: 'Home Carer Tax Credit' },
+];
+---
+<section class="who sec bg-2" aria-labelledby="who-h" data-who>
+  <div class="wrap">
+    <div class="top">
+      <h2 id="who-h" class="split">People we help, <span class="hl">all over Ireland</span></h2>
+      <p class="lede rv">If you pay tax through PAYE, there is a good chance something has been missed. Pick the one that sounds like you.</p>
+    </div>
+
+    <div class="grid2">
+      <div class="stage rv rv-i">
+        {people.map((p, i) => <img src={`/photos/${p.p}`} alt={p.alt} class:list={{ on: i === 0 }} data-i={i} loading="lazy" />)}
+        <div class="cap" aria-live="polite">
+          <p class="cap-k">{people[0].k}</p>
+          <p class="cap-n">{people[0].note}</p>
+          <a class="cap-a" href={people[0].href}><span>{people[0].cta}</span><Arrow /></a>
+        </div>
+      </div>
+
+      <ul class="chips stg" role="list">
+        {people.map((p, i) => (
+          <li><button type="button" class:list={['ch', { on: i === 0 }]} data-i={i} aria-pressed={i === 0 ? 'true' : 'false'}
+            data-k={p.k} data-n={p.note} data-h={p.href} data-c={p.cta}>
+            <img src={`/photos/${p.p}`} alt="" loading="lazy" /><span>{p.k}</span>
+          </button></li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .top{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:24px clamp(32px,5vw,80px);align-items:end;margin-bottom:clamp(36px,5vw,64px)}
+  .top .lede{margin:0}
+  .grid2{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(24px,4vw,64px);align-items:center}
+  .stage{position:relative;margin:0;aspect-ratio:5/5.4;border-radius:var(--r-xl);overflow:hidden;background:var(--indigo-100)}
+  .stage>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.08);transition:opacity .6s,transform 1.4s var(--ease-out)}
+  .stage>img.on{opacity:1;transform:none}
+  .cap{position:absolute;left:16px;right:16px;bottom:16px;padding:20px 22px;background:#fff;border-radius:var(--r-lg);box-shadow:var(--sh-2);z-index:2}
+  .cap p{margin:0}
+  .cap-k{font:600 1.2rem/1.25 var(--f-display);color:var(--ink);margin-bottom:6px!important}
+  .cap-n{font-size:var(--fs-sm);line-height:1.5;color:var(--ink-2)}
+  .cap-a{display:inline-flex;align-items:center;gap:8px;margin-top:12px;font:600 var(--fs-sm)/1 var(--f-display);color:var(--indigo);text-decoration:none}
+  .cap-a :global(svg){width:16px;height:16px;transition:transform .3s}
+  .cap-a:hover{color:var(--green-ink)}
+  .cap-a:hover :global(svg){transform:translateX(4px)}
+  .chips{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:12px 10px}
+  .ch{display:inline-flex;align-items:center;gap:12px;padding:6px 22px 6px 6px;border-radius:var(--r-pill);border:1.5px solid var(--line-2);background:#fff;font:600 clamp(.95rem,.9rem + .25vw,1.1rem)/1.2 var(--f-display);color:var(--ink);cursor:pointer;transition:background .3s,border-color .3s,color .3s,transform .4s var(--ease-out)}
+  .ch img{width:42px;height:42px;border-radius:50%;object-fit:cover;flex:none;transition:transform .4s var(--ease-out)}
+  .ch:hover{border-color:var(--indigo);transform:translateY(-2px)}
+  .ch:hover img{transform:rotate(-8deg) scale(1.06)}
+  .ch.on{background:var(--indigo);border-color:var(--indigo);color:#fff}
+  @media (max-width:900px){
+    .top,.grid2{grid-template-columns:1fr}
+    .stage{aspect-ratio:4/4.2}
+  }
+  @media (max-width:700px){
+    .chips{flex-wrap:nowrap;overflow-x:auto;scroll-snap-type:x mandatory;margin-inline:calc(var(--gut) * -1);padding:4px var(--gut) 10px;scrollbar-width:none}
+    .chips::-webkit-scrollbar{display:none}
+    .chips li{flex:none;scroll-snap-align:start;scroll-margin-left:var(--gut)}
+    .ch:hover{transform:none}
+  }
+  @media (max-width:520px){
+    .chips{gap:8px}
+    .ch{padding:4px 14px 4px 4px;gap:8px;font-size:.92rem}
+    .ch img{width:36px;height:36px}
+    .cap{left:10px;right:10px;bottom:10px;padding:16px}
+    .cap-k{font-size:1.05rem}
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-who]');
+  if (root) {
+    const imgs = Array.from(root.querySelectorAll<HTMLImageElement>('.stage>img'));
+    const btns = Array.from(root.querySelectorAll<HTMLButtonElement>('.ch'));
+    const k = root.querySelector('.cap-k')!, n = root.querySelector('.cap-n')!;
+    const a = root.querySelector<HTMLAnchorElement>('.cap-a')!, ac = a.querySelector('span')!;
+    let cur = 0, user = false, timer = 0 as any;
+    const set = (i: number) => {
+      cur = i;
+      btns.forEach((b, j) => { b.classList.toggle('on', j === i); b.setAttribute('aria-pressed', String(j === i)); });
+      imgs.forEach((im, j) => im.classList.toggle('on', j === i));
+      const b = btns[i];
+      const ul = b.closest('ul')!;
+      if (ul.scrollWidth > ul.clientWidth + 4) {
+        const li = b.parentElement!;
+        ul.scrollTo({ left: li.offsetLeft - ul.offsetLeft - 20, behavior: 'smooth' });
+      }
+      k.textContent = b.dataset.k!; n.textContent = b.dataset.n!; a.href = b.dataset.h!; ac.textContent = b.dataset.c!;
+    };
+    btns.forEach((b, i) => {
+      b.addEventListener('click', () => { user = true; clearInterval(timer); set(i); });
+      b.addEventListener('pointerenter', () => { if (matchMedia('(hover:hover)').matches) { user = true; clearInterval(timer); set(i); } });
+    });
+    // gentle auto-cycle while visible, until the visitor picks one
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      new IntersectionObserver(([e]) => {
+        clearInterval(timer);
+        if (e.isIntersecting && !user) timer = setInterval(() => set((cur + 1) % btns.length), 3200);
+      }, { threshold: 0.4 }).observe(root);
+    }
+  }
+</script>

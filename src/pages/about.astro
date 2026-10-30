@@ -1,0 +1,177 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Button from '../components/Button.astro';
+import Pic from '../components/Pic.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { SITE, CTA } from '../data/site';
+
+const incorporated = new Date(SITE.incorporated).toLocaleDateString('en-IE', { day: 'numeric', month: 'long', year: 'numeric' });
+
+const promises = [
+  { t: 'A fee agreed upfront', d: 'You see our fee in writing in your engagement letter before we do any work. No surprises later.' },
+  { t: 'No refund, no fee', d: 'If we don’t find you a refund, you pay nothing at all.' },
+  { t: 'Your refund goes straight to you', d: 'Revenue pays it into your own bank account. We invoice our agreed fee afterwards.' },
+  { t: 'We never ask for your Revenue password', d: 'You approve our agent request inside your own myAccount. Your login stays yours.' },
+  { t: 'Plain-English updates', d: 'We tell you what we found, what we filed and what happens next, without the jargon.' },
+];
+
+const steps = [
+  { t: 'We check every open year', d: 'Right now that’s 2022 to 2025. Claims for 2022 close on 31 December 2026, so we look at those first.' },
+  { t: 'We check every relief that fits', d: 'Rent, medical and dental costs, working from home, flat rate expenses for your job, tuition fees, family credits and more.' },
+  { t: 'We tell you before we file', d: 'Occasionally a review shows tax owed, for example from a second job. You hear about it from us first, and nothing is filed without your say-so.' },
+  { t: 'We deal with Revenue', d: 'If Revenue has questions, we answer them, and we keep you posted until your Statement of Liability arrives.' },
+];
+
+const facts: [string, string][] = [
+  ['Company name', SITE.legal.toUpperCase()],
+  ['Company type', 'Private company limited by shares'],
+  ['CRO number', SITE.cro],
+  ['Incorporated', `${incorporated}, under the Companies Act 2014`],
+  ['Registered office', `${SITE.address} [CONFIRM]`],
+  ['Tax Agent Identification Number (TAIN)', '[CONFIRM]'],
+];
+---
+<Base
+  title="About TaxRoots — a Dublin tax refund company"
+  description="TaxRoots Limited is a new Dublin company (CRO 828654) helping PAYE workers in Ireland claim back overpaid tax. Our promises, how we work and company details."
+>
+  <PageHero
+    title="Built in Dublin to help you get more back"
+    tag="About us"
+    crumbs={[{ label: 'About' }]}
+    lede="TaxRoots is a new Irish company, set up in October 2026, for one job: helping PAYE workers in Ireland find and claim the tax credits and reliefs they’ve missed."
+    photo="hero-dublin-street.jpg"
+    alt="People walking down a colourful Dublin shopping street lined with shopfronts and a church spire"
+  >
+    <div class="btns"><Button href={CTA.href} variant="green">{CTA.label}</Button><Button href="#promises" variant="ghost">Our promises</Button></div>
+  </PageHero>
+
+  <section class="sec-s ab-state">
+    <div class="wrap">
+      <p class="display split sd-fill ab-big">Too many people in Ireland miss out on credits they’re entitled to. Not because they don’t qualify, but because the rules change every year and the four-year deadline quietly catches them out.</p>
+    </div>
+  </section>
+
+  <section class="ab-band" aria-label="The Irish coast">
+    <div class="wrap-wide">
+      <Pic src="about-irish-coastline.jpg" alt="Rugged green clifftop above the turquoise sea on the Irish coast" ratio="21/9" reveal="sd-clip" class="ab-coast" />
+    </div>
+  </section>
+
+  <section class="sec ab-who">
+    <div class="wrap ab-who-in">
+      <h2 class="split">Who we are</h2>
+      <div class="ab-who-copy">
+        <p class="lede rv">We’re a Dublin-based company, incorporated on {incorporated}. We’re new, and we’d rather tell you that than dress it up.</p>
+        <p class="rv">What we offer is simple: someone who checks every open year and every relief that applies to you, does the Revenue paperwork, and keeps you informed until the money lands in your own account.</p>
+        <p class="rv">You can claim all of this yourself, free of charge, through Revenue’s myAccount. Many people do. We’re here for everyone who would rather an expert took care of it, and wants to be sure nothing was missed.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec bg-2" id="promises">
+    <div class="wrap ab-pr">
+      <div class="ab-pr-head">
+        <p class="tag rv">Our promises</p>
+        <h2 class="split">Five things you can hold us to</h2>
+        <p class="rv muted">Simple commitments, in plain English, that shape everything we do.</p>
+      </div>
+      <ol class="ab-pr-list stg">
+        {promises.map((p, i) => (
+          <li><span class="ab-n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span><div><h3>{p.t}</h3><p>{p.d}</p></div></li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec ab-how">
+    <div class="wrap ab-how-in">
+      <div class="ab-col">
+        <Pic src="service-irish-terrace-house.jpg" alt="Brick terraced houses in Sandymount, Dublin, with red and blue Georgian-style front doors" ratio="4/5" reveal="" class="ab-c1 sd-par" style="--depth:.25" />
+        <Pic src="about-coffee-notebook.jpg" alt="Open notebook and pen beside a latte on a wooden desk" ratio="1/1" reveal="rv-i" class="ab-c2" />
+        <Pic src="about-laptop-documents.jpg" alt="Laptop on a bright white desk with documents and a coffee cup" ratio="4/3" reveal="" class="ab-c3 sd-par" style="--depth:-.35" />
+      </div>
+      <div class="ab-how-copy">
+        <p class="tag rv">How we work</p>
+        <h2 class="split">Thorough, careful and on your side</h2>
+        <ol class="ab-steps stg">
+          {steps.map((s) => <li><h3>{s.t}</h3><p>{s.d}</p></li>)}
+        </ol>
+        <a class="link rv" href="/how-it-works/">See the full process</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec-s">
+    <div class="wrap ab-co">
+      <div class="ab-co-copy">
+        <h2 class="split">Company details</h2>
+        <p class="rv">You can look us up on the Companies Registration Office (CRO) register using our company number.</p>
+        <p class="rv muted">TaxRoots is an independent company. We are not part of, or endorsed by, the Revenue Commissioners.</p>
+        <div class="btns rv"><Button href="/contact/" variant="ghost" size="sm">Contact us</Button></div>
+      </div>
+      <div class="card ab-card rv rv-s">
+        <dl>
+          {facts.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand title="Let’s see what you could be owed" photo="about-euro-coin.jpg" />
+</Base>
+
+<style>
+  .ab-state{padding-bottom:var(--s7)}
+  .ab-big{max-width:22ch;color:var(--ink);font-family:var(--f-display);font-weight:600;margin:0}
+  .wrap-wide{max-width:1440px;margin-inline:auto;padding-inline:var(--gut)}
+  :global(.ab-coast){border-radius:var(--r-xl)}
+  .ab-who-in{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(32px,5vw,96px)}
+  .ab-who-copy p:not(.lede){max-width:60ch}
+  .ab-who-copy .lede{color:var(--ink);margin-bottom:var(--s5)}
+
+  .ab-pr{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(32px,5vw,96px);align-items:start}
+  .ab-pr-head{position:sticky;top:calc(var(--header-h,72px) + 32px)}
+  .ab-pr-head h2{margin-bottom:var(--s4)}
+  .ab-pr-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line-2)}
+  .ab-pr-list li{display:grid;grid-template-columns:72px 1fr;gap:var(--s5);padding:var(--s6) 0;border-bottom:1px solid var(--line-2)}
+  .ab-n{font:600 clamp(2rem,1.4rem + 1.6vw,3rem)/1 var(--f-display);color:var(--indigo);letter-spacing:-.03em}
+  .ab-pr-list li:nth-child(even) .ab-n{color:var(--green)}
+  .ab-pr-list h3{margin-bottom:6px}
+  .ab-pr-list p{margin:0;max-width:52ch}
+
+  .ab-how-in{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,104px);align-items:center}
+  .ab-col{position:relative;display:grid;grid-template-columns:repeat(12,1fr);grid-template-rows:repeat(12,minmax(0,48px))}
+  .ab-col :global(figure){aspect-ratio:auto!important;height:100%}
+  .ab-col :global(.ab-c1){grid-column:1/8;grid-row:1/11;border-radius:var(--r-xl)}
+  .ab-col :global(.ab-c2){grid-column:8/13;grid-row:1/7;aspect-ratio:1!important;height:auto;align-self:start;border-radius:50%;z-index:2;border:6px solid #fff}
+  .ab-col :global(.ab-c3){grid-column:5/13;grid-row:8/13;z-index:3;border:6px solid #fff;border-radius:var(--r-xl)}
+  .ab-how-copy h2{margin-bottom:var(--s6)}
+  .ab-steps{list-style:none;margin:0 0 var(--s6);padding:0;counter-reset:s;display:grid;gap:var(--s5)}
+  .ab-steps li{counter-increment:s;position:relative;padding-left:56px}
+  .ab-steps li::before{content:counter(s);position:absolute;left:0;top:0;width:38px;height:38px;border-radius:50%;background:var(--indigo-50);color:var(--indigo);display:grid;place-items:center;font:600 1rem/1 var(--f-display)}
+  .ab-steps h3{font-size:1.15rem;margin:6px 0 6px}
+  .ab-steps p{margin:0}
+
+  .ab-co{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(32px,5vw,96px);align-items:center}
+  .ab-co-copy h2{margin-bottom:var(--s5)}
+  .ab-card{padding:clamp(24px,3vw,40px);border-radius:var(--r-xl);box-shadow:var(--sh-1)}
+  .ab-card dl{margin:0;display:grid}
+  .ab-card dl>div{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:var(--s4);padding:14px 0;border-bottom:1px solid var(--line)}
+  .ab-card dl>div:last-child{border-bottom:0}
+  .ab-card dt{font-size:var(--fs-sm);color:var(--ink-3)}
+  .ab-card dd{margin:0;color:var(--ink);font-weight:600;overflow-wrap:anywhere}
+
+  @media (max-width:900px){
+    .ab-who-in,.ab-pr,.ab-how-in,.ab-co{grid-template-columns:1fr}
+    .ab-pr-head{position:static}
+    .ab-col{grid-template-rows:repeat(12,minmax(0,34px));max-width:560px}
+    :global(.ab-coast){aspect-ratio:4/3!important}
+  }
+  @media (max-width:520px){
+    .ab-big{font-size:1.8rem;line-height:1.15}
+    .ab-pr-list li{grid-template-columns:48px 1fr;gap:var(--s4)}
+    .ab-card dl>div{grid-template-columns:1fr;gap:2px}
+  }
+</style>

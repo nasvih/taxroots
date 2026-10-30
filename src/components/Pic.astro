@@ -1,0 +1,11 @@
+---
+// Photo in a rounded frame. Photos live in /public/photos (see public/photos/CREDITS.json for alt text).
+// reveal: '' | 'rv-c' (curtain) | 'rv-i' (iris) | 'sd-clip' (scroll un-clip)
+interface Props { src: string; alt: string; ratio?: string; reveal?: string; class?: string; eager?: boolean; style?: string; delay?: number }
+const { src, alt, ratio = '4/5', reveal = 'rv-c', class: cls = '', eager = false, style = '', delay } = Astro.props;
+const rv = reveal === 'sd-clip' ? 'sd-clip' : reveal ? `rv ${reveal}` : '';
+---
+<figure class:list={['pic', rv, cls]} style={`aspect-ratio:${ratio};${style}`} data-delay={delay}>
+  <img src={src.startsWith('/') ? src : `/photos/${src}`} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" />
+</figure>
+<style>figure{margin:0}</style>

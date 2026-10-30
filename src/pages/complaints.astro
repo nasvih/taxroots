@@ -1,0 +1,50 @@
+---
+import LegalPage from '../components/company/LegalPage.astro';
+import { SITE } from '../data/site';
+const toc = [
+  { id: 'promise', label: 'Our commitment' },
+  { id: 'how', label: 'How to complain' },
+  { id: 'next', label: 'What happens next' },
+  { id: 'escalate', label: 'If you are still unhappy' },
+  { id: 'revenue', label: 'Complaints about Revenue' },
+];
+---
+<LegalPage
+  title="Complaints procedure"
+  h1="Complaints procedure"
+  crumb="Complaints"
+  description="How to make a complaint to TaxRoots Limited, how quickly we will respond, and where you can turn if you are still not satisfied with our answer."
+  lede="If we get something wrong, we want to hear about it and put it right quickly. Here is how to raise a complaint and what to expect."
+  toc={toc}
+>
+  <h2 id="promise">1. Our commitment</h2>
+  <p>We will treat every complaint seriously, fairly and in confidence. Making a complaint will never affect how we handle your claim.</p>
+
+  <h2 id="how">2. How to complain</h2>
+  <ul>
+    <li>Email: <a href={`mailto:${SITE.email}`}>{SITE.email}</a> with "Complaint" in the subject line</li>
+    <li>Phone: <a href={SITE.phoneHref}>{SITE.phone}</a> ({SITE.hours})</li>
+    <li>Post: {SITE.legal}, {SITE.address} [CONFIRM full postal address]</li>
+  </ul>
+  <p>Please include your name, how to contact you, what went wrong and what you would like us to do. Copies of any relevant emails or documents help.</p>
+
+  <h2 id="next">3. What happens next</h2>
+  <ol>
+    <li><strong>Acknowledgement</strong> within [CONFIRM, e.g. 5] working days, with the name of the person handling it.</li>
+    <li><strong>Investigation:</strong> we review your file and may ask you a few questions.</li>
+    <li><strong>Our answer</strong> in writing within [CONFIRM, e.g. 20] working days of receiving your complaint. If we need longer, we will tell you why and when to expect it.</li>
+  </ol>
+  <p>If we made a mistake, we will say so plainly and explain what we will do to fix it.</p>
+
+  <h2 id="escalate">4. If you are still unhappy</h2>
+  <p>If you are not satisfied with our final answer you can ask for it to be reviewed by a director of the company [CONFIRM]. You can also contact:</p>
+  <ul>
+    <li>the <strong>Competition and Consumer Protection Commission</strong> (<a href="https://www.ccpc.ie" rel="noopener">ccpc.ie</a>) for information on your consumer rights;</li>
+    <li>the <strong>Data Protection Commission</strong> (<a href="https://www.dataprotection.ie" rel="noopener">dataprotection.ie</a>) if your complaint is about personal data;</li>
+    <li>the Small Claims procedure of the District Court, for consumer claims within its limit.</li>
+  </ul>
+  <p>[CONFIRM any professional body or redress scheme TaxRoots belongs to.]</p>
+
+  <h2 id="revenue">5. Complaints about Revenue</h2>
+  <p>TaxRoots is independent of the Revenue Commissioners. If your complaint is about a Revenue decision or service, Revenue has its own complaints and review process, and you can also go to the Office of the Ombudsman. We are happy to help you work out where to direct it.</p>
+</LegalPage>

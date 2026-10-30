@@ -1,0 +1,335 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Button from '../components/Button.astro';
+import Pic from '../components/Pic.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { CTA } from '../data/site';
+import { openYears } from '../lib/estimator';
+
+const OPEN = openYears(new Date());
+const range = `${OPEN[0]}–${OPEN[OPEN.length - 1]}`;
+
+const STEPS = [
+  {
+    n: '01', title: 'Tell us about you',
+    photo: 'hero-woman-laptop-home.jpg', alt: 'Young woman smiling while working on her laptop at home beside a houseplant',
+    text: 'Fill in our short online form: your name, PPSN (Personal Public Service Number), contact details, and the costs you’ve had, like rent, medical bills, college fees or working from home. Ballpark figures are fine. It takes about five minutes.',
+    confirm: true,
+    you: ['Answer a few questions about your work, costs and family', 'Agree our fee in writing before we start'],
+    we: ['Never ask for your myAccount password', 'Flag the credits and reliefs worth checking'],
+  },
+  {
+    n: '02', title: 'Link us to your Revenue record',
+    photo: 'about-laptop-documents.jpg', alt: 'Laptop on a bright white desk with documents and a coffee cup',
+    text: 'We send Revenue a request to act as your tax agent. You approve it in your own myAccount, under MyEnquiries (“Agent-Client Link”). If you don’t use myAccount, you sign Form PAYE A1 instead. This lets us see your record and file on your behalf.',
+    you: ['Approve the Agent-Client Link in MyEnquiries', 'Or sign Form PAYE A1 if you’re not online'],
+    we: ['Send the link request to Revenue', 'Use our own Revenue login, never yours'],
+  },
+  {
+    n: '03', title: 'We review and claim',
+    photo: 'about-calculator-paperwork.jpg', alt: 'Close-up of a calculator and pen on handwritten paperwork',
+    text: `We check every year that’s still open (currently ${range}), match your costs to the credits and reliefs you qualify for, and file your returns. If a year could show tax owed, we tell you first and don’t file it without your OK.`,
+    you: ['Answer any quick questions we have', 'Find a receipt if Revenue asks for one'],
+    we: ['Review every open year, line by line', 'File your returns and deal with Revenue'],
+  },
+  {
+    n: '04', title: 'Revenue pays you directly',
+    photo: 'hero-woman-smiling-phone.jpg', alt: 'Young woman in glasses smiling as she reads good news on her phone',
+    text: 'Refunds go straight from Revenue into the bank account on your Revenue record, usually within three to five working days of the Statement of Liability. We then send you our invoice for the fee you agreed at the start. No refund, no fee.',
+    you: ['Check the bank account on your Revenue record is up to date', 'Pay our agreed fee once the refund is confirmed'],
+    we: ['Send you a plain-English summary of each year', 'Invoice only if you get money back'],
+  },
+];
+
+const NEED = [
+  'Your name, date of birth, address, email and mobile',
+  'Your PPSN, so we can send the agent link request',
+  'Your job title and employers since ' + OPEN[0],
+  'Rough yearly figures for rent, medical, college fees and working from home',
+  'For rent: your landlord’s name and address, and the RTB (Residential Tenancies Board) number if you have it',
+  'Your OK on the Agent-Client Link in myAccount',
+];
+const NEVER = [
+  'Your myAccount or ROS password',
+  'Your original receipts (keep them yourself for six years)',
+  'Any money upfront',
+];
+
+const faq = [
+  { q: 'Will you need my myAccount password?', a: 'No, never. Revenue advises against sharing it, and we don’t need it. You approve our agent request inside your own myAccount.' },
+  { q: 'How does my refund get paid?', a: 'Revenue pays it straight into the bank account on your Revenue record, or by cheque if there’s no account. Since the start of 2026, refunds can’t be paid to an agent’s account.' },
+  { q: 'When do I pay your fee?', a: 'After Revenue confirms your refund, we send you an invoice for the agreed fee. <span class="ph">[CONFIRM payment terms]</span>' },
+  { q: 'How long does it take?', a: 'We aim to review your record within <span class="ph">[CONFIRM]</span> working days of your approval. Revenue typically issues a Statement of Liability about five days after filing and pays within three to five working days.' },
+  { q: 'What if I owe tax instead?', a: 'Sometimes a review shows an underpayment, for example from a second job or extra income. We check first and tell you before filing. Revenue usually collects underpayments by reducing your tax credits over up to four years.' },
+  { q: 'What if I change my mind?', a: 'You can cancel within 14 days of signing up <span class="ph">[CONFIRM]</span>, and you can remove us as your agent in myAccount at any time.' },
+];
+
+const howTo = {
+  '@context': 'https://schema.org', '@type': 'HowTo', name: 'How to claim an Irish tax refund with TaxRoots',
+  step: STEPS.map((s, i) => ({ '@type': 'HowToStep', position: i + 1, name: s.title, text: s.text })),
+};
+---
+<Base
+  title="How it works: your tax refund in 4 steps"
+  description="How a TaxRoots claim works: tell us about you, approve our agent link in myAccount, we review every open year, and Revenue pays your refund straight to you."
+  jsonld={howTo}
+>
+  <PageHero
+    title="Four steps, and Revenue pays you directly."
+    tag="How it works"
+    lede="You tell us about your last few years and approve one request in myAccount. We do the checking, the forms and the back-and-forth with Revenue."
+    crumbs={[{ label: 'How it works' }]}
+    photo="hero-couple-kitchen-paperwork.jpg"
+    alt="Couple laughing together while reading a letter at their kitchen counter"
+  >
+    <div class="btns"><Button href={CTA.href} variant="green">{CTA.label}</Button><Button href="/refund-estimator/" variant="ghost">Estimate my refund</Button></div>
+  </PageHero>
+
+  <section class="sec story" id="steps" aria-labelledby="story-h">
+    <div class="wrap">
+      <div class="story-head">
+        <h2 id="story-h" class="split">From first form to money in your account</h2>
+        <p class="lede rv">Here’s exactly what happens, who does what, and when.</p>
+      </div>
+      <div class="story-grid">
+        <div class="story-media" aria-hidden="true">
+          <div class="sm-frame">
+            {STEPS.map((s, i) => <figure class="sm-pic" data-pic={i}><img src={`/photos/${s.photo}`} alt="" loading={i ? 'lazy' : 'eager'} /></figure>)}
+            <div class="sm-badge"><span data-num>01</span><small>of 04</small></div>
+          </div>
+          <ol class="sm-dots">{STEPS.map((s, i) => <li data-dot={i} class:list={{ on: i === 0 }}>{s.title}</li>)}</ol>
+        </div>
+        <ol class="story-steps">
+          {STEPS.map((s, i) => (
+            <li class="ss" data-ss={i}>
+              <Pic src={s.photo} alt={s.alt} ratio="16/10" class="ss-pic" />
+              <p class="ss-n">Step {s.n}</p>
+              <h3>{s.title}</h3>
+              <p class="ss-t">{s.text}{s.confirm && <> <span class="ph">[CONFIRM]</span></>}</p>
+              <div class="ss-who">
+                <div><strong>You</strong><ul>{s.you.map((x) => <li>{x}</li>)}</ul></div>
+                <div><strong>Us</strong><ul>{s.we.map((x) => <li>{x}</li>)}</ul></div>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec bg-2 need">
+    <div class="wrap need-in">
+      <div>
+        <h2 class="split">What we need from you</h2>
+        <p class="lede rv">Not much. Most of it you’ll know off the top of your head, and anything you’re unsure of we can find on your Revenue record.</p>
+        <ul class="checks stg need-list">{NEED.map((n) => <li>{n}</li>)}</ul>
+      </div>
+      <div class="never rv rv-r">
+        <h3>What we’ll never ask for</h3>
+        <ul class="no-list">{NEVER.map((n) => <li>{n}</li>)}</ul>
+        <p>Revenue warns people never to give their myAccount or ROS password to an agent. Agents use their own Revenue login and digital certificate. If anyone asks for yours, say no.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec band tl" aria-labelledby="tl-h">
+    <div class="wrap">
+      <div class="tl-head">
+        <h2 id="tl-h" class="split">How long it takes</h2>
+        <p class="lede rv">From your approval of the agent link, we aim to review your record within <span class="ph">[CONFIRM]</span> working days. Once a return is filed, Revenue usually issues a Statement of Liability in about five days, and refunds normally reach your bank three to five working days after that.</p>
+      </div>
+      <ol class="tl-track stg">
+        <li><span class="tl-dot"></span><p class="tl-when">Day 0</p><h3>You approve the link</h3><p>One click in myAccount under MyEnquiries.</p></li>
+        <li><span class="tl-dot"></span><p class="tl-when">Within <span class="ph">[CONFIRM]</span> working days</p><h3>We review your record</h3><p>Every open year, every credit and relief. You hear from us before anything is filed.</p></li>
+        <li><span class="tl-dot"></span><p class="tl-when">About <span data-count>5</span> days after filing</p><h3>Statement of Liability</h3><p>Revenue’s summary for the year shows whether you overpaid.</p></li>
+        <li><span class="tl-dot"></span><p class="tl-when"><span data-count>3</span>–5 working days later</p><h3>Money in your bank</h3><p>Paid by Revenue to the account on your Revenue record.</p></li>
+      </ol>
+      <p class="tl-foot rv">Some claims take longer, for example where Revenue asks for receipts or there are residency questions. We keep you posted either way.</p>
+    </div>
+  </section>
+
+  <section class="sec agent" aria-labelledby="agent-h">
+    <div class="wrap agent-in">
+      <Pic src="blog-card-laptop.jpg" alt="Person holding a bank card while using a laptop" ratio="4/5" reveal="rv-c" class="agent-pic" />
+      <div>
+        <p class="tag rv">What changed in 2026</p>
+        <h2 id="agent-h" class="split">Your refund goes straight to you, not to us.</h2>
+        <p class="lede rv">Revenue withdrew the old process that let agents have refunds paid into the agent’s own bank account. Since 31 December 2025, PAYE refunds are paid directly to you.</p>
+        <div class="agent-cols stg">
+          <div class="card">
+            <h3>How the agent link works</h3>
+            <ol class="mini">
+              <li>We send Revenue an e-linking request with your details.</li>
+              <li>You log in to myAccount and open <strong>MyEnquiries</strong>.</li>
+              <li>You approve the <strong>“Agent-Client Link”</strong> request.</li>
+              <li>Not on myAccount? You sign Form PAYE A1 and we send it in.</li>
+            </ol>
+          </div>
+          <div class="card">
+            <h3>What it means for you</h3>
+            <ul class="checks">
+              <li>Revenue pays your refund into your own bank account.</li>
+              <li>We invoice our agreed fee afterwards. No refund, no fee.</li>
+              <li>You can remove us as your agent in myAccount at any time.</li>
+              <li>You stay responsible for what’s claimed, so we show you everything first, and we keep the paperwork for six years.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec-s bg-2">
+    <div class="wrap faq-wrap">
+      <div>
+        <h2 class="split">Questions about the process</h2>
+        <p class="rv">More answers on our <a class="link" href="/faq/">FAQ page</a>.</p>
+      </div>
+      <Faq items={faq} />
+    </div>
+  </section>
+
+  <CtaBand title="Ready when you are." text={`Five minutes on our form, one click in myAccount, and we check every open year (${range}). No refund, no fee.`} photo="hero-dublin-street.jpg" />
+</Base>
+
+<style>
+  .ph{display:inline-block;padding:0 6px;border-radius:6px;background:#FFF4D6;color:#6B4E00;font:600 .8em/1.6 var(--f-body)}
+  :global(.faq .ph){display:inline-block;padding:0 6px;border-radius:6px;background:#FFF4D6;color:#6B4E00;font:600 .8em/1.6 var(--f-body)}
+
+  /* story */
+  .story-head{max-width:760px;margin-bottom:clamp(40px,5vw,72px)}
+  .story-head .lede{margin-top:var(--s4)}
+  .story-grid{display:grid;grid-template-columns:1fr;gap:var(--s6)}
+  .story-media{display:none}
+  .story-steps{list-style:none;margin:0;padding:0;display:grid;gap:clamp(40px,5vw,64px)}
+  .ss{display:grid;gap:var(--s4);max-width:640px}
+  :global(.ss-pic){border-radius:var(--r-xl)}
+  .ss-n{margin:0;font:600 var(--fs-sm)/1 var(--f-display);color:var(--green-ink);letter-spacing:.04em}
+  .ss h3{font-size:clamp(1.6rem,1.2rem + 1.6vw,2.6rem);letter-spacing:-.025em}
+  .ss-t{margin:0;font-size:var(--fs-lede);line-height:1.6}
+  .ss-who{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:var(--s2)}
+  .ss-who>div{padding:18px 20px;border-radius:var(--r-lg);background:var(--bg-2)}
+  .ss-who>div:last-child{background:var(--indigo-50)}
+  .ss-who strong{display:block;font:600 .8rem/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--indigo);margin-bottom:10px}
+  .ss-who ul{margin:0;padding-left:1.1em;display:grid;gap:6px;font-size:var(--fs-sm);color:var(--ink)}
+
+  .story.js .story-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(40px,6vw,96px);align-items:start}
+  .story.js .story-media{display:grid;gap:20px;position:sticky;top:calc(var(--header-h) + 32px)}
+  .story.js :global(.ss-pic){display:none}
+  .story.js .story-steps{gap:0}
+  .story.js .ss{min-height:78vh;align-content:center;padding-block:6vh;opacity:.28;transition:opacity .5s var(--ease-out)}
+  .story.js .ss.on{opacity:1}
+  .story.js .ss:first-child{min-height:62vh;align-content:start;padding-top:2vh}
+  .sm-frame{position:relative;aspect-ratio:4/5;max-height:calc(100vh - var(--header-h) - 140px);border-radius:var(--r-xl);overflow:hidden;background:var(--indigo-50)}
+  .sm-pic{position:absolute;inset:0;margin:0;clip-path:inset(100% 0 0 0)}
+  .sm-pic:first-child{clip-path:inset(0 0 0 0)}
+  .sm-pic img{width:100%;height:100%;object-fit:cover;transform:scale(1.12)}
+  .sm-badge{position:absolute;left:20px;bottom:20px;display:flex;align-items:baseline;gap:8px;padding:14px 20px;border-radius:var(--r-lg);background:#fff;box-shadow:var(--sh-2)}
+  .sm-badge span{font:700 2.4rem/1 var(--f-display);color:var(--indigo);letter-spacing:-.04em}
+  .sm-badge small{font-weight:600;color:var(--ink-3)}
+  .sm-dots{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .sm-dots li{position:relative;padding-top:14px;font:500 var(--fs-xs)/1.3 var(--f-body);color:var(--ink-3);transition:color .3s}
+  .sm-dots li::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;border-radius:4px;background:var(--line);transition:background .4s}
+  .sm-dots li.on{color:var(--indigo);font-weight:600}
+  .sm-dots li.on::before,.sm-dots li.past::before{background:var(--green)}
+
+  /* need */
+  .need-in{display:grid;grid-template-columns:1.25fr .75fr;gap:clamp(32px,5vw,80px);align-items:start}
+  .need h2{margin-bottom:var(--s4)}
+  .need-list{margin-top:var(--s6)}
+  .never{background:#fff;border-radius:var(--r-xl);padding:clamp(24px,3vw,40px);box-shadow:var(--sh-1);display:grid;gap:var(--s4)}
+  .never h3{font-size:1.35rem}
+  .never p{margin:0;font-size:var(--fs-sm)}
+  .no-list{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+  .no-list li{position:relative;padding-left:34px;color:var(--ink);font-weight:500}
+  .no-list li::before{content:"";position:absolute;left:0;top:.15em;width:22px;height:22px;border-radius:50%;background:#FCE9EA}
+  .no-list li::after{content:"";position:absolute;left:6px;top:calc(.15em + 10px);width:10px;height:2px;background:var(--err);border-radius:2px}
+
+  /* timeline */
+  .tl-head{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(24px,4vw,64px);align-items:end;margin-bottom:clamp(40px,5vw,72px)}
+  .tl-head .lede{margin:0}
+  .tl .ph{background:rgba(255,244,214,.95)}
+  .tl-track{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;position:relative}
+  .tl-track::before{content:"";position:absolute;left:0;right:0;top:9px;height:2px;background:var(--line-dark)}
+  .tl-track li{position:relative;padding-top:40px}
+  .tl-dot{position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;background:var(--indigo);border:3px solid var(--green-bright)}
+  .tl-track li:last-child .tl-dot{background:var(--green-bright)}
+  .tl-when{margin:0 0 8px;font:600 var(--fs-sm)/1.3 var(--f-body);color:var(--green-bright)}
+  .tl-track h3{font-size:1.25rem;margin-bottom:8px}
+  .tl-track p:last-child{margin:0;font-size:var(--fs-sm)}
+  .tl-foot{margin:clamp(32px,4vw,56px) 0 0;max-width:70ch;font-size:var(--fs-sm)}
+
+  /* agent */
+  .agent-in{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(32px,5vw,80px);align-items:start}
+  :global(.agent-pic){border-radius:var(--r-xl)!important;position:sticky;top:calc(var(--header-h) + 24px)}
+  .agent .tag{margin-bottom:var(--s5)}
+  .agent h2{margin-bottom:var(--s4)}
+  .agent-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:var(--s6)}
+  .agent-cols h3{font-size:1.15rem;margin-bottom:var(--s4)}
+  .agent-cols .checks{gap:10px;font-size:var(--fs-sm)}
+  .mini{margin:0;padding:0;list-style:none;counter-reset:m;display:grid;gap:12px;font-size:var(--fs-sm);color:var(--ink)}
+  .mini li{counter-increment:m;position:relative;padding-left:38px}
+  .mini li::before{content:counter(m);position:absolute;left:0;top:-1px;width:26px;height:26px;border-radius:50%;background:var(--indigo);color:#fff;display:grid;place-items:center;font:600 .78rem/1 var(--f-display)}
+
+  .faq-wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(24px,4vw,64px);align-items:start}
+  .faq-wrap h2{margin-bottom:var(--s4)}
+
+  @media (max-width:980px){
+    .need-in,.tl-head,.agent-in,.faq-wrap{grid-template-columns:1fr}
+    .tl-track{grid-template-columns:1fr 1fr;row-gap:36px}
+    .tl-track::before{display:none}
+    :global(.agent-pic){max-width:440px;position:static}
+  }
+  @media (max-width:640px){
+    .ss-who,.agent-cols{grid-template-columns:1fr}
+    .tl-track{grid-template-columns:1fr;gap:28px;padding-left:4px}
+    .tl-track::before{display:block;left:13px;right:auto;top:8px;bottom:8px;width:2px;height:auto}
+    .tl-track li{padding:0 0 0 44px}
+    .tl-dot{left:4px;top:2px}
+    :global(.agent-pic){aspect-ratio:4/3!important}
+  }
+</style>
+
+<script>
+  import { gsap, ScrollTrigger, reduceMotion } from '../scripts/gsap';
+
+  const story = document.querySelector<HTMLElement>('.story')!;
+  const pics = Array.from(story.querySelectorAll<HTMLElement>('[data-pic]'));
+  const steps = Array.from(story.querySelectorAll<HTMLElement>('[data-ss]'));
+  const dots = Array.from(story.querySelectorAll<HTMLElement>('[data-dot]'));
+  const num = story.querySelector<HTMLElement>('[data-num]')!;
+  const mm = gsap.matchMedia();
+
+  mm.add('(min-width: 960px) and (min-height: 600px)', () => {
+    story.classList.add('js');
+    let active = -1;
+    const setActive = (i: number) => {
+      if (i === active) return;
+      active = i;
+      steps.forEach((s, k) => s.classList.toggle('on', k === i));
+      dots.forEach((d, k) => { d.classList.toggle('on', k === i); d.classList.toggle('past', k < i); });
+      num.textContent = String(i + 1).padStart(2, '0');
+      pics.forEach((p, k) => {
+        const show = k <= i;
+        if (reduceMotion) { gsap.set(p, { clipPath: show ? 'inset(0% 0 0 0)' : 'inset(100% 0 0 0)' }); return; }
+        gsap.to(p, { clipPath: show ? 'inset(0% 0 0 0)' : 'inset(100% 0 0 0)', duration: 1, ease: 'expo.out', overwrite: true });
+        if (show && k === i) gsap.fromTo(p.querySelector('img'), { scale: 1.22 }, { scale: 1.08, duration: 1.4, ease: 'expo.out', overwrite: true });
+      });
+      if (!reduceMotion) gsap.fromTo(num, { yPercent: 60, opacity: 0 }, { yPercent: 0, opacity: 1, duration: .6, ease: 'expo.out' });
+    };
+    setActive(0);
+    const triggers = steps.map((s, i) => ScrollTrigger.create({
+      trigger: s, start: 'top 60%', end: 'bottom 60%',
+      onToggle: (self) => { if (self.isActive) setActive(i); },
+    }));
+    ScrollTrigger.refresh();
+    return () => {
+      triggers.forEach((t) => t.kill());
+      story.classList.remove('js');
+      steps.forEach((s) => s.classList.remove('on'));
+      pics.forEach((p, k) => gsap.set(p, { clearProps: 'clipPath' }));
+    };
+  });
+</script>

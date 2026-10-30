@@ -1,0 +1,190 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Button from '../../components/Button.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { CTA, SITE } from '../../data/site';
+import { GROUPS, SERVICES, servicesIn } from '../../data/services';
+
+const ld = {
+  '@context': 'https://schema.org', '@type': 'ItemList', name: 'TaxRoots services',
+  itemListElement: SERVICES.map((s, i) => ({ '@type': 'ListItem', position: i + 1, name: s.title, url: `${SITE.url}/services/${s.slug}/` })),
+};
+let n = 0;
+---
+<Base title="Tax refund services in Ireland" description="Fourteen ways to get tax back in Ireland: rent, medical, remote working, flat rate expenses, family credits and more. We check every open year, 2022 to 2025." jsonld={ld}>
+  <PageHero
+    crumbs={[{ label: 'Services' }]}
+    tag="Our services"
+    title="Every credit and relief, checked for you."
+    lede="Most refunds come from things people never told Revenue about: rent, a dentist bill, a uniform, a wedding, a new baby. Pick what applies to you, or let us review the lot."
+    photo="hero-woman-smiling-phone.jpg"
+    alt="Young woman in glasses smiling as she reads good news on her phone">
+    <div class="btns">
+      <Button href={CTA.href} variant="green">{CTA.label}</Button>
+      <Button href="/refund-estimator/" variant="ghost">Estimate my refund</Button>
+    </div>
+  </PageHero>
+
+  <div class="groups">
+  <nav class="jump" aria-label="Service groups">
+    <div class="wrap">
+      <ul class="jump-in">
+        {GROUPS.map((g) => (
+          <li><a href={`#${g.id}`} class="chip" data-jump={g.id}>{g.name}<span>{servicesIn(g.name).length}</span></a></li>
+        ))}
+      </ul>
+    </div>
+  </nav>
+
+  {GROUPS.map((g, gi) => {
+    const list = servicesIn(g.name);
+    return (
+      <section id={g.id} class:list={['grp sec', { 'bg-2': gi % 2 === 1 }]} aria-labelledby={`${g.id}-h`} data-group={g.id}>
+        <div class="wrap grp-in">
+          <div class="grp-side">
+            <div class="grp-stick">
+              <p class="grp-no" aria-hidden="true">0{gi + 1}<span>/ 0{GROUPS.length}</span></p>
+              <h2 id={`${g.id}-h`} class="split">{g.name}</h2>
+              <p class="grp-blurb rv">{g.blurb}</p>
+              <figure class="grp-pic pic rv rv-c" data-swap>
+                <img src={`/photos/${g.photo}`} alt={g.alt} loading="lazy" class="on" data-key="group" />
+                {list.map((s) => <img src={`/photos/${s.photo}`} alt="" loading="lazy" data-key={s.slug} aria-hidden="true" />)}
+                <figcaption data-cap>{g.name}: {list.length} {list.length === 1 ? 'service' : 'services'}</figcaption>
+              </figure>
+            </div>
+          </div>
+          <ol class="rows stg" role="list">
+            {list.map((s) => { n++; return (
+              <li>
+                <a href={`/services/${s.slug}/`} class="row" data-key={s.slug} data-cap={s.title}>
+                  <span class="row-no" aria-hidden="true">{String(n).padStart(2, '0')}</span>
+                  <div class="row-body">
+                    <h3>{s.title}</h3>
+                    <p class="row-sum">{s.summary}</p>
+                    <span class="row-chip">{s.chip}</span>
+                  </div>
+                  <span class="row-go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+                </a>
+              </li>
+            ); })}
+          </ol>
+        </div>
+      </section>
+    );
+  })}
+
+  </div>
+  <section class="sec-s">
+    <div class="wrap unsure">
+      <div class="unsure-pic pic sd-clip"><img src="/photos/about-laptop-documents.jpg" alt="Laptop on a bright white desk with documents and a coffee cup" loading="lazy" /></div>
+      <div class="unsure-copy">
+        <h2 class="split">Not sure which ones apply?</h2>
+        <p class="rv">That is normal. Our <a class="link" href="/services/paye-tax-review/">4-Year PAYE Tax Review</a> checks every credit and relief on this page against your record for 2022 to 2025, then tells you what you could be owed before anything is filed.</p>
+        <p class="note rv"><strong>2022 refunds close on 31 December 2026.</strong> After that, Revenue cannot repay tax for 2022.</p>
+        <div class="btns rv" data-delay="120">
+          <Button href="/services/paye-tax-review/">See the full review</Button>
+          <Button href="/refund-estimator/" variant="ghost">Estimate my refund</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .jump{position:sticky;top:12px;z-index:40;margin-top:calc(-1 * var(--s5));pointer-events:none}
+  .jump-in{pointer-events:auto;display:flex;gap:8px;list-style:none;margin:0;padding:8px;width:max-content;max-width:100%;overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:var(--r-pill);box-shadow:var(--sh-1);scrollbar-width:none}
+  .jump-in::-webkit-scrollbar{display:none}
+  .chip{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 10px 0 18px;border-radius:var(--r-pill);font:600 var(--fs-sm)/1 var(--f-display);color:var(--ink);text-decoration:none;white-space:nowrap;transition:background var(--t-fast),color var(--t-fast)}
+  .chip span{display:grid;place-items:center;min-width:26px;height:26px;padding:0 6px;border-radius:var(--r-pill);background:var(--indigo-50);color:var(--indigo);font-size:var(--fs-xs)}
+  .chip:hover{background:var(--indigo-50)}
+  .chip.on{background:var(--indigo);color:#fff}
+  .chip.on span{background:var(--green);color:#fff}
+
+  .grp{scroll-margin-top:24px}
+  .grp-in{display:grid;grid-template-columns:5fr 7fr;gap:clamp(32px,6vw,96px);align-items:start}
+  .grp-side{align-self:stretch}
+  .grp-stick{position:sticky;top:calc(var(--header-h) + 64px)}
+  .grp-no{font:600 var(--fs-sm)/1 var(--f-display);color:var(--green-ink);letter-spacing:.06em;margin:0 0 var(--s4)}
+  .grp-no span{color:var(--ink-3);margin-left:6px}
+  .grp h2{font-size:var(--fs-display);line-height:1.04;letter-spacing:-.03em}
+  .grp-blurb{margin:var(--s4) 0 var(--s6);max-width:40ch}
+  .grp-pic{position:relative;aspect-ratio:4/3;border-radius:var(--r-xl);margin:0}
+  .grp-pic img{position:absolute;inset:0;opacity:0;transition:opacity .5s var(--ease-out),transform 1.2s var(--ease-out);transform:scale(1.06)}
+  .grp-pic img.on{opacity:1;transform:none}
+  .grp-pic figcaption{position:absolute;left:14px;bottom:14px;max-width:calc(100% - 28px);padding:9px 16px;border-radius:var(--r-pill);background:#fff;color:var(--ink);font:600 var(--fs-xs)/1.3 var(--f-body);box-shadow:var(--sh-1)}
+
+  .rows{list-style:none;margin:0;padding:0;border-top:1px solid var(--line-2)}
+  .rows li{border-bottom:1px solid var(--line-2)}
+  .row{position:relative;display:grid;grid-template-columns:auto 1fr auto;gap:clamp(16px,2.4vw,32px);align-items:start;padding:clamp(22px,2.6vw,34px) clamp(8px,1.4vw,20px);text-decoration:none;color:inherit;border-radius:var(--r-lg);transition:background .3s var(--ease-out)}
+  .row::before{content:"";position:absolute;left:0;top:50%;width:4px;height:0;background:var(--green);border-radius:4px;translate:0 -50%;transition:height .35s var(--ease-out)}
+  .row-no{font:600 var(--fs-sm)/1.9 var(--f-display);color:var(--ink-3);min-width:2ch}
+  .row h3{font-size:clamp(1.3rem,1.1rem + .8vw,1.85rem);line-height:1.2;transition:color .25s}
+  .row-body{display:grid;gap:10px}
+  .row-sum{color:var(--ink-2);max-width:58ch;margin:0}
+  .row-chip{justify-self:start;display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:var(--r-pill);background:var(--green-50);color:var(--green-ink);font:600 var(--fs-xs)/1.3 var(--f-body)}
+  .row-chip::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--green)}
+  .row-go{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;border:1.5px solid var(--line-2);color:var(--indigo);transition:background .3s,border-color .3s,color .3s,transform .45s var(--ease-out)}
+  .row-go svg{width:20px;height:20px}
+  .row:hover,.row:focus-visible{background:#fff}
+  .bg-2 .row:hover,.bg-2 .row:focus-visible{background:#fff}
+  .grp:not(.bg-2) .row:hover,.grp:not(.bg-2) .row:focus-visible{background:var(--indigo-50)}
+  .row:hover::before,.row:focus-visible::before{height:56%}
+  .row:hover h3{color:var(--indigo)}
+  .row:hover .row-go,.row:focus-visible .row-go{background:var(--indigo);border-color:var(--indigo);color:#fff;transform:rotate(-45deg)}
+
+  .unsure{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,5vw,80px);align-items:center}
+  .unsure-pic{aspect-ratio:5/4;border-radius:var(--r-xl)}
+  .unsure h2{margin-bottom:var(--s5)}
+  .unsure .note{margin:var(--s5) 0 var(--s6)}
+
+  @media (max-width:900px){
+    .grp-in{grid-template-columns:1fr}
+    .grp-stick{position:static}
+    .grp-pic{aspect-ratio:16/9}
+    .unsure{grid-template-columns:1fr}
+  }
+  @media (max-width:560px){
+    .jump{top:8px}
+    .chip{padding:0 8px 0 14px}
+    .row{grid-template-columns:1fr auto;padding-inline:4px}
+    .row-no{display:none}
+    .row-go{width:44px;height:44px}
+  }
+</style>
+
+<script>
+  // Hovering a row swaps the group photo to that service's photo.
+  document.querySelectorAll<HTMLElement>('[data-group]').forEach((sec) => {
+    const fig = sec.querySelector<HTMLElement>('[data-swap]');
+    if (!fig) return;
+    const imgs = Array.from(fig.querySelectorAll<HTMLImageElement>('img'));
+    const cap = fig.querySelector<HTMLElement>('[data-cap]')!;
+    const base = cap.textContent;
+    const show = (key: string, text: string | null) => {
+      imgs.forEach((im) => im.classList.toggle('on', im.dataset.key === key));
+      cap.textContent = text;
+    };
+    sec.querySelectorAll<HTMLAnchorElement>('.row').forEach((a) => {
+      const on = () => show(a.dataset.key!, a.dataset.cap!);
+      a.addEventListener('mouseenter', on);
+      a.addEventListener('focus', on);
+    });
+    sec.querySelector('.rows')!.addEventListener('mouseleave', () => show('group', base));
+  });
+
+  // Active chip follows the group in view.
+  const chips = new Map(Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-jump]')).map((c) => [c.dataset.jump!, c]));
+  const io = new IntersectionObserver((es) => {
+    for (const e of es) {
+      if (!e.isIntersecting) continue;
+      const id = (e.target as HTMLElement).id;
+      chips.forEach((c, k) => c.classList.toggle('on', k === id));
+      const c = chips.get(id), bar = c?.closest('ul');
+      if (c && bar && bar.scrollWidth > bar.clientWidth) bar.scrollTo({ left: c.getBoundingClientRect().left - bar.getBoundingClientRect().left + bar.scrollLeft - 8, behavior: 'smooth' });
+    }
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  document.querySelectorAll('[data-group]').forEach((s) => io.observe(s));
+</script>

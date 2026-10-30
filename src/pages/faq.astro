@@ -1,0 +1,127 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { SERVICE_LINKS, SITE } from '../data/site';
+
+const svc = (slug: string, text: string) => {
+  const s = SERVICE_LINKS.find((l) => l.href === `/services/${slug}/`);
+  return s ? `<a href="${s.href}">${text}</a>` : text;
+};
+
+const groups = [
+  {
+    id: 'getting-started', title: 'Getting started', items: [
+      { q: 'Who can use TaxRoots?', a: `Anyone taxed under PAYE in Ireland, whether you’re an employee or a pensioner, including people who have since left Ireland. If you’re self-employed or have rental income over €5,000, ask us first [CONFIRM scope]. See our ${svc('landlord-tax-returns', 'small landlord tax returns')} page.` },
+      { q: 'How far back can I claim?', a: `Four years. Right now that’s 2022, 2023, 2024 and 2025. Claims for 2022 must be made by 31 December 2026, or Revenue can’t repay them. Our ${svc('paye-tax-review', '4-Year PAYE Tax Review')} checks every open year.` },
+      { q: 'Can’t I do this myself for free?', a: 'Yes. Revenue’s myAccount lets you claim credits and reliefs at no cost. We do the work for you, check every open year and every relief that applies, and deal with Revenue if questions come up.' },
+      { q: 'I’ve left Ireland. Can you still help?', a: `Yes. You may be owed tax for the year you left and for earlier open years. See ${svc('leaving-ireland-refund', 'leaving Ireland tax refunds')}.` },
+    ],
+  },
+  {
+    id: 'fees', title: 'Fees and payment', items: [
+      { q: 'How much does it cost?', a: 'Our fee is [FEE %] of the refund we secure, agreed in writing before we start. No refund, no fee. See <a href="/fees/">our fees</a> for a worked example.' },
+      { q: 'How does my refund get paid?', a: 'Revenue pays it straight into the bank account on your Revenue record, or by cheque if there’s no account. Since the start of 2026, refunds can’t be paid into an agent’s account.' },
+      { q: 'When do I pay your fee?', a: 'After Revenue confirms your refund, we send you an invoice for the agreed fee [CONFIRM payment terms].' },
+    ],
+  },
+  {
+    id: 'process', title: 'The process', items: [
+      { q: 'Will you need my myAccount password?', a: 'No, never. Revenue advises against sharing it, and we don’t need it. You approve our agent request inside your own myAccount.' },
+      { q: 'How long does it take?', a: 'We aim to review your record within [CONFIRM] working days of your approval. Revenue typically issues a Statement of Liability about five days after filing and pays within three to five working days. See <a href="/how-it-works/">how it works</a>.' },
+      { q: 'What if I owe tax instead?', a: 'Sometimes a review shows an underpayment, for example from a second job or extra income. We check first and tell you before filing. Revenue usually collects underpayments by reducing your tax credits over up to four years.' },
+      { q: 'What is a Statement of Liability?', a: 'It’s Revenue’s end-of-year summary for a tax year. It shows whether you overpaid, underpaid or paid the right amount.' },
+      { q: 'Do I need receipts?', a: `For some claims, yes. ${svc('medical-expenses', 'Health expenses')} and ${svc('rent-tax-credit', 'rent')} need records, which you keep for six years. ${svc('flat-rate-expenses', 'Flat rate expenses')} don’t need receipts.` },
+    ],
+  },
+  {
+    id: 'trust', title: 'Trust and your data', items: [
+      { q: 'Is my information safe?', a: 'We only use your data to handle your claim, as set out in our <a href="/privacy/">privacy notice</a> [CONFIRM storage location and retention policy]. We have to keep claim documents for six years.' },
+      { q: 'Are you part of Revenue?', a: `No. TaxRoots is an independent private company (CRO ${SITE.cro}). We act for you as your authorised agent [CONFIRM TAIN].` },
+      { q: 'What if I change my mind?', a: 'You can cancel within 14 days of signing up [CONFIRM cooling-off wording], and you can remove us as your agent in myAccount at any time. See our <a href="/terms/">terms of engagement</a>.' },
+    ],
+  },
+];
+const allItems = groups.flatMap((g) => g.items);
+const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: allItems.map((i) => ({ '@type': 'Question', name: i.q, acceptedAnswer: { '@type': 'Answer', text: i.a.replace(/<[^>]+>/g, '') } })) };
+---
+<Base
+  title="Tax refund FAQs"
+  description="Answers to common questions about claiming an Irish tax refund with TaxRoots: who can claim, how far back, our fee, your myAccount password, timings and data."
+  jsonld={faqLd}
+>
+  <PageHero
+    title="Questions, answered plainly"
+    tag="FAQ"
+    crumbs={[{ label: 'FAQ' }]}
+    lede="The things people ask us most about claiming back tax in Ireland. Can’t find yours? Get in touch and we’ll answer it."
+  />
+
+  <section class="sec-s fq-sec">
+    <div class="wrap fq">
+      <nav class="fq-side" aria-label="FAQ sections">
+        <p class="fq-h">Jump to</p>
+        <ul>
+          {groups.map((g) => <li><a href={`#${g.id}`}>{g.title}<span>{g.items.length}</span></a></li>)}
+        </ul>
+        <div class="fq-svc">
+          <p class="fq-h">By service</p>
+          <ul class="fq-pills">
+            {SERVICE_LINKS.slice(0, 8).map((s) => <li><a class="pill" href={s.href}>{s.label}</a></li>)}
+            <li><a class="pill" href="/services/">All services</a></li>
+          </ul>
+        </div>
+      </nav>
+      <div class="fq-body">
+        {groups.map((g) => (
+          <section id={g.id} class="fq-g" aria-labelledby={`${g.id}-h`}>
+            <h2 id={`${g.id}-h`} class="rv">{g.title}</h2>
+            <Faq items={g.items} ld={false} />
+          </section>
+        ))}
+        <p class="muted fq-more rv">Each service page has its own questions too, from the <a class="link" href="/services/rent-tax-credit/">Rent Tax Credit</a> to <a class="link" href="/services/remote-working-relief/">remote working relief</a>. Still stuck? <a class="link" href="/contact/">Ask us</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<script>
+  // Highlight the index link for the group in view.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.fq-side ul:first-of-type a')];
+  const io = new IntersectionObserver((es) => {
+    es.forEach((e) => { if (e.isIntersecting) links.forEach((l) => l.classList.toggle('on', l.hash === '#' + e.target.id)); });
+  }, { rootMargin: '-35% 0px -60% 0px' });
+  document.querySelectorAll('.fq-g').forEach((s) => io.observe(s));
+</script>
+
+<style>
+  .fq-sec{padding-top:0}
+  .fq{display:grid;grid-template-columns:280px minmax(0,1fr);gap:clamp(32px,5vw,80px);align-items:start}
+  .fq-side{position:sticky;top:calc(var(--header-h,72px) + 24px)}
+  .fq-h{font:600 var(--fs-xs)/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--indigo);margin-bottom:var(--s4)}
+  .fq-side ul{list-style:none;margin:0;padding:0}
+  .fq-side>ul{display:grid;gap:4px}
+  .fq-side>ul a{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-radius:var(--r-md);text-decoration:none;color:var(--ink-2);font-weight:500;transition:background var(--t-fast),color var(--t-fast)}
+  .fq-side>ul a span{font-size:var(--fs-xs);color:var(--ink-3);background:var(--bg-2);border-radius:99px;min-width:26px;text-align:center;padding:3px 8px}
+  .fq-side>ul a:hover{background:var(--bg-2);color:var(--ink)}
+  .fq-side>ul a.on{background:var(--indigo);color:#fff}
+  .fq-side>ul a.on span{background:rgba(255,255,255,.18);color:#fff}
+  .fq-svc{margin-top:var(--s6);padding-top:var(--s5);border-top:1px solid var(--line)}
+  .fq-pills{display:flex;flex-wrap:wrap;gap:8px}
+  .fq-pills .pill{font-size:var(--fs-xs);min-height:32px;padding:0 12px}
+  .fq-g{scroll-margin-top:calc(var(--header-h,72px) + 24px)}
+  .fq-g+.fq-g{margin-top:var(--s8)}
+  .fq-g h2{font-size:clamp(1.5rem,1.2rem + 1vw,2.1rem);margin-bottom:var(--s5)}
+  .fq-more{margin-top:var(--s7);max-width:65ch}
+  @media (max-width:900px){
+    .fq{grid-template-columns:1fr}
+    .fq-side{position:static;background:var(--bg-2);border-radius:var(--r-lg);padding:20px}
+    .fq-side>ul{grid-template-columns:1fr 1fr}
+    .fq-side>ul a span{background:#fff}
+    .fq-svc{display:none}
+  }
+  @media (max-width:400px){.fq-side>ul{grid-template-columns:1fr}}
+</style>

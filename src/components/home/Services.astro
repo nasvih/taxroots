@@ -1,0 +1,119 @@
+---
+import Button from '../Button.astro';
+import Arrow from '../Arrow.astro';
+import { SERVICE_LINKS } from '../../data/site';
+const pick: [string, string, string, string][] = [
+  // href, photo, alt, short line
+  ['/services/rent-tax-credit/', 'service-rent-apartment-keys.jpg', 'Hand holding house keys in front of an apartment door', 'Renting your home, or paying rent for a student in college'],
+  ['/services/medical-expenses/', 'service-medical-pharmacist.jpg', 'Pharmacist reaching for medicine on pharmacy shelves', '20% back on GP, consultant, prescription and non-routine dental costs'],
+  ['/services/remote-working-relief/', 'service-work-from-home-desk.jpg', 'Home office desk with a monitor beside a window', 'A share of your electricity, heating and broadband bills'],
+  ['/services/flat-rate-expenses/', 'service-nurse-healthcare.jpg', 'Healthcare worker in navy scrubs smiling', 'Fixed yearly amounts for nurses, teachers, shop and hotel staff'],
+  ['/services/tuition-fees-relief/', 'service-graduation-tuition.jpg', 'Graduates throwing their caps in the air', 'College fees you paid for yourself or someone in your family'],
+  ['/services/emergency-tax-refund/', 'blog-card-laptop.jpg', 'Person holding a bank card while using a laptop', 'New job, first job or a payroll mix-up? Get the extra back'],
+  ['/services/marriage-joint-assessment/', 'service-wedding-rings-joint.jpg', 'Married couple’s hands showing their wedding rings', 'Married or in a civil partnership? Share credits and rate bands'],
+  ['/services/leaving-ireland-refund/', 'service-airport-leaving-ireland.jpg', 'Airport departure lounge looking out at a plane', 'Moved abroad mid-year? You may be owed for that year and earlier ones'],
+];
+const items = pick.map(([href, photo, alt, line]) => {
+  const s = SERVICE_LINKS.find((l) => l.href === href)!;
+  return { href, photo, alt, line, label: s.label };
+});
+---
+<section class="svc sec" aria-labelledby="svc-h">
+  <div class="wrap svc-in">
+    <div class="intro">
+      <p class="tag rv">What we claim</p>
+      <h2 id="svc-h" class="split">Eight common ways people in Ireland get money back</h2>
+      <p class="lede rv">Most refunds come from credits and reliefs that were never claimed. We check all of them for every year still open, not just the obvious ones.</p>
+      <div class="btns rv"><Button href="/services/" variant="ghost">See all services</Button></div>
+    </div>
+
+    <ol class="list" data-svc>
+      {items.map((it, i) => (
+        <li class="rv" data-delay={i * 60}>
+          <a href={it.href} data-i={i}>
+            <span class="no">{String(i + 1).padStart(2, '0')}</span>
+            <img class="th" src={`/photos/${it.photo}`} alt="" loading="lazy" />
+            <span class="t"><strong>{it.label}</strong><span>{it.line}</span></span>
+            <span class="ar"><Arrow /></span>
+          </a>
+        </li>
+      ))}
+    </ol>
+
+    <div class="float" aria-hidden="true">
+      {items.map((it, i) => <img src={`/photos/${it.photo}`} alt="" data-i={i} loading="lazy" />)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .svc-in{position:relative;display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(32px,6vw,96px);align-items:start}
+  .intro{position:sticky;top:calc(var(--header-h) + 48px)}
+  .intro .tag{margin-bottom:var(--s5)}
+  h2{margin-bottom:var(--s5);max-width:14ch}
+  .lede{margin-bottom:var(--s6)}
+  .list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+  .list li{border-bottom:1px solid var(--line)}
+  .list a{position:relative;display:grid;grid-template-columns:52px 1fr auto;align-items:center;gap:20px;padding:26px 8px 26px 0;text-decoration:none;color:var(--ink);isolation:isolate}
+  .list a::before{content:"";position:absolute;inset:0 -16px;border-radius:var(--r-lg);background:var(--indigo-50);opacity:0;transform:scaleY(.6);transition:opacity .35s,transform .45s var(--ease-out);z-index:-1}
+  .list a:hover::before,.list a:focus-visible::before{opacity:1;transform:none}
+  .no{font:500 var(--fs-sm)/1 var(--f-display);color:var(--ink-3)}
+  .th{display:none}
+  .t{display:grid;gap:6px}
+  .t strong{font:600 clamp(1.25rem,1rem + 1vw,1.9rem)/1.15 var(--f-display);letter-spacing:-.02em;transition:transform .45s var(--ease-out),color .3s}
+  .t span{font-size:var(--fs-sm);color:var(--ink-2);line-height:1.45}
+  .list a:hover strong{transform:translateX(10px);color:var(--indigo)}
+  .ar{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;border:1.5px solid var(--line-2);color:var(--indigo);transition:background .3s,color .3s,border-color .3s,transform .45s var(--ease-out)}
+  .ar :global(svg){width:18px;height:18px}
+  .list a:hover .ar{background:var(--green);border-color:var(--green);color:#fff;transform:rotate(-45deg)}
+
+  /* Floating photo that follows the pointer (desktop with hover) */
+  .float{position:absolute;left:0;top:0;width:280px;aspect-ratio:4/5;border-radius:var(--r-xl);overflow:hidden;pointer-events:none;z-index:3;opacity:0;scale:.6;transition:opacity .3s,scale .5s var(--ease-out);box-shadow:var(--sh-3);display:none}
+  .float.on{opacity:1;scale:1}
+  .float img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;clip-path:inset(100% 0 0 0);transition:clip-path .6s var(--ease-out)}
+  .float img.on{clip-path:inset(0 0 0 0);z-index:1}
+  @media (hover:hover) and (min-width:1000px){.float{display:block}}
+
+  @media (max-width:1000px){
+    .svc-in{grid-template-columns:1fr}
+    .intro{position:static}
+    .list a{grid-template-columns:72px 1fr auto;gap:16px;padding:16px 0}
+    .no{display:none}
+    .th{display:block;width:72px;height:72px;border-radius:var(--r-md);object-fit:cover}
+    .ar{width:38px;height:38px}
+  }
+  @media (max-width:420px){
+    .list a{grid-template-columns:60px 1fr auto;gap:14px}
+    .th{width:60px;height:60px}
+    .t span{font-size:var(--fs-xs)}
+  }
+</style>
+
+<script>
+  import { gsap, reduceMotion } from '../../scripts/gsap';
+  const list = document.querySelector<HTMLElement>('[data-svc]');
+  const fl = document.querySelector<HTMLElement>('.svc .float');
+  if (list && fl && matchMedia('(hover:hover) and (min-width:1000px)').matches) {
+    const host = fl.parentElement!;
+    const imgs = Array.from(fl.querySelectorAll<HTMLImageElement>('img'));
+    imgs.forEach((im) => { im.loading = 'eager'; });
+    const dur = reduceMotion ? 0 : 0.55;
+    const qx = gsap.quickTo(fl, 'x', { duration: dur, ease: 'power3' });
+    const qy = gsap.quickTo(fl, 'y', { duration: dur, ease: 'power3' });
+    const qr = gsap.quickTo(fl, 'rotation', { duration: 0.8, ease: 'power3' });
+    let lx = 0;
+    host.addEventListener('pointermove', (e) => {
+      const r = host.getBoundingClientRect();
+      const x = Math.min(e.clientX - r.left + 36, r.width - 250), y = e.clientY - r.top - 175;
+      qx(x); qy(y); qr(gsap.utils.clamp(-5, 5, (e.clientX - lx) * 0.3)); lx = e.clientX;
+    });
+    list.querySelectorAll<HTMLAnchorElement>('a[data-i]').forEach((a) => {
+      const show = () => {
+        fl.classList.add('on');
+        imgs.forEach((im) => im.classList.toggle('on', im.dataset.i === a.dataset.i));
+      };
+      a.addEventListener('pointerenter', show);
+    });
+    list.addEventListener('pointerleave', () => { fl.classList.remove('on'); qr(0); });
+  }
+</script>

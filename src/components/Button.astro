@@ -1,0 +1,10 @@
+---
+// Pill button with arrow disc. variant: '' (indigo) | 'green' | 'ghost' | 'white'; size: '' | 'sm'
+import Arrow from './Arrow.astro';
+interface Props { href?: string; variant?: string; size?: string; type?: 'button'|'submit'; class?: string; [k: string]: any }
+const { href, variant = '', size = '', type = 'button', class: cls = '', ...rest } = Astro.props;
+const c = ['btn', variant, size, cls].filter(Boolean).join(' ');
+---
+{href
+  ? <a href={href} class={c} {...rest}><span><slot /></span><span class="disc"><Arrow /></span></a>
+  : <button type={type} class={c} {...rest}><span><slot /></span><span class="disc"><Arrow /></span></button>}

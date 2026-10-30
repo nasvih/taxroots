@@ -1,0 +1,53 @@
+---
+// Shared shell for the legal drafts (privacy, terms, cookies, complaints).
+// Hero + solicitor-review note + sticky contents list + .prose body.
+import Base from '../../layouts/Base.astro';
+import PageHero from '../PageHero.astro';
+interface Props { title: string; h1: string; description: string; lede: string; crumb: string; updated?: string; toc: { id: string; label: string }[] }
+const { title, h1, description, lede, crumb, updated = '30 October 2026', toc } = Astro.props;
+---
+<Base title={title} description={description}>
+  <PageHero title={h1} lede={lede} tag="Legal" crumbs={[{ label: crumb }]} />
+  <section class="sec-s lg-sec">
+    <div class="wrap">
+      <div class="note lg-note" role="note">
+        <strong>Draft — to be reviewed by TaxRoots' solicitor before launch.</strong>
+        This text is a working draft. Items shown in [square brackets] are still to be confirmed and nothing here is final legal wording.
+      </div>
+    </div>
+    <div class="wrap lg">
+      <aside class="lg-side">
+        <p class="lg-h">On this page</p>
+        <ol>
+          {toc.map((t) => <li><a href={`#${t.id}`}>{t.label}</a></li>)}
+        </ol>
+        <p class="muted lg-up">Last updated {updated}</p>
+      </aside>
+      <div class="lg-body">
+        <article class="prose"><slot /></article>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .lg-sec{padding-top:0}
+  .lg{display:grid;grid-template-columns:240px minmax(0,1fr);gap:clamp(32px,5vw,80px);align-items:start}
+  .lg-side{position:sticky;top:calc(var(--header-h,72px) + 24px);border-left:2px solid var(--line);padding-left:20px}
+  .lg-h{font:600 var(--fs-xs)/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--indigo);margin-bottom:var(--s4)}
+  .lg-side ol{list-style:none;margin:0;padding:0;display:grid;gap:10px;font-size:var(--fs-sm);counter-reset:t}
+  .lg-side li{counter-increment:t}
+  .lg-side a{color:var(--ink-2);text-decoration:none;display:flex;gap:10px}
+  .lg-side a::before{content:counter(t,decimal-leading-zero);color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .lg-side a:hover{color:var(--indigo)}
+  .lg-up{font-size:var(--fs-xs);margin:var(--s5) 0 0}
+  .lg-note{font-size:var(--fs-body);padding:20px 24px;margin-bottom:var(--s7);max-width:none}
+  .lg-note strong{display:block;font-family:var(--f-display);font-size:1.1rem;margin-bottom:4px}
+  .lg-body :global(.prose > h2:first-child){margin-top:0}
+  .lg-body :global(.prose h2){scroll-margin-top:calc(var(--header-h,72px) + 24px)}
+  @media (max-width:900px){
+    .lg{grid-template-columns:1fr}
+    .lg-side{position:static;border-left:0;padding:20px;background:var(--bg-2);border-radius:var(--r-lg)}
+    .lg-side ol{grid-template-columns:1fr 1fr;gap:8px 16px}
+  }
+  @media (max-width:480px){.lg-side ol{grid-template-columns:1fr}}
+</style>

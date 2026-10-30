@@ -1,0 +1,62 @@
+---
+import Arrow from '../Arrow.astro';
+// Claims for 2022 close 31 Dec 2026 (Revenue four-year rule). Section disappears after that.
+const END = '2026-12-31T23:59:59+00:00';
+const msLeft = new Date(END).getTime() - Date.now();
+const days = Math.max(0, Math.ceil(msLeft / 86400000));
+const href = '/insights/claim-2022-tax-refund-before-deadline/';
+---
+{msLeft > 0 && (
+  <section class="dl" data-deadline={END} aria-label="2022 claim deadline">
+    <div class="wrap">
+      <a class="dl-in rv" href={href}>
+        <span class="count" aria-hidden="true"><b data-days>{days}</b><small>days left</small></span>
+        <span class="txt">
+          <strong>Time's running out for 2022.</strong>
+          <span>Revenue only repays 2022 overpayments if the claim is made by <b>31 December 2026</b>. After that, the money stays with Revenue.</span>
+        </span>
+        <span class="go">Check my 2022 refund <span class="disc"><Arrow /></span></span>
+        <span class="sr-only" data-days-sr>{days} days left to claim for 2022.</span>
+      </a>
+    </div>
+  </section>
+)}
+
+<style>
+  .dl{padding-block:8px clamp(24px,3vw,40px)}
+  .dl-in{position:relative;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:clamp(18px,3vw,40px);padding:16px 16px 16px 16px;border-radius:var(--r-xl);background:var(--indigo-900);color:var(--on-dark-2);text-decoration:none;overflow:hidden;isolation:isolate}
+  .dl-in::after{content:"";position:absolute;inset:0;background:var(--indigo);transform:scaleX(0);transform-origin:0 50%;transition:transform .7s var(--ease-out);z-index:-1}
+  .dl-in:hover::after{transform:scaleX(1)}
+  .count{display:grid;place-items:center;align-content:center;min-width:132px;aspect-ratio:1.25;padding:10px 14px;border-radius:var(--r-lg);background:var(--green);color:#fff}
+  .count b{font:600 clamp(2.2rem,1.6rem + 2vw,3.2rem)/1 var(--f-display);letter-spacing:-.03em}
+  .count small{font:600 var(--fs-xs)/1.2 var(--f-body);letter-spacing:.06em;text-transform:uppercase;margin-top:6px}
+  .txt{display:grid;gap:4px;font-size:var(--fs-sm);line-height:1.5}
+  .txt strong{font:600 clamp(1.25rem,1rem + 1vw,1.75rem)/1.2 var(--f-display);color:#fff;letter-spacing:-.02em}
+  .txt b{color:#fff;font-weight:600}
+  .go{display:inline-flex;align-items:center;gap:14px;padding:6px 6px 6px 22px;border-radius:var(--r-pill);background:#fff;color:var(--indigo);font:600 var(--fs-sm)/1 var(--f-display);white-space:nowrap;margin-right:8px}
+  .go .disc{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--indigo);color:#fff}
+  .go .disc :global(svg){width:18px;height:18px;transition:transform .45s var(--ease-out)}
+  .dl-in:hover .go .disc :global(svg){transform:translateX(3px)}
+  @media (max-width:860px){
+    .dl-in{grid-template-columns:auto 1fr;padding:14px}
+    .go{grid-column:1/-1;justify-content:space-between;margin:0}
+    .count{min-width:96px}
+  }
+  @media (max-width:420px){.count{min-width:84px;aspect-ratio:1}.txt span{font-size:var(--fs-xs)}}
+</style>
+
+<script>
+  const s = document.querySelector<HTMLElement>('[data-deadline]');
+  if (s) {
+    const end = new Date(s.dataset.deadline!).getTime();
+    const upd = () => {
+      const ms = end - Date.now();
+      if (ms <= 0) { s.hidden = true; return; }
+      const d = Math.ceil(ms / 86400000);
+      s.querySelector('[data-days]')!.textContent = String(d);
+      s.querySelector('[data-days-sr]')!.textContent = `${d} ${d === 1 ? 'day' : 'days'} left to claim for 2022.`;
+      const sm = s.querySelector('.count small'); if (sm) sm.textContent = d === 1 ? 'day left' : 'days left';
+    };
+    upd(); setInterval(upd, 60000);
+  }
+</script>

@@ -1,0 +1,31 @@
+---
+const a = ['Rent Tax Credit', 'Medical expenses', 'Remote working relief', 'Flat rate expenses', 'Tuition fees', 'Emergency tax', 'Home Carer Tax Credit', 'Non-routine dental'];
+const b = ['Joint assessment', 'Leaving Ireland', 'Single Person Child Carer Credit', 'Nursing home fees', 'Student accommodation rent', 'Dependent relative credit', 'Age credit', 'Uniforms and registration fees'];
+---
+<section class="tk" aria-label="Things you may be able to claim">
+  <p class="sr-only">Things you may be able to claim: {[...a, ...b].join(', ')}.</p>
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      {[0, 1].map(() => a.map((t, i) => <span class:list={['chip', { on: i % 3 === 0 }]}>{t}</span>))}
+    </div>
+  </div>
+  <div class="marquee rev" aria-hidden="true">
+    <div class="marquee-track">
+      {[0, 1].map(() => b.map((t, i) => <span class:list={['chip', 'ol', { g: i % 4 === 1 }]}>{t}</span>))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .tk{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;padding-block:clamp(24px,3vw,40px) clamp(56px,6vw,96px)}
+  .tk .marquee-track{gap:14px;animation-duration:46s}
+  .rev .marquee-track{animation-direction:reverse;animation-duration:54s}
+  .chip{display:inline-flex;align-items:center;gap:14px;padding:16px 28px 16px 22px;border-radius:var(--r-pill);background:var(--bg-2);font:600 clamp(1.05rem,.9rem + .7vw,1.6rem)/1 var(--f-display);color:var(--ink);letter-spacing:-.015em;white-space:nowrap}
+  .chip::before{content:"";width:12px;height:12px;border-radius:3px;background:var(--green);flex:none}
+  .chip.on{background:var(--indigo);color:#fff}
+  .chip.on::before{background:var(--green-bright)}
+  .chip.ol{background:#fff;border:1.5px solid var(--line-2)}
+  .chip.ol::before{background:var(--indigo)}
+  .chip.g{background:var(--green-50);border-color:var(--green-100)}
+  .chip.g::before{background:var(--green)}
+</style>

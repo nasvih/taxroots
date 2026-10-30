@@ -1,0 +1,86 @@
+---
+import Base from '../layouts/Base.astro';
+import Faq from '../components/Faq.astro';
+import LeadForm from '../components/LeadForm.astro';
+import Hero from '../components/home/Hero.astro';
+import Deadline from '../components/home/Deadline.astro';
+import Ticker from '../components/home/Ticker.astro';
+import DidYouKnow from '../components/home/DidYouKnow.astro';
+import Services from '../components/home/Services.astro';
+import WhoWeHelp from '../components/home/WhoWeHelp.astro';
+import Steps from '../components/home/Steps.astro';
+import EstimatorTeaser from '../components/home/EstimatorTeaser.astro';
+import WhyUs from '../components/home/WhyUs.astro';
+import { SITE } from '../data/site';
+
+const faqs = [
+  { q: 'How far back can I claim?', a: 'Four years. Right now that means 2022, 2023, 2024 and 2025. Claims for 2022 must be made by 31 December 2026, or Revenue can’t repay them.' },
+  { q: 'Can’t I do this myself for free?', a: 'Yes. Revenue’s myAccount lets you claim credits and reliefs at no cost. We do the work for you, check every open year and every relief that applies, and deal with Revenue if questions come up.' },
+  { q: 'Will you need my myAccount password?', a: 'No, never. Revenue advises against sharing it, and we don’t need it. You approve our agent request inside your own myAccount.' },
+  { q: 'How does my refund get paid?', a: 'Revenue pays it straight into the bank account on your Revenue record, or by cheque if there’s no account. Since the start of 2026, refunds can’t be paid into an agent’s account.' },
+  { q: 'What if I owe tax instead?', a: 'Sometimes a review shows an underpayment, for example from a second job or extra income. We check first and tell you before anything is filed. Revenue usually collects underpayments by reducing your tax credits over up to four years.' },
+  { q: 'I’ve left Ireland. Can you still help?', a: 'Yes. You may be owed tax for the year you left and for earlier years that are still open.' },
+];
+---
+<Base
+  title="Irish Tax Refunds for PAYE Workers | TaxRoots"
+  description="Paid too much tax in Ireland? TaxRoots reviews four years of your PAYE record, claims missed credits and reliefs, and Revenue pays you. No refund, no fee."
+>
+  <Hero />
+  <Deadline />
+  <Ticker />
+  <DidYouKnow />
+  <Services />
+  <WhoWeHelp />
+  <Steps />
+  <EstimatorTeaser />
+  <WhyUs />
+
+  <section class="faq-sec sec bg-2" aria-labelledby="faq-h">
+    <div class="wrap faq-in">
+      <div class="faq-l">
+        <h2 id="faq-h" class="split">Questions people ask first</h2>
+        <p class="lede rv">Straight answers about how refunds work in Ireland and what we do for you.</p>
+        <a class="link rv" href="/faq/">Read all FAQs</a>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <section class="lead-sec sec" aria-labelledby="lead-h" id="check">
+    <div class="wrap lead-in">
+      <div class="lead-l">
+        <p class="tag rv">Free check</p>
+        <h2 id="lead-h" class="split">Not sure where to start? <span class="hl">Ask us to look.</span></h2>
+        <p class="lede rv">Leave your details and we’ll get back to you about what you could claim, and which years are still open for you.</p>
+        <ul class="checks stg">
+          <li>No obligation: we tell you what we find before anything is filed</li>
+          <li>Your fee is agreed in writing before any work starts</li>
+          <li>We never ask for your myAccount password</li>
+          <li>Your refund is paid by Revenue, straight to you</li>
+        </ul>
+        <p class="alt rv">Prefer email? <a class="link" href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+      </div>
+      <div class="lead-card rv rv-r">
+        <LeadForm source="home" />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .faq-in{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr);gap:clamp(32px,5vw,80px);align-items:start}
+  .faq-l{position:sticky;top:calc(var(--header-h) + 48px)}
+  .faq-l h2{margin-bottom:var(--s5);max-width:12ch}
+  .faq-l .lede{margin-bottom:var(--s5)}
+  .lead-in{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(32px,5vw,80px);align-items:center}
+  .lead-l .tag{margin-bottom:var(--s5)}
+  .lead-l h2{margin-bottom:var(--s5)}
+  .lead-l .lede{margin-bottom:var(--s6)}
+  .alt{margin:var(--s6) 0 0;font-size:var(--fs-sm)}
+  .lead-card{padding:clamp(22px,3vw,40px);border-radius:var(--r-xl);background:#fff;border:1px solid var(--line);box-shadow:var(--sh-2)}
+  @media (max-width:900px){
+    .faq-in,.lead-in{grid-template-columns:1fr}
+    .faq-l{position:static}
+  }
+</style>

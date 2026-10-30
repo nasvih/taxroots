@@ -1,0 +1,66 @@
+---
+// The one lead form. Static site: submitting opens WhatsApp with the details pre-filled (no backend).
+// Props: source = page id (e.g. "home", "service:rent-tax-credit"); compact = fewer fields; dark = on indigo band.
+import Button from './Button.astro';
+import { SERVICE_LINKS, SITE } from '../data/site';
+interface Props { source: string; compact?: boolean; service?: string; submit?: string }
+const { source, compact = false, service = '', submit = 'Send on WhatsApp' } = Astro.props;
+const id = 'lf-' + Math.random().toString(36).slice(2, 7);
+---
+<form class="lead" method="get" action={SITE.whatsapp} target="_blank" data-lead>
+  <input type="hidden" name="source" value={source} />
+  <div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off" /></label></div>
+  <div class="row">
+    <div class="field"><label for={`${id}-n`}>Full name</label><input id={`${id}-n`} name="name" autocomplete="name" required /></div>
+    <div class="field"><label for={`${id}-e`}>Email <span class="opt">(optional)</span></label><input id={`${id}-e`} name="email" type="email" autocomplete="email" /></div>
+  </div>
+  <div class="row">
+    <div class="field"><label for={`${id}-p`}>Phone <span class="opt">(optional)</span></label><input id={`${id}-p`} name="phone" type="tel" autocomplete="tel" inputmode="tel" /></div>
+    <div class="field"><label for={`${id}-s`}>What would you like to claim?</label>
+      <select id={`${id}-s`} name="service">
+        <option value="">Not sure — please check everything</option>
+        {SERVICE_LINKS.map((s) => <option value={s.label} selected={s.label === service}>{s.label}</option>)}
+      </select>
+    </div>
+  </div>
+  {!compact && <div class="field"><label for={`${id}-m`}>Anything we should know? <span class="opt">(optional)</span></label><textarea id={`${id}-m`} name="message" rows="3" placeholder="e.g. I rented in Dublin 2023–2025 and started a new job in March."></textarea></div>}
+  <label class="consent"><input type="checkbox" name="consent" value="yes" required /> <span>I agree that TaxRoots may contact me about my claim. See our <a href="/privacy/">privacy notice</a>.</span></label>
+  <div class="foot">
+    <Button type="submit" variant="green">{submit}</Button>
+    <p class="status" role="status" aria-live="polite"></p>
+  </div>
+  <p class="wa-note">Opens WhatsApp with your details filled in — just press send. Prefer email? <a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+</form>
+
+<style>
+  .lead{display:grid;gap:var(--s4)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+  .opt{font-weight:400;color:var(--ink-3)}
+  .consent{display:flex;gap:10px;align-items:flex-start;font-size:var(--fs-sm);color:var(--ink-2);cursor:pointer}
+  .consent input{width:20px;height:20px;margin-top:2px;accent-color:var(--green);flex:none}
+  .consent a{color:var(--indigo)}
+  .foot{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s4)}
+  .status{margin:0;font-size:var(--fs-sm);font-weight:600}
+  .status.ok{color:var(--green-ink)} .status.err{color:var(--err)}
+  .wa-note{margin:0;font-size:var(--fs-xs);color:var(--ink-3)}
+  .wa-note a{color:var(--indigo)}
+  .lead.done .row,.lead.done .field,.lead.done .consent{opacity:.5;pointer-events:none}
+  @media (max-width:640px){.row{grid-template-columns:1fr}}
+</style>
+
+<script>
+  import { openWhatsApp, formToLines } from '../scripts/whatsapp';
+  document.querySelectorAll<HTMLFormElement>('form[data-lead]').forEach((f) => {
+    if (f.dataset.bound) return; f.dataset.bound = '1';
+    f.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if ((f.querySelector('[name=website]') as HTMLInputElement)?.value) return; // honeypot
+      const st = f.querySelector<HTMLElement>('.status')!;
+      const lines = formToLines(f);
+      const text = ['Hi TaxRoots, I would like a tax refund check.', '', ...lines, '', `(Sent from taxrootsirl.com — ${(f.querySelector('[name=source]') as HTMLInputElement)?.value || 'website'})`].join('\n');
+      openWhatsApp(text);
+      st.className = 'status ok'; st.textContent = 'WhatsApp opened with your details — press send to reach us.';
+    });
+  });
+</script>

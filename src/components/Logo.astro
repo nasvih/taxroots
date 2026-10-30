@@ -1,0 +1,12 @@
+---
+// Full logo (icon + TaxRoots wordmark + GET MORE BACK). tone: 'color' (white bg) | 'dark' (indigo bg) | 'white'
+const { tone = 'color', height = 44, tagline = true, class: cls = '' } = Astro.props;
+// Source art is the client's logo (files/brand), aspect 674:149.
+const w = Math.round(height * 674 / 149);
+---
+<a href="/" class:list={['logo', cls]} aria-label="TaxRoots — home">
+  <img src={`/brand/logo-${tone}.webp`} width={w} height={height} alt="TaxRoots — Get more back" style={`height:${height}px;width:auto`} decoding="async" fetchpriority="high" />
+</a>
+<style>
+  .logo{display:inline-flex;align-items:center;text-decoration:none;flex:none}
+</style>

@@ -1,0 +1,41 @@
+---
+// Figure table for a service page. Announced-but-not-enacted rows get a visible marker.
+import type { FigureTable } from '../../data/services';
+interface Props { table: FigureTable }
+const { table } = Astro.props;
+const ann = new Set(table.announced ?? []);
+---
+<figure class="yt rv">
+  <div class="yt-scroll" tabindex="0" role="region" aria-label={table.caption}>
+    <table>
+      <caption>{table.caption}</caption>
+      <thead><tr>{table.head.map((h) => <th scope="col">{h}</th>)}</tr></thead>
+      <tbody>
+        {table.rows.map((r, i) => (
+          <tr class:list={{ ann: ann.has(i) }}>
+            {r.map((c, j) => j === 0
+              ? <th scope="row">{c}{ann.has(i) && <span class="mark" title="Announced in Budget 2027, subject to the Finance Bill">Announced</span>}</th>
+              : <td>{c}</td>)}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  {table.note && <figcaption>{table.note}</figcaption>}
+</figure>
+<style>
+  .yt{margin:0;background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+  .yt-scroll{overflow-x:auto}
+  .yt-scroll:focus-visible{outline-offset:-3px}
+  table{width:100%;border-collapse:collapse;font-size:var(--fs-sm);font-variant-numeric:tabular-nums}
+  caption{caption-side:top;text-align:left;padding:18px 22px 14px;font:600 1rem/1.35 var(--f-display);color:var(--ink)}
+  th,td{text-align:left;padding:13px 22px;border-top:1px solid var(--line);vertical-align:top}
+  thead th{background:var(--indigo);color:#fff;font:600 var(--fs-xs)/1.3 var(--f-body);letter-spacing:.04em;text-transform:uppercase;border-top:0;white-space:nowrap}
+  tbody th{color:var(--ink);font-weight:600}
+  td{color:var(--ink-2)}
+  tbody tr:nth-child(even){background:var(--bg-2)}
+  tr.ann{background:var(--green-50)!important}
+  .mark{display:block;width:max-content;margin-top:6px;padding:3px 9px;border-radius:var(--r-pill);background:#fff;border:1px solid var(--green-100);color:var(--green-ink);font:600 .7rem/1.3 var(--f-body);letter-spacing:.04em;text-transform:uppercase;vertical-align:1px}
+  figcaption{padding:14px 22px 18px;font-size:var(--fs-xs);color:var(--ink-3);border-top:1px solid var(--line)}
+  @media (max-width:560px){th,td{padding:12px 14px}caption{padding:16px 14px 12px}figcaption{padding:12px 14px 16px}thead th{white-space:normal}}
+</style>

@@ -1,0 +1,29 @@
+---
+// Indigo call-to-action band that grows from an inset card to full bleed on scroll.
+import Button from './Button.astro';
+import { CTA } from '../data/site';
+interface Props { title?: string; text?: string; photo?: string }
+const { title = 'Ready to see what you are owed?', text = 'Tell us a little about your last four years. We check every credit and relief, file the claim with Revenue and keep you posted until the money lands.', photo = '' } = Astro.props;
+---
+<section class="ctab band sd-band">
+  <div class="wrap ctab-in">
+    <div>
+      <h2 class="split">{title}</h2>
+      <p class="lede rv">{text}</p>
+      <div class="btns rv" data-delay="150">
+        <Button href={CTA.href} variant="green">{CTA.label}</Button>
+        <Button href="/refund-estimator/" variant="ghost">Estimate my refund</Button>
+      </div>
+    </div>
+    {photo && <figure class="pic rv rv-i"><img src={`/photos/${photo}`} alt="" loading="lazy" /></figure>}
+  </div>
+</section>
+<style>
+  .ctab{padding-block:clamp(64px,8vw,120px);margin-block:var(--sec-s)}
+  .ctab-in{display:grid;grid-template-columns:1.2fr .8fr;gap:clamp(32px,5vw,72px);align-items:center}
+  .ctab-in:not(:has(figure)){grid-template-columns:1fr;max-width:900px}
+  h2{font-size:var(--fs-display);line-height:1.05;letter-spacing:-.03em;margin-bottom:var(--s5)}
+  .lede{margin-bottom:var(--s6)}
+  figure{aspect-ratio:1;border-radius:50%;margin:0}
+  @media (max-width:860px){.ctab-in{grid-template-columns:1fr}figure{max-width:320px}}
+</style>

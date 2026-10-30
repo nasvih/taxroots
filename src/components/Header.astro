@@ -1,0 +1,128 @@
+---
+import Logo from './Logo.astro';
+import Button from './Button.astro';
+import Arrow from './Arrow.astro';
+import { NAV, CTA, SITE, SERVICE_LINKS } from '../data/site';
+const path = Astro.url.pathname;
+const active = (href: string) => href !== '/' && path.startsWith(href);
+---
+<div class="progress" aria-hidden="true"></div>
+<header class="site-header">
+  <div class="hd wrap">
+    <div class="bar">
+      <Logo height={40} />
+      <nav class="nav" aria-label="Main">
+        <ul>
+          {NAV.map((l) => l.children ? (
+            <li class="has-mega">
+              <a href={l.href} class:list={['nl', { on: active(l.href) }]} aria-haspopup="true">{l.label}<svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></a>
+              <div class="mega" role="group" aria-label="Services">
+                <div class="mega-in">
+                  <ul class="mega-list">
+                    {l.children.map((c) => (
+                      <li><a href={c.href}><strong>{c.label}</strong><span>{c.desc}</span></a></li>
+                    ))}
+                  </ul>
+                  <a class="mega-cta" href="/refund-estimator/">
+                    <img src="/brand/icon-white.webp" alt="" width="44" height="44" />
+                    <strong>Not sure what you can claim?</strong>
+                    <span>Two minutes with our refund estimator shows where your money is.</span>
+                    <span class="go">Estimate my refund <Arrow /></span>
+                  </a>
+                </div>
+              </div>
+            </li>
+          ) : (
+            <li><a href={l.href} class:list={['nl', { on: active(l.href) }]}>{l.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+      <div class="end">
+        <a class="nl phone" href="/contact/">Contact</a>
+        <Button href={CTA.href} variant="green" size="sm" class="cta">{CTA.label}</Button>
+        <button class="burger" aria-expanded="false" aria-controls="mnav" aria-label="Open menu"><span></span><span></span></button>
+      </div>
+    </div>
+  </div>
+  <div id="mnav" class="mnav" hidden>
+    <div class="wrap">
+      <ul class="m-main">
+        {NAV.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        <li><a href="/contact/">Contact</a></li>
+      </ul>
+      <p class="m-h">Services</p>
+      <ul class="m-svc">
+        {SERVICE_LINKS.map((c) => <li><a class="pill" href={c.href}>{c.label}</a></li>)}
+      </ul>
+      <div class="m-cta"><Button href={CTA.href} variant="green">{CTA.label}</Button></div>
+      <p class="muted m-legal">{SITE.legal} · CRO {SITE.cro}</p>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header{position:sticky;top:0;z-index:100;padding-top:12px;transition:transform .45s var(--ease-out)}
+  .site-header.hide{transform:translateY(-110%)}
+  .bar{display:flex;align-items:center;gap:var(--s5);height:var(--header-h);padding:0 10px 0 22px;background:rgba(255,255,255,.92);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);border:1px solid var(--line);border-radius:var(--r-pill);transition:box-shadow .3s}
+  .scrolled .bar{box-shadow:var(--sh-2)}
+  .nav{margin-inline:auto}
+  .nav>ul{display:flex;gap:2px;list-style:none;margin:0;padding:0}
+  .nl{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 14px;white-space:nowrap;border-radius:var(--r-pill);font:500 .95rem/1 var(--f-display);color:var(--ink);text-decoration:none;transition:background .2s,color .2s}
+  .nl:hover,.has-mega:focus-within>.nl,.has-mega:hover>.nl{background:var(--indigo-50);color:var(--indigo)}
+  .nl.on{color:var(--indigo);box-shadow:inset 0 -2px 0 var(--green)}
+  .chev{flex:none;width:12px;height:12px;transition:transform .3s}
+  .has-mega:hover .chev{transform:rotate(180deg)}
+  .end{display:flex;align-items:center;gap:6px}
+  /* Mega menu */
+  .has-mega{position:relative}
+  .mega{position:absolute;left:50%;top:100%;padding-top:18px;transform:translate(-38%,8px);opacity:0;visibility:hidden;transition:opacity .25s,transform .35s var(--ease-out),visibility .25s}
+  .has-mega:hover .mega,.has-mega:focus-within .mega{opacity:1;visibility:visible;transform:translate(-38%,0)}
+  .mega-in{display:grid;grid-template-columns:1fr 260px;gap:12px;width:min(880px,90vw);padding:12px;background:#fff;border:1px solid var(--line);border-radius:var(--r-xl);box-shadow:var(--sh-3)}
+  .mega-list{display:grid;grid-template-columns:1fr 1fr;gap:2px;list-style:none;margin:0;padding:0}
+  .mega-list a{display:grid;gap:2px;padding:12px 14px;border-radius:var(--r-md);text-decoration:none;transition:background .2s}
+  .mega-list a:hover{background:var(--bg-2)}
+  .mega-list strong{font:600 .95rem/1.3 var(--f-display);color:var(--ink)}
+  .mega-list span{font-size:var(--fs-xs);color:var(--ink-3);line-height:1.4}
+  .mega-cta{display:flex;flex-direction:column;gap:10px;padding:22px;border-radius:var(--r-lg);background:var(--indigo);color:var(--on-dark-2);text-decoration:none;font-size:var(--fs-sm);line-height:1.5}
+  .mega-cta strong{color:#fff;font:600 1.15rem/1.25 var(--f-display)}
+  .mega-cta img{width:44px;height:auto}
+  .mega-cta .go{margin-top:auto;display:inline-flex;align-items:center;gap:8px;color:var(--green-bright);font-weight:600}
+  .mega-cta .go svg{width:16px;transition:transform .3s}
+  .mega-cta:hover .go svg{transform:translateX(4px)}
+  /* Burger + mobile */
+  .burger{display:none;width:48px;height:48px;border:0;border-radius:50%;background:var(--indigo);cursor:pointer;position:relative}
+  .burger span{position:absolute;left:15px;right:15px;height:2px;background:#fff;border-radius:2px;transition:transform .35s var(--ease-out)}
+  .burger span:first-child{top:19px}.burger span:last-child{top:27px}
+  .open .burger span:first-child{transform:translateY(4px) rotate(45deg)}
+  .open .burger span:last-child{transform:translateY(-4px) rotate(-45deg)}
+  .mnav{position:fixed;inset:calc(var(--header-h) + 24px) 0 0;background:#fff;overflow:auto;padding:var(--s5) 0 var(--s8);border-top:1px solid var(--line)}
+  .m-main{list-style:none;margin:0;padding:0}
+  .m-main a{display:block;padding:12px 0;font:600 1.6rem/1.2 var(--f-display);color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
+  .m-h{margin:var(--s6) 0 var(--s3);font:600 var(--fs-xs)/1 var(--f-body);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+  .m-svc{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0}
+  .m-cta{margin-top:var(--s6)}
+  .m-legal{margin-top:var(--s5);font-size:var(--fs-xs)}
+  @media (max-width:1300px){.phone{display:none}.nl{padding:0 11px}}
+  @media (max-width:1140px){
+    .nav{display:none}
+    .end{margin-left:auto}
+    .burger{display:block}
+    .bar{padding-right:8px;padding-left:18px}
+  }
+  @media (max-width:520px){.end :global(.cta){display:none}.bar{height:64px}:root{--header-h:64px}}
+</style>
+
+<script>
+  const h = document.querySelector('.site-header')!;
+  const b = h.querySelector<HTMLButtonElement>('.burger')!;
+  const m = document.getElementById('mnav')!;
+  const set = (open: boolean) => {
+    h.classList.toggle('open', open); b.setAttribute('aria-expanded', String(open));
+    b.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    m.hidden = !open; document.body.style.overflow = open ? 'hidden' : '';
+    const l = (window as any).__lenis; if (l) open ? l.stop() : l.start();
+  };
+  b.addEventListener('click', () => set(!h.classList.contains('open')));
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') set(false); });
+  matchMedia('(min-width:1141px)').addEventListener('change', (e) => e.matches && set(false));
+</script>

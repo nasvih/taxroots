@@ -1,0 +1,6 @@
+---
+// Arrow glyph for buttons/links. dir: 'right' | 'up-right' | 'down'
+const { dir = 'right' } = Astro.props;
+const rot = dir === 'up-right' ? -45 : dir === 'down' ? 90 : 0;
+---
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style={`rotate:${rot}deg`}><path d="M5 12h14M13 6l6 6-6 6"/></svg>

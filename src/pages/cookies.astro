@@ -1,0 +1,42 @@
+---
+import LegalPage from '../components/company/LegalPage.astro';
+import { SITE } from '../data/site';
+const toc = [
+  { id: 'what', label: 'What cookies are' },
+  { id: 'use', label: 'Cookies we use' },
+  { id: 'consent', label: 'Your consent' },
+  { id: 'control', label: 'Managing cookies' },
+  { id: 'contact', label: 'Contact' },
+];
+---
+<LegalPage
+  title="Cookie policy"
+  h1="Cookie policy"
+  crumb="Cookies"
+  description="Which cookies and similar storage the TaxRoots website uses, why, and how you can control them. No analytics or marketing cookies are set without your consent."
+  lede="We keep cookies to a minimum. Nothing used for analytics or marketing is set on your device unless you agree first."
+  toc={toc}
+>
+  <h2 id="what">1. What cookies are</h2>
+  <p>Cookies are small text files a website stores on your device. Similar tools, such as local storage, work in the same way. Some are needed for a site to work; others help a site owner understand how the site is used.</p>
+
+  <h2 id="use">2. Cookies we use</h2>
+  <table>
+    <thead><tr><th>Type</th><th>What it does</th><th>Consent needed?</th></tr></thead>
+    <tbody>
+      <tr><td>Strictly necessary</td><td>Keeps the site secure and working, for example protecting our forms from spam.</td><td>No</td></tr>
+      <tr><td>Preferences</td><td>Remembers choices such as your cookie decision.</td><td>No</td></tr>
+      <tr><td>Analytics</td><td>Counts visits and shows which pages are useful. [CONFIRM provider, if any]</td><td>Yes</td></tr>
+      <tr><td>Marketing</td><td>We do not currently use marketing or advertising cookies. [CONFIRM]</td><td>Yes</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="consent">3. Your consent</h2>
+  <p>Under the ePrivacy Regulations (S.I. No. 336 of 2011) and the guidance of the Data Protection Commission, we ask for your consent before setting any cookie that is not strictly necessary. Saying no is as easy as saying yes, and you can change your mind at any time. [CONFIRM consent banner before any analytics is added]</p>
+
+  <h2 id="control">4. Managing cookies</h2>
+  <p>You can also block or delete cookies in your browser settings. Blocking strictly necessary cookies may stop parts of the site, such as the claim form, from working.</p>
+
+  <h2 id="contact">5. Contact</h2>
+  <p>Questions about cookies? Email <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. For how we use personal data more generally, see our <a href="/privacy/">privacy notice</a>.</p>
+</LegalPage>
