@@ -3,3 +3,4 @@ dist
 .astro
 data/
 .DS_Store
+.vercel
