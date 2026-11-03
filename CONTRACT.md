@@ -9,7 +9,7 @@ Root: `/Users/nasvih/Claude/projects/taxroots/site`
 ## Sources of truth
 - Copy + facts: `/Users/nasvih/Claude/projects/taxroots/files/research/CONTENT.md` (researched, cited). Write ORIGINAL copy from it. Never invent testimonials, client counts, refund totals, ratings, awards, "years of experience" or reviews — the company is days old. Figures (credit amounts, % rates) only from CONTENT.md, with the tax year stated.
 - Photos: `public/photos/*.jpg` + `public/photos/CREDITS.json` (alt text + suggested use). Use `<Pic src="file.jpg" alt="..."/>` or `<img src="/photos/file.jpg">`. Never draw illustrations (no SVG/CSS art of objects/scenes). Simple UI icons (line icons, arrows, checks) are fine.
-- Site facts + nav + service slugs: `src/data/site.ts` (`SITE`, `SERVICE_LINKS`, `CTA`). Contact placeholders there are marked CONFIRM — always read from `SITE`, never hard-code phone/email.
+- Site facts + nav + service slugs: `src/data/site.ts` (`SITE`, `SERVICE_LINKS`, `CTA`). Remaining contact placeholders there are marked CONFIRM — always read from `SITE`, never hard-code phone/email.
 
 ## Do NOT edit (shared)
 `src/styles/*`, `src/layouts/Base.astro`, `src/components/{Header,Footer,Button,Arrow,Logo,Pic,LeadForm,Faq,PageHero,CtaBand}.astro`, `src/scripts/*`, `src/data/site.ts`, `astro.config.mjs`, `package.json`.
