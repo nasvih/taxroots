@@ -561,7 +561,7 @@ const FRE_LABELS = ESTIMATOR.fre.map((f) => f.label);
           .filter((r) => !/…:/.test(r));
         return rows.length ? [`*${sec.querySelector('h3')?.textContent}*`, ...rows, ''] : [];
       }))
-      .concat(['(Sent from taxrootsirl.com/start)']).join('\n');
+      .concat(['(Sent from taxroots.ie/start)']).join('\n');
     openWhatsApp(text);
     try { sessionStorage.removeItem('tr-estimate'); } catch {}
     form.hidden = true;

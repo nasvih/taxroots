@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "version": "1.0.0",
-  "description": "taxrootsirl.com \u2014 TaxRoots Limited (Irish tax refunds). Static Astro 5 site; enquiries go to WhatsApp.",
+  "description": "taxroots.ie \u2014 TaxRoots Limited (Irish tax refunds). Static Astro 5 site; enquiries go to WhatsApp.",
   "scripts": {
     "dev": "astro dev --port 4610",
     "build": "astro build",

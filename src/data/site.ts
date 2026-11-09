@@ -5,11 +5,11 @@ export const SITE = {
   name: 'TaxRoots',
   legal: 'TaxRoots Limited',
   tagline: 'Get more back',
-  url: 'https://taxrootsirl.com',
+  url: 'https://taxroots.ie',
   cro: '828654',
   incorporated: '2026-10-19',
   city: 'Dublin, Ireland',
-  email: 'hello@taxrootsirl.com',          // CONFIRM
+  email: 'hello@taxroots.ie',          // CONFIRM
   phone: '+353 85 228 1647',
   phoneHref: 'tel:+353852281647',
   whatsappNumber: '353852281647',

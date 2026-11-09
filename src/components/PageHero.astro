@@ -2,7 +2,7 @@
 // Inner-page hero: crumbs, tag, split H1, lede, optional buttons slot + optional photo.
 interface Props { title: string; lede?: string; tag?: string; crumbs?: { label: string; href?: string }[]; photo?: string; alt?: string }
 const { title, lede, tag, crumbs = [], photo, alt = '' } = Astro.props;
-const ld = crumbs.length ? { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ label: 'Home', href: '/' }, ...crumbs].map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.label, ...(c.href ? { item: new URL(c.href, 'https://taxrootsirl.com').href } : {}) })) } : null;
+const ld = crumbs.length ? { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ label: 'Home', href: '/' }, ...crumbs].map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.label, ...(c.href ? { item: new URL(c.href, 'https://taxroots.ie').href } : {}) })) } : null;
 ---
 <section class:list={['ph', { 'has-photo': photo }]}>
   <div class="wrap ph-in">

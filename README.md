@@ -1,4 +1,4 @@
-# TaxRoots — taxrootsirl.com
+# TaxRoots — taxroots.ie
 
 Website for **TaxRoots Limited** (Irish tax refunds, CRO 828654, Dublin). Static Astro 5 site — no backend.
 Every enquiry form opens WhatsApp (or email) with the details pre-filled.

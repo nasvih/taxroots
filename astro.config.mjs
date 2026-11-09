@@ -3,7 +3,7 @@ import sitemap from '@astrojs/sitemap';
 
 // Fully static site (no backend). Enquiries go to WhatsApp / email.
 export default defineConfig({
-  site: 'https://taxrootsirl.com',
+  site: 'https://taxroots.ie',
   output: 'static',
   trailingSlash: 'ignore',
   integrations: [sitemap()],

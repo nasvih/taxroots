@@ -58,7 +58,7 @@ const id = 'lf-' + Math.random().toString(36).slice(2, 7);
       if ((f.querySelector('[name=website]') as HTMLInputElement)?.value) return; // honeypot
       const st = f.querySelector<HTMLElement>('.status')!;
       const lines = formToLines(f);
-      const text = ['Hi TaxRoots, I would like a tax refund check.', '', ...lines, '', `(Sent from taxrootsirl.com — ${(f.querySelector('[name=source]') as HTMLInputElement)?.value || 'website'})`].join('\n');
+      const text = ['Hi TaxRoots, I would like a tax refund check.', '', ...lines, '', `(Sent from taxroots.ie — ${(f.querySelector('[name=source]') as HTMLInputElement)?.value || 'website'})`].join('\n');
       openWhatsApp(text);
       st.className = 'status ok'; st.textContent = 'WhatsApp opened with your details — press send to reach us.';
     });
