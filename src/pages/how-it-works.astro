@@ -15,8 +15,7 @@ const STEPS = [
   {
     n: '01', title: 'Tell us about you',
     photo: 'hero-woman-laptop-home.jpg', alt: 'Young woman smiling while working on her laptop at home beside a houseplant',
-    text: 'Fill in our short online form: your name, PPSN (Personal Public Service Number), contact details, and the costs you’ve had, like rent, medical bills, college fees or working from home. Ballpark figures are fine. It takes about five minutes.',
-    confirm: true,
+    text: 'Fill in our short online form: your name, PPSN (Personal Public Service Number), contact details, and the costs you’ve had, like rent, medical bills, college fees or working from home. Ballpark figures are fine. It only takes a few minutes.',
     you: ['Answer a few questions about your work, costs and family', 'Agree our fee in writing before we start'],
     we: ['Never ask for your myAccount password', 'Flag the credits and reliefs worth checking'],
   },
@@ -60,10 +59,10 @@ const NEVER = [
 const faq = [
   { q: 'Will you need my myAccount password?', a: 'No, never. Revenue advises against sharing it, and we don’t need it. You approve our agent request inside your own myAccount.' },
   { q: 'How does my refund get paid?', a: 'Revenue pays it straight into the bank account on your Revenue record, or by cheque if there’s no account. Since the start of 2026, refunds can’t be paid to an agent’s account.' },
-  { q: 'When do I pay your fee?', a: 'After Revenue confirms your refund, we send you an invoice for the agreed fee. <span class="ph">[CONFIRM payment terms]</span>' },
-  { q: 'How long does it take?', a: 'We aim to review your record within <span class="ph">[CONFIRM]</span> working days of your approval. Revenue typically issues a Statement of Liability about five days after filing and pays within three to five working days.' },
+  { q: 'When do I pay your fee?', a: 'After Revenue confirms your refund, we send you an invoice for the agreed fee. How and when to pay is agreed with you in writing before we start any work.' },
+  { q: 'How long does it take?', a: 'We start as soon as you approve the agent link and keep you updated at each step. Revenue typically issues a Statement of Liability about five days after filing and pays within three to five working days.' },
   { q: 'What if I owe tax instead?', a: 'Sometimes a review shows an underpayment, for example from a second job or extra income. We check first and tell you before filing. Revenue usually collects underpayments by reducing your tax credits over up to four years.' },
-  { q: 'What if I change my mind?', a: 'You can cancel within 14 days of signing up <span class="ph">[CONFIRM]</span>, and you can remove us as your agent in myAccount at any time.' },
+  { q: 'What if I change my mind?', a: 'You can cancel within 14 days of signing up, and you can remove us as your agent in myAccount at any time.' },
 ];
 
 const howTo = {
@@ -107,7 +106,7 @@ const howTo = {
               <Pic src={s.photo} alt={s.alt} ratio="16/10" class="ss-pic" />
               <p class="ss-n">Step {s.n}</p>
               <h3>{s.title}</h3>
-              <p class="ss-t">{s.text}{s.confirm && <> <span class="ph">[CONFIRM]</span></>}</p>
+              <p class="ss-t">{s.text}</p>
               <div class="ss-who">
                 <div><strong>You</strong><ul>{s.you.map((x) => <li>{x}</li>)}</ul></div>
                 <div><strong>Us</strong><ul>{s.we.map((x) => <li>{x}</li>)}</ul></div>
@@ -138,11 +137,11 @@ const howTo = {
     <div class="wrap">
       <div class="tl-head">
         <h2 id="tl-h" class="split">How long it takes</h2>
-        <p class="lede rv">From your approval of the agent link, we aim to review your record within <span class="ph">[CONFIRM]</span> working days. Once a return is filed, Revenue usually issues a Statement of Liability in about five days, and refunds normally reach your bank three to five working days after that.</p>
+        <p class="lede rv">We start as soon as you approve the agent link and keep you updated at each step. Once a return is filed, Revenue usually issues a Statement of Liability in about five days, and refunds normally reach your bank three to five working days after that.</p>
       </div>
       <ol class="tl-track stg">
         <li><span class="tl-dot"></span><p class="tl-when">Day 0</p><h3>You approve the link</h3><p>One click in myAccount under MyEnquiries.</p></li>
-        <li><span class="tl-dot"></span><p class="tl-when">Within <span class="ph">[CONFIRM]</span> working days</p><h3>We review your record</h3><p>Every open year, every credit and relief. You hear from us before anything is filed.</p></li>
+        <li><span class="tl-dot"></span><p class="tl-when">As soon as you approve</p><h3>We review your record</h3><p>Every open year, every credit and relief. You hear from us before anything is filed.</p></li>
         <li><span class="tl-dot"></span><p class="tl-when">About <span data-count>5</span> days after filing</p><h3>Statement of Liability</h3><p>Revenue’s summary for the year shows whether you overpaid.</p></li>
         <li><span class="tl-dot"></span><p class="tl-when"><span data-count>3</span>–5 working days later</p><h3>Money in your bank</h3><p>Paid by Revenue to the account on your Revenue record.</p></li>
       </ol>

@@ -13,7 +13,7 @@ const svc = (slug: string, text: string) => {
 const groups = [
   {
     id: 'getting-started', title: 'Getting started', items: [
-      { q: 'Who can use TaxRoots?', a: `Anyone taxed under PAYE in Ireland, whether you’re an employee or a pensioner, including people who have since left Ireland. If you’re self-employed or have rental income over €5,000, ask us first [CONFIRM scope]. See our ${svc('landlord-tax-returns', 'small landlord tax returns')} page.` },
+      { q: 'Who can use TaxRoots?', a: `Anyone taxed under PAYE in Ireland, whether you’re an employee or a pensioner, including people who have since left Ireland. If you’re self-employed or have rental income over €5,000, ask us first. See our ${svc('landlord-tax-returns', 'small landlord tax returns')} page.` },
       { q: 'How far back can I claim?', a: `Four years. Right now that’s 2022, 2023, 2024 and 2025. Claims for 2022 must be made by 31 December 2026, or Revenue can’t repay them. Our ${svc('paye-tax-review', '4-Year PAYE Tax Review')} checks every open year.` },
       { q: 'Can’t I do this myself for free?', a: 'Yes. Revenue’s myAccount lets you claim credits and reliefs at no cost. We do the work for you, check every open year and every relief that applies, and deal with Revenue if questions come up.' },
       { q: 'I’ve left Ireland. Can you still help?', a: `Yes. You may be owed tax for the year you left and for earlier open years. See ${svc('leaving-ireland-refund', 'leaving Ireland tax refunds')}.` },
@@ -21,15 +21,15 @@ const groups = [
   },
   {
     id: 'fees', title: 'Fees and payment', items: [
-      { q: 'How much does it cost?', a: 'Our fee is [FEE %] of the refund we secure, agreed in writing before we start. No refund, no fee. See <a href="/fees/">our fees</a> for a worked example.' },
+      { q: 'How much does it cost?', a: 'Our fee is a percentage of the refund we secure, agreed with you in writing before we start any work. No refund, no fee. See <a href="/fees/">our fees</a> for how it works.' },
       { q: 'How does my refund get paid?', a: 'Revenue pays it straight into the bank account on your Revenue record, or by cheque if there’s no account. Since the start of 2026, refunds can’t be paid into an agent’s account.' },
-      { q: 'When do I pay your fee?', a: 'After Revenue confirms your refund, we send you an invoice for the agreed fee [CONFIRM payment terms].' },
+      { q: 'When do I pay your fee?', a: 'After Revenue confirms your refund, we send you an invoice for the agreed fee. How and when to pay is agreed with you in writing before we start any work.' },
     ],
   },
   {
     id: 'process', title: 'The process', items: [
       { q: 'Will you need my myAccount password?', a: 'No, never. Revenue advises against sharing it, and we don’t need it. You approve our agent request inside your own myAccount.' },
-      { q: 'How long does it take?', a: 'We aim to review your record within [CONFIRM] working days of your approval. Revenue typically issues a Statement of Liability about five days after filing and pays within three to five working days. See <a href="/how-it-works/">how it works</a>.' },
+      { q: 'How long does it take?', a: 'We start as soon as you approve the agent link and keep you updated at each step. Revenue typically issues a Statement of Liability about five days after filing and pays within three to five working days. See <a href="/how-it-works/">how it works</a>.' },
       { q: 'What if I owe tax instead?', a: 'Sometimes a review shows an underpayment, for example from a second job or extra income. We check first and tell you before filing. Revenue usually collects underpayments by reducing your tax credits over up to four years.' },
       { q: 'What is a Statement of Liability?', a: 'It’s Revenue’s end-of-year summary for a tax year. It shows whether you overpaid, underpaid or paid the right amount.' },
       { q: 'Do I need receipts?', a: `For some claims, yes. ${svc('medical-expenses', 'Health expenses')} and ${svc('rent-tax-credit', 'rent')} need records, which you keep for six years. ${svc('flat-rate-expenses', 'Flat rate expenses')} don’t need receipts.` },
@@ -37,9 +37,9 @@ const groups = [
   },
   {
     id: 'trust', title: 'Trust and your data', items: [
-      { q: 'Is my information safe?', a: 'We only use your data to handle your claim, as set out in our <a href="/privacy/">privacy notice</a> [CONFIRM storage location and retention policy]. We have to keep claim documents for six years.' },
-      { q: 'Are you part of Revenue?', a: `No. TaxRoots is an independent private company (CRO ${SITE.cro}). We act for you as your authorised agent [CONFIRM TAIN].` },
-      { q: 'What if I change my mind?', a: 'You can cancel within 14 days of signing up [CONFIRM cooling-off wording], and you can remove us as your agent in myAccount at any time. See our <a href="/terms/">terms of engagement</a>.' },
+      { q: 'Is my information safe?', a: 'We only use your data to handle your claim, as set out in our <a href="/privacy/">privacy notice</a>. We have to keep claim documents for six years.' },
+      { q: 'Are you part of Revenue?', a: `No. TaxRoots is an independent private company (CRO ${SITE.cro}). We act for you as your authorised agent.` },
+      { q: 'What if I change my mind?', a: 'You can cancel within 14 days of signing up, and you can remove us as your agent in myAccount at any time. See our <a href="/terms/">terms of engagement</a>.' },
     ],
   },
 ];

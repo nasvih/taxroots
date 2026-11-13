@@ -1,21 +1,15 @@
 ---
-// CONFIRM: placeholder fee rate for the example + slider only. NOT TaxRoots' confirmed fee.
-const FEE_PERCENT = 10; // CONFIRM fee % with owner (and whether VAT is added)
-
+// CONFIRM fee % and VAT with owner before adding any number or calculator here (see ../CONFIRM.md).
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import Button from '../components/Button.astro';
 import Pic from '../components/Pic.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { CTA } from '../data/site';
-
-const eur = (n: number) => '€' + Math.round(n).toLocaleString('en-IE');
-const exRefund = 1000;
-const exFee = exRefund * FEE_PERCENT / 100;
 ---
 <Base
   title="Our Fees for Irish Tax Refund Claims"
-  description="TaxRoots' fee is agreed in writing before we start. Revenue pays your refund straight to you and we invoice afterwards. See how it works, with an example."
+  description="TaxRoots' fee is agreed in writing before we start. Revenue pays your refund straight to you and we invoice afterwards. See how the fee works."
 >
   <PageHero
     title="One clear fee. Agreed before we start."
@@ -23,13 +17,13 @@ const exFee = exRefund * FEE_PERCENT / 100;
     crumbs={[{ label: 'Fees' }]}
     lede="Our fee is a percentage of the refund we secure for you. You’ll see it in writing in your engagement letter before we do any work, and if there’s no refund, there’s no fee."
   >
-    <div class="btns"><Button href={CTA.href} variant="green">{CTA.label}</Button><Button href="#calculator" variant="ghost">Try the fee calculator</Button></div>
+    <div class="btns"><Button href={CTA.href} variant="green">{CTA.label}</Button><Button href="#calculator" variant="ghost">How our fee works</Button></div>
   </PageHero>
 
   <section class="sec-s fe-top">
     <div class="wrap">
       <div class="fe-trio stg">
-        <div class="fe-t fe-t1"><p class="fe-k">Agreed upfront</p><p>Our fee is <strong>[FEE %] [+ VAT, CONFIRM]</strong> of the refund we secure. It’s in your engagement letter before we start.</p></div>
+        <div class="fe-t fe-t1"><p class="fe-k">Agreed upfront</p><p>Our fee is <strong>a percentage of the refund</strong> we secure, agreed with you in writing before we start any work.</p></div>
         <div class="fe-t fe-t2"><p class="fe-k">No refund, no fee</p><p>If we don’t find you a refund, you pay nothing. No sign-up charge, no hidden extras.</p></div>
         <div class="fe-t fe-t3"><p class="fe-k">Paid to you, invoiced after</p><p>Revenue pays your refund directly into your own bank account. Then we send our invoice.</p></div>
       </div>
@@ -46,7 +40,7 @@ const exFee = exRefund * FEE_PERCENT / 100;
       <ol class="fe-steps stg">
         <li><span>1</span><div><h3>Revenue confirms your refund</h3><p>You get a Statement of Liability, usually about five days after we file.</p></div></li>
         <li><span>2</span><div><h3>The money lands in your account</h3><p>Revenue usually pays within three to five working days, or by cheque if it has no bank account for you.</p></div></li>
-        <li><span>3</span><div><h3>We send our invoice</h3><p>For the fee agreed in your engagement letter. Payment terms: [CONFIRM, e.g. within 14 days by card or bank transfer].</p></div></li>
+        <li><span>3</span><div><h3>We send our invoice</h3><p>For the fee agreed in your engagement letter, which also sets out how and when to pay.</p></div></li>
       </ol>
     </div>
   </section>
@@ -54,22 +48,19 @@ const exFee = exRefund * FEE_PERCENT / 100;
   <section class="sec bg-2" id="calculator">
     <div class="wrap fe-calc-in">
       <div class="fe-calc-copy">
-        <p class="tag rv">Worked example</p>
+        <p class="tag rv">How it’s worked out</p>
         <h2 class="split">Your refund, our fee, what you keep</h2>
-        <p class="rv">If we secure a refund of {eur(exRefund)}, our fee is {eur(exFee)} [+ VAT, CONFIRM] and you keep {eur(exRefund - exFee)}.</p>
-        <p class="note rv"><strong>Example only.</strong> The {FEE_PERCENT}% used here is a placeholder, not our confirmed fee. Your actual fee is set out in writing before we start.</p>
+        <p class="rv">Revenue pays your whole refund to you. Our fee is a percentage of that refund, and you see the percentage in writing before we start, so you know exactly what you keep before you agree to anything.</p>
+        <p class="note rv"><strong>No refund, no fee.</strong> If Revenue doesn’t pay you anything, you pay us nothing.</p>
       </div>
-      <div class="card fe-calc rv rv-s" data-fee={FEE_PERCENT}>
-        <label for="fe-r" class="fe-lab">Your refund</label>
-        <output id="fe-out" for="fe-r" class="fe-big">{eur(exRefund)}</output>
-        <input id="fe-r" type="range" min="100" max="5000" step="50" value={exRefund} aria-describedby="fe-hint" />
-        <p id="fe-hint" class="muted fe-hint"><span>€100</span><span>€5,000</span></p>
-        <div class="fe-bar" aria-hidden="true"><i class="fe-bar-keep" style={`width:${100 - FEE_PERCENT}%`}></i><i class="fe-bar-fee" style={`width:${FEE_PERCENT}%`}></i></div>
+      <div class="card fe-calc rv rv-s">
+        <p class="fe-lab">Your refund</p>
+        <p class="fe-big">Paid to you</p>
         <dl class="fe-res">
-          <div><dt>Our fee <span class="muted">({FEE_PERCENT}% placeholder)</span></dt><dd id="fe-fee">{eur(exFee)}</dd></div>
-          <div class="fe-keep"><dt>You keep</dt><dd id="fe-keep">{eur(exRefund - exFee)}</dd></div>
+          <div><dt>Our fee</dt><dd>Agreed upfront</dd></div>
+          <div class="fe-keep"><dt>You keep</dt><dd>The rest</dd></div>
         </dl>
-        <p class="muted fe-small">Excludes VAT [CONFIRM]. If there is no refund, the fee is €0.</p>
+        <p class="muted fe-small">Our fee is set out in your engagement letter before we start. If there is no refund, the fee is €0.</p>
       </div>
     </div>
   </section>
@@ -81,31 +72,12 @@ const exFee = exRefund * FEE_PERCENT / 100;
         <h2 class="split">Prefer to do it yourself?</h2>
         <p class="lede rv">You can. Every credit and relief we claim can be claimed free of charge through Revenue’s myAccount.</p>
         <p class="rv">We’re here for people who want an expert to check every open year and every relief that applies, do the paperwork, and deal with Revenue if questions come up. If you’d rather do it yourself, our <a class="link" href="/insights/">guides</a> are free to read.</p>
-        <div class="note rv fe-conf">
-          <strong>Still to be confirmed:</strong> what counts as a “refund” for fee purposes (for example, in-year credits that reduce future tax rather than a repayment), any minimum fee, and any separate fee for Form 11 or landlord returns. [CONFIRM]
-        </div>
       </div>
     </div>
   </section>
 
   <CtaBand title="See what you could be owed, then decide" />
 </Base>
-
-<script>
-  const box = document.querySelector<HTMLElement>('.fe-calc');
-  if (box) {
-    const pct = Number(box.dataset.fee) || 0;
-    const r = box.querySelector<HTMLInputElement>('#fe-r')!;
-    const out = box.querySelector('#fe-out')!, fee = box.querySelector('#fe-fee')!, keep = box.querySelector('#fe-keep')!;
-    const eur = (n: number) => '€' + Math.round(n).toLocaleString('en-IE');
-    const upd = () => {
-      const v = Number(r.value), f = v * pct / 100;
-      out.textContent = eur(v); fee.textContent = eur(f); keep.textContent = eur(v - f);
-      r.style.setProperty('--p', ((v - Number(r.min)) / (Number(r.max) - Number(r.min)) * 100) + '%');
-    };
-    r.addEventListener('input', upd); upd();
-  }
-</script>
 
 <style>
   .fe-top{padding-top:0}
