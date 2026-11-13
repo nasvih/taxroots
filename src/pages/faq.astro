@@ -47,7 +47,7 @@ const allItems = groups.flatMap((g) => g.items);
 const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: allItems.map((i) => ({ '@type': 'Question', name: i.q, acceptedAnswer: { '@type': 'Answer', text: i.a.replace(/<[^>]+>/g, '') } })) };
 ---
 <Base
-  title="Tax refund FAQs"
+  title="Tax Refund FAQs: Claiming Tax Back in Ireland"
   description="Answers to common questions about claiming an Irish tax refund with TaxRoots: who can claim, how far back, our fee, your myAccount password, timings and data."
   jsonld={faqLd}
 >

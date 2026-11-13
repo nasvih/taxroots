@@ -1,0 +1,5 @@
+# taxroots.ie
+User-agent: *
+Allow: /
+
+Sitemap: https://taxroots.ie/sitemap-index.xml

@@ -7,6 +7,7 @@ import LeadForm from '../../components/LeadForm.astro';
 import YearTable from '../../components/services/YearTable.astro';
 import { CTA, SITE } from '../../data/site';
 import { SERVICES, SOURCES, getService, type Service } from '../../data/services';
+import { ARTICLES } from '../../data/articles';
 
 export function getStaticPaths() {
   return SERVICES.map((s) => ({ params: { slug: s.slug }, props: { s } }));
@@ -14,10 +15,12 @@ export function getStaticPaths() {
 const { s } = Astro.props as { s: Service };
 const related = s.related.map(getService).filter(Boolean) as Service[];
 const url = `${SITE.url}/services/${s.slug}/`;
+// Guides whose main topic is this service (first `related` slug).
+const guides = ARTICLES.filter((a) => a.related[0] === s.slug);
 const ld = {
   '@context': 'https://schema.org', '@type': 'Service',
   name: s.title, serviceType: s.title, description: s.summary, url,
-  provider: { '@type': 'Organization', name: SITE.legal, url: SITE.url },
+  provider: { '@id': `${SITE.url}/#org` },
   areaServed: { '@type': 'Country', name: 'Ireland', identifier: 'IE' },
   audience: { '@type': 'Audience', audienceType: 'PAYE taxpayers in Ireland' },
 };
@@ -101,6 +104,7 @@ const ld = {
       <div>
         <h2 id="faq-h" class="split">Questions people ask</h2>
         <p class="rv">More answers on our <a class="link" href="/faq/">FAQ page</a>.</p>
+        {guides.length > 0 && <p class="rv faq-guides">Read our guide{guides.length > 1 ? 's' : ''}: {guides.map((g, i) => <>{i > 0 && ' · '}<a class="link" href={`/insights/${g.slug}/`}>{g.title}</a></>)}.</p>}
       </div>
       <Faq items={s.faqs} />
     </div>
@@ -204,6 +208,7 @@ const ld = {
 
   .faq-in{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(32px,5vw,80px);align-items:start}
   .faq-in h2{margin-bottom:var(--s4)}
+  .faq-guides{margin-top:var(--s3)}
 
   .rel-h{margin-bottom:var(--s6)}
   .rel-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s4)}

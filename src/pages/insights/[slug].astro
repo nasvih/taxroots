@@ -27,8 +27,8 @@ const ld = [
     '@context': 'https://schema.org', '@type': 'Article',
     headline: x.title, description: x.description, image: [`${SITE.url}/photos/${x.photo}`],
     datePublished: x.date, dateModified: LAST_CHECKED_ISO, articleSection: x.tag, inLanguage: 'en-IE',
-    author: { '@type': 'Organization', name: SITE.name, url: SITE.url },
-    publisher: { '@type': 'Organization', name: SITE.legal, logo: { '@type': 'ImageObject', url: `${SITE.url}/icon-512.png` } },
+    author: { '@type': 'Organization', '@id': `${SITE.url}/#org`, name: SITE.legal, url: `${SITE.url}/` },
+    publisher: { '@type': 'Organization', '@id': `${SITE.url}/#org`, name: SITE.legal, logo: { '@type': 'ImageObject', url: `${SITE.url}/icon-512.png` } },
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
   },
   {
@@ -41,7 +41,7 @@ const ld = [
   },
 ];
 ---
-<Base title={x.seoTitle} description={x.description} image={`/photos/${x.photo}`} jsonld={ld}>
+<Base title={x.seoTitle} description={x.description} image={`/photos/${x.photo}`} imageAlt={x.alt} article={{ published: x.date, modified: LAST_CHECKED_ISO, section: x.tag }} jsonld={ld}>
   <section class="ah">
     <div class="wrap">
       <ol class="crumbs"><li><a href="/">Home</a></li><li><a href="/insights/">Insights</a></li><li><span aria-current="page">{x.tag}</span></li></ol>

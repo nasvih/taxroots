@@ -105,7 +105,7 @@ const raw: Omit<Service, 'label'>[] = [
     title: '4-Year PAYE Tax Review',
     group: 'Everyone',
     summary: 'One careful look at every tax year that is still open, so nothing you are owed gets left behind.',
-    metaTitle: '4-Year PAYE Tax Review, 2022 to 2025',
+    metaTitle: 'PAYE Tax Refund: 4-Year Review, 2022 to 2025',
     metaDescription: 'We review your PAYE tax for 2022 to 2025, check every credit and relief you could be owed and file the claim. 2022 refunds close on 31 December 2026.',
     whoFor: [
       'Employees and pensioners taxed through PAYE in Ireland',
@@ -212,7 +212,7 @@ const raw: Omit<Service, 'label'>[] = [
     title: 'Leaving Ireland Tax Refund',
     group: 'Everyone',
     summary: 'Moving abroad? You may be owed tax for the part of the year you worked here, plus any open earlier years.',
-    metaTitle: 'Leaving Ireland Tax Refund',
+    metaTitle: 'Leaving Ireland? Claim Your Tax Refund',
     metaDescription: 'Leaving Ireland mid-year? A full year of tax credits against part-year pay often means a refund. We check the year you leave and every open year before it.',
     whoFor: [
       'Anyone who has left, or is about to leave, Ireland after working here',
@@ -380,7 +380,7 @@ const raw: Omit<Service, 'label'>[] = [
     title: 'Remote Working Relief',
     group: 'Your costs',
     summary: 'Worked from home? Claim back part of your electricity, heating and broadband for every year still open.',
-    metaTitle: 'Remote Working Relief Claims',
+    metaTitle: 'Remote Working Relief: Claim Tax Back',
     metaDescription: 'Worked from home for your employer? Claim 30% of your share of electricity, heating and broadband, at your highest tax rate, for 2022 to 2025. We do the sums.',
     whoFor: [
       'Employees who worked from home under an arrangement with their employer',
@@ -432,7 +432,7 @@ const raw: Omit<Service, 'label'>[] = [
     title: 'Flat Rate Expenses',
     group: 'Your costs',
     summary: 'Nurses, teachers, shop staff, chefs, tradespeople and many more can claim a fixed yearly allowance for work costs like uniforms, tools and registration fees.',
-    metaTitle: 'Flat Rate Expenses for Your Job',
+    metaTitle: 'Flat Rate Expenses: Claim Tax Back for Your Job',
     metaDescription: 'Nurses, teachers, retail and hospitality staff can claim flat rate expenses: €733 a year for nurses, €518 for teachers (2020 to 2026). We check your job.',
     whoFor: [
       'Employees whose job is on Revenue\'s flat rate expenses list',
