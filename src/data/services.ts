@@ -152,7 +152,7 @@ const raw: Omit<Service, 'label'>[] = [
     faqs: [
       { q: 'Could a review leave me owing money?', a: 'It can happen, for example if you had two jobs at the same time or untaxed extra income. We look at your record first and tell you before anything is filed with Revenue.' },
       { q: 'I already got a refund for one year. Can you check the others?', a: 'Yes. Every year is reviewed separately, and a claim for one year does not stop a claim for another.' },
-      { q: 'How long does it take?', a: 'Once we can see your record and have your details, we aim to file within <strong>[CONFIRM turnaround]</strong>. Revenue usually issues a Statement of Liability about five days after filing, and refunds are paid within three to five working days.' },
+      { q: 'How long does it take?', a: 'Once we can see your record and have your details, we file as soon as we can, and we tell you the date it went in. Revenue usually issues a Statement of Liability about five days after filing, and refunds are paid within three to five working days.' },
     ],
     photo: 'about-calculator-paperwork.jpg',
     alt: 'Close-up of a calculator and pen on handwritten paperwork',
@@ -248,7 +248,7 @@ const raw: Omit<Service, 'label'>[] = [
     ],
     faqs: [
       { q: 'Can I claim before I go?', a: 'Yes. If you are leaving Ireland permanently, you can claim straight away rather than waiting until the end of the year.' },
-      { q: 'Can the refund go to a foreign bank account?', a: '<strong>[CONFIRM: check Revenue\'s current policy on paying refunds to non-Irish (SEPA) accounts before publishing this answer.]</strong>' },
+      { q: 'Can the refund go to a foreign bank account?', a: 'Revenue pays refunds by bank transfer to the account on your Revenue record. Tell us where your account is and we will check with you whether it can be used before we file.' },
       { q: 'What is split-year treatment?', a: 'If you are resident in Ireland in the year you leave and not resident the following year, employment income you earn abroad after you leave is ignored for Irish tax.' },
     ],
     photo: 'service-airport-leaving-ireland.jpg',
@@ -861,7 +861,7 @@ const raw: Omit<Service, 'label'>[] = [
     faqs: [
       { q: 'Is a room in my house treated the same as a rental flat?', a: 'No. Rent-a-Room Relief can make room income tax-free up to the limit, but if you go over the limit, all of it is taxed.' },
       { q: 'I am a PAYE worker. Do I really need a Form 11?', a: 'Only if your net non-PAYE income is over €5,000, or your gross non-PAYE income is over €30,000. Below that, it goes on your PAYE return.' },
-      { q: 'Do you handle bigger portfolios?', a: '<strong>[CONFIRM scope: does TaxRoots do Form 11 and self-assessment work, and at what fee?]</strong>' },
+      { q: 'Do you handle bigger portfolios?', a: 'Talk to us first. We will tell you upfront whether we can take it on and what it would cost, before any work starts.' },
     ],
     photo: 'service-irish-terrace-house.jpg',
     alt: 'Brick terraced houses in Sandymount, Dublin, with red and blue Georgian-style front doors',

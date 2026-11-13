@@ -18,17 +18,17 @@ const ogImage = new URL(image, SITE.url).href;
 const isDefaultOg = image === '/og.jpg';
 const canonical = new URL(Astro.url.pathname, SITE.url).href;
 const fullTitle = title.includes('TaxRoots') ? title : `${title} | TaxRoots`;
-// Only confirmed facts here: no email, street address, hours, prices, ratings or sameAs until the owner confirms them.
+// Only confirmed facts here: no email, hours, prices, ratings or sameAs until the owner confirms them.
 const org = {
   '@context': 'https://schema.org', '@type': 'AccountingService', '@id': `${SITE.url}/#org`,
   name: SITE.legal, legalName: SITE.legal, alternateName: SITE.name, url: `${SITE.url}/`,
   logo: { '@type': 'ImageObject', url: `${SITE.url}/icon-512.png`, width: 512, height: 512 },
   image: `${SITE.url}/og.jpg`, slogan: SITE.tagline,
-  description: 'TaxRoots Limited is a Dublin company that helps PAYE workers in Ireland claim back overpaid tax from Revenue: tax credits, reliefs and refunds for every open year.',
+  description: 'TaxRoots Limited is an Irish company, based in Co. Cork, that helps PAYE workers in Ireland claim back overpaid tax from Revenue: tax credits, reliefs and refunds for every open year.',
   telephone: SITE.phone.replace(/\s/g, ''),
   contactPoint: { '@type': 'ContactPoint', telephone: SITE.phone.replace(/\s/g, ''), contactType: 'customer service', areaServed: 'IE', availableLanguage: 'en' },
   areaServed: { '@type': 'Country', name: 'Ireland', identifier: 'IE' },
-  address: { '@type': 'PostalAddress', addressLocality: 'Dublin', addressCountry: 'IE' },
+  address: { '@type': 'PostalAddress', streetAddress: '3 Willow Close, Bishops Island', addressLocality: 'Watergrasshill', addressRegion: 'Co. Cork', postalCode: 'T56 RF40', addressCountry: 'IE' },
   identifier: { '@type': 'PropertyValue', propertyID: 'CRO', value: SITE.cro }, foundingDate: SITE.incorporated,
   knowsAbout: ['PAYE tax refunds', 'Irish tax credits', 'Rent Tax Credit', 'Medical expenses tax relief', 'Remote Working Relief', 'Flat rate expenses', 'Tuition fees tax relief', 'Emergency tax'],
 };

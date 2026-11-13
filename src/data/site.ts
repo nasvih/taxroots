@@ -8,13 +8,13 @@ export const SITE = {
   url: 'https://taxroots.ie',
   cro: '828654',
   incorporated: '2026-10-19',
-  city: 'Dublin, Ireland',
+  city: 'Co. Cork, Ireland',
   email: 'hello@taxroots.ie',          // CONFIRM
   phone: '+353 85 228 1647',
   phoneHref: 'tel:+353852281647',
   whatsappNumber: '353852281647',
   whatsapp: 'https://wa.me/353852281647',  // keep in sync with whatsappNumber
-  address: 'Dublin, Ireland',              // CONFIRM full registered address
+  address: '3 Willow Close, Bishops Island, Watergrasshill, Co. Cork, T56 RF40', // registered office (client confirmed 2026-11-13)
   hours: 'Mon–Fri, 9:00–17:30',            // CONFIRM
   fee: 'Agreed upfront. No refund, no fee.', // CONFIRM fee model
 };
