@@ -1,31 +1,34 @@
 ---
-// CONFIRM fee % and VAT with owner before adding any number or calculator here (see ../CONFIRM.md).
+// Fee confirmed by client 2026-11-17: ONLY 6% service charge, VAT charged separately (not included in the 6%).
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import Button from '../components/Button.astro';
 import Pic from '../components/Pic.astro';
 import CtaBand from '../components/CtaBand.astro';
-import { CTA } from '../data/site';
+import { CTA, SITE } from '../data/site';
+const F = SITE.feePercent, V = SITE.vatRate;
+const ex = 1000, exFee = ex * F / 100, exVat = Math.round(exFee * V) / 100;
+const eur = (n: number) => '€' + n.toLocaleString('en-IE', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
 ---
 <Base
-  title="Our Fees for Irish Tax Refund Claims"
-  description="TaxRoots' fee is agreed in writing before we start. Revenue pays your refund straight to you and we invoice afterwards. See how the fee works."
+  title="Our Fees: Only 6% Service Charge | TaxRoots"
+  description="TaxRoots charges only a 6% service charge (plus VAT), payable after Revenue pays your refund into your own account. No refund, no fee. Work out your fee here."
 >
   <PageHero
-    title="One clear fee. Agreed before we start."
+    title="Only 6% service charge. No refund, no fee."
     tag="Fees"
     crumbs={[{ label: 'Fees' }]}
-    lede="Our fee is a percentage of the refund we secure for you. You’ll see it in writing in your engagement letter before we do any work, and if there’s no refund, there’s no fee."
+    lede={SITE.feeLine}
   >
-    <div class="btns"><Button href={CTA.href} variant="green">{CTA.label}</Button><Button href="#calculator" variant="ghost">How our fee works</Button></div>
+    <div class="btns"><Button href={CTA.href} variant="green">{CTA.label}</Button><Button href="#calculator" variant="ghost">Work out your fee</Button></div>
   </PageHero>
 
   <section class="sec-s fe-top">
     <div class="wrap">
       <div class="fe-trio stg">
-        <div class="fe-t fe-t1"><p class="fe-k">Agreed upfront</p><p>Our fee is <strong>a percentage of the refund</strong> we secure, agreed with you in writing before we start any work.</p></div>
-        <div class="fe-t fe-t2"><p class="fe-k">No refund, no fee</p><p>If we don’t find you a refund, you pay nothing. No sign-up charge, no hidden extras.</p></div>
-        <div class="fe-t fe-t3"><p class="fe-k">Paid to you, invoiced after</p><p>Revenue pays your refund directly into your own bank account. Then we send our invoice.</p></div>
+        <div class="fe-t fe-t1"><p class="fe-k">Only {F}%</p><p>Our service charge is <strong>{F}% of the refund</strong> Revenue pays you. VAT is charged separately and is not included in the {F}%.</p></div>
+        <div class="fe-t fe-t2"><p class="fe-k">No refund, no fee</p><p>If you don’t get a refund, you pay nothing. No sign-up charge, no hidden extras.</p></div>
+        <div class="fe-t fe-t3"><p class="fe-k">Payable after your refund</p><p>Revenue pays your refund directly into your own account. Our {F}% is payable only after you receive it.</p></div>
       </div>
     </div>
   </section>
@@ -40,7 +43,7 @@ import { CTA } from '../data/site';
       <ol class="fe-steps stg">
         <li><span>1</span><div><h3>Revenue confirms your refund</h3><p>You get a Statement of Liability, usually about five days after we file.</p></div></li>
         <li><span>2</span><div><h3>The money lands in your account</h3><p>Revenue usually pays within three to five working days, or by cheque if it has no bank account for you.</p></div></li>
-        <li><span>3</span><div><h3>We send our invoice</h3><p>For the fee agreed in your engagement letter, which also sets out how and when to pay.</p></div></li>
+        <li><span>3</span><div><h3>We send our invoice</h3><p>For our {F}% service charge plus VAT, payable only after you have received your refund.</p></div></li>
       </ol>
     </div>
   </section>
@@ -50,17 +53,23 @@ import { CTA } from '../data/site';
       <div class="fe-calc-copy">
         <p class="tag rv">How it’s worked out</p>
         <h2 class="split">Your refund, our fee, what you keep</h2>
-        <p class="rv">Revenue pays your whole refund to you. Our fee is a percentage of that refund, and you see the percentage in writing before we start, so you know exactly what you keep before you agree to anything.</p>
+        <p class="rv">Revenue pays your whole refund into your own account. Our service charge is <strong>{F}% of that refund</strong>. VAT at the standard Irish rate ({V}%) is added to the service charge; it is not included in the {F}%.</p>
+        <p class="rv fe-ex"><strong>Worked example:</strong> a {eur(ex)} refund means a {F}% service charge of {eur(exFee)}, plus {eur(exVat)} VAT, so {eur(exFee + exVat)} in total. You keep {eur(ex - exFee - exVat)}.</p>
         <p class="note rv"><strong>No refund, no fee.</strong> If Revenue doesn’t pay you anything, you pay us nothing.</p>
       </div>
-      <div class="card fe-calc rv rv-s">
-        <p class="fe-lab">Your refund</p>
-        <p class="fe-big">Paid to you</p>
+      <div class="card fe-calc rv rv-s" data-calc data-fee={F} data-vat={V}>
+        <label class="fe-lab" for="fe-r">If your refund is</label>
+        <output class="fe-big" for="fe-r" data-out="refund">{eur(ex)}</output>
+        <input id="fe-r" type="range" min="100" max="5000" step="50" value={ex} aria-describedby="fe-note" />
+        <div class="fe-hint muted"><span>€100</span><span>€5,000</span></div>
+        <div class="fe-bar" aria-hidden="true"><span class="fe-bar-keep" data-bar="keep" style={`flex:${ex - exFee - exVat}`}></span><span class="fe-bar-fee" data-bar="fee" style={`flex:${exFee + exVat}`}></span></div>
         <dl class="fe-res">
-          <div><dt>Our fee</dt><dd>Agreed upfront</dd></div>
-          <div class="fe-keep"><dt>You keep</dt><dd>The rest</dd></div>
+          <div><dt>Service charge ({F}%)</dt><dd data-out="fee">{eur(exFee)}</dd></div>
+          <div><dt>VAT ({V}%)</dt><dd data-out="vat">{eur(exVat)}</dd></div>
+          <div><dt>Total fee</dt><dd data-out="total">{eur(exFee + exVat)}</dd></div>
+          <div class="fe-keep"><dt>You keep</dt><dd data-out="keep">{eur(ex - exFee - exVat)}</dd></div>
         </dl>
-        <p class="muted fe-small">Our fee is set out in your engagement letter before we start. If there is no refund, the fee is €0.</p>
+        <p id="fe-note" class="muted fe-small">Example figures only. Your refund is paid by Revenue straight to you; our fee is payable only after you receive it. If there is no refund, the fee is €0.</p>
       </div>
     </div>
   </section>
@@ -118,6 +127,7 @@ import { CTA } from '../data/site';
   .fe-res dd{margin:4px 0 0;font:600 1.6rem/1.2 var(--f-display);color:var(--indigo);font-variant-numeric:tabular-nums}
   .fe-res .fe-keep{background:var(--green-50)}
   .fe-res .fe-keep dd{color:var(--green-ink)}
+  .fe-ex{background:#fff;border-radius:var(--r-md);padding:14px 18px;border-left:4px solid var(--green)}
   .fe-small{font-size:var(--fs-xs);margin:var(--s4) 0 0}
 
   .fe-diy{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(32px,5vw,96px);align-items:center}
@@ -128,5 +138,23 @@ import { CTA } from '../data/site';
   @media (max-width:900px){
     .fe-trio,.fe-pay-in,.fe-calc-in,.fe-diy{grid-template-columns:1fr}
   }
-  @media (max-width:420px){.fe-res{grid-template-columns:1fr}}
+  @media (max-width:340px){.fe-res{grid-template-columns:1fr}}
 </style>
+
+<script>
+  const box = document.querySelector<HTMLElement>('[data-calc]');
+  if (box) {
+    const F = Number(box.dataset.fee), V = Number(box.dataset.vat);
+    const r = box.querySelector<HTMLInputElement>('input[type=range]')!;
+    const out = (k: string) => box.querySelector<HTMLElement>(`[data-out="${k}"]`)!;
+    const bar = (k: string) => box.querySelector<HTMLElement>(`[data-bar="${k}"]`)!;
+    const eur = (n: number) => '€' + n.toLocaleString('en-IE', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
+    const upd = () => {
+      const v = Number(r.value), fee = Math.round(v * F) / 100, vat = Math.round(fee * V) / 100, tot = Math.round((fee + vat) * 100) / 100, keep = Math.round((v - tot) * 100) / 100;
+      out('refund').textContent = eur(v); out('fee').textContent = eur(fee); out('vat').textContent = eur(vat); out('total').textContent = eur(tot); out('keep').textContent = eur(keep);
+      bar('keep').style.flex = String(keep); bar('fee').style.flex = String(tot);
+      r.style.setProperty('--p', `${((v - Number(r.min)) / (Number(r.max) - Number(r.min))) * 100}%`);
+    };
+    r.addEventListener('input', upd); upd();
+  }
+</script>

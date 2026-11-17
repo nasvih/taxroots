@@ -16,7 +16,7 @@ const id = 'lf-' + Math.random().toString(36).slice(2, 7);
   </div>
   <div class="row">
     <div class="field"><label for={`${id}-p`}>Phone <span class="opt">(optional)</span></label><input id={`${id}-p`} name="phone" type="tel" autocomplete="tel" inputmode="tel" /></div>
-    <div class="field"><label for={`${id}-s`}>What would you like to claim?</label>
+    <div class="field"><label for={`${id}-s`}>What can we help with?</label>
       <select id={`${id}-s`} name="service">
         <option value="">Not sure — please check everything</option>
         {SERVICE_LINKS.map((s) => <option value={s.label} selected={s.label === service}>{s.label}</option>)}

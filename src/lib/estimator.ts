@@ -39,8 +39,8 @@ export const ESTIMATOR = {
     ageCouple: 490,
   },
   spcccExtraBand: 4000, // SPCCC adds €4,000 to the standard rate band
-  feePercent: null as number | null, // CONFIRM with owner; null = no fee line shown
-  feeVat: false, // CONFIRM
+  feePercent: 6 as number | null, // client confirmed 2026-11-17 (SITE.feePercent); null = no fee line shown
+  feeVat: true, // VAT charged separately, not included in the 6%
   // Flat Rate Expenses (CONTENT.md 2.14, Revenue list [S21]); € per year, same 2020–2026 unless a table is given.
   fre: [
     { id: 'nurse-supply-launder', label: 'Nurse: supply and launder own uniforms', amount: 733 },

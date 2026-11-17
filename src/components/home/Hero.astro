@@ -1,13 +1,13 @@
 ---
 import Button from '../Button.astro';
 import { CTA, SITE } from '../../data/site';
-const trust = ['Fee agreed upfront', 'No refund, no fee', 'Refund paid directly to you', 'We never ask for your myAccount password', `Irish company, CRO ${SITE.cro}`];
+const trust = ['Only 6% service charge', 'No refund, no fee', 'Refund paid directly to you', 'We never ask for your myAccount password', `Irish company, CRO ${SITE.cro}`];
 ---
 <section class="hero" aria-labelledby="hero-h">
   <div class="wrap hero-in">
     <div class="say">
       <p class="tag rv">Irish tax refunds · PAYE</p>
-      <h1 id="hero-h" class="split"><span class="l1">Paid too much tax?</span> <span class="hl">Get more back.</span></h1>
+      <h1 id="hero-h" class="split"><span class="l1">Paid too much tax?</span> <span class="hl">Get More Back.</span></h1>
       <p class="lede rv" data-delay="350">We review up to four years of your PAYE tax record, find the credits and reliefs you missed, and claim them for you. Revenue pays your refund straight into your own bank account.</p>
       <div class="btns rv" data-delay="500">
         <Button href={CTA.href} variant="green">{CTA.label}</Button>

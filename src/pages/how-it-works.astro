@@ -16,7 +16,7 @@ const STEPS = [
     n: '01', title: 'Tell us about you',
     photo: 'hero-woman-laptop-home.jpg', alt: 'Young woman smiling while working on her laptop at home beside a houseplant',
     text: 'Fill in our short online form: your name, PPSN (Personal Public Service Number), contact details, and the costs you’ve had, like rent, medical bills, college fees or working from home. Ballpark figures are fine. It only takes a few minutes.',
-    you: ['Answer a few questions about your work, costs and family', 'Agree our fee in writing before we start'],
+    you: ['Answer a few questions about your work, costs and family', 'Agree our 6% service charge in writing before we start'],
     we: ['Never ask for your myAccount password', 'Flag the credits and reliefs worth checking'],
   },
   {
@@ -36,8 +36,8 @@ const STEPS = [
   {
     n: '04', title: 'Revenue pays you directly',
     photo: 'hero-woman-smiling-phone.jpg', alt: 'Young woman in glasses smiling as she reads good news on her phone',
-    text: 'Refunds go straight from Revenue into the bank account on your Revenue record, usually within three to five working days of the Statement of Liability. We then send you our invoice for the fee you agreed at the start. No refund, no fee.',
-    you: ['Check the bank account on your Revenue record is up to date', 'Pay our agreed fee once the refund is confirmed'],
+    text: 'Refunds go straight from Revenue into the bank account on your Revenue record, usually within three to five working days of the Statement of Liability. Only then is our 6% service charge (plus VAT) payable. No refund, no fee.',
+    you: ['Check the bank account on your Revenue record is up to date', 'Pay our 6% service charge (plus VAT) once you have received the refund'],
     we: ['Send you a plain-English summary of each year', 'Invoice only if you get money back'],
   },
 ];
@@ -59,7 +59,7 @@ const NEVER = [
 const faq = [
   { q: 'Will you need my myAccount password?', a: 'No, never. Revenue advises against sharing it, and we don’t need it. You approve our agent request inside your own myAccount.' },
   { q: 'How does my refund get paid?', a: 'Revenue pays it straight into the bank account on your Revenue record, or by cheque if there’s no account. Since the start of 2026, refunds can’t be paid to an agent’s account.' },
-  { q: 'When do I pay your fee?', a: 'After Revenue confirms your refund, we send you an invoice for the agreed fee. How and when to pay is agreed with you in writing before we start any work.' },
+  { q: 'When do I pay your fee?', a: 'Only after you receive your refund. Our 6% service charge (plus VAT, which is not included in the 6%) is then payable. How to pay is set out in your engagement letter.' },
   { q: 'How long does it take?', a: 'We start as soon as you approve the agent link and keep you updated at each step. Revenue typically issues a Statement of Liability about five days after filing and pays within three to five working days.' },
   { q: 'What if I owe tax instead?', a: 'Sometimes a review shows an underpayment, for example from a second job or extra income. We check first and tell you before filing. Revenue usually collects underpayments by reducing your tax credits over up to four years.' },
   { q: 'What if I change my mind?', a: 'You can cancel within 14 days of signing up, and you can remove us as your agent in myAccount at any time.' },
@@ -170,7 +170,7 @@ const howTo = {
             <h3>What it means for you</h3>
             <ul class="checks">
               <li>Revenue pays your refund into your own bank account.</li>
-              <li>We invoice our agreed fee afterwards. No refund, no fee.</li>
+              <li>Our 6% service charge (plus VAT) is payable afterwards. No refund, no fee.</li>
               <li>You can remove us as your agent in myAccount at any time.</li>
               <li>You stay responsible for what’s claimed, so we show you everything first, and we keep the paperwork for six years.</li>
             </ul>

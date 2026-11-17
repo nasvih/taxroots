@@ -1,7 +1,8 @@
 ---
 import Logo from './Logo.astro';
 import Button from './Button.astro';
-import { SITE, FOOTER, SERVICE_LINKS, CTA } from '../data/site';
+import { SITE, FOOTER, SERVICE_LINKS, CTA, OFFICES } from '../data/site';
+const svc = ['paye-tax-review', 'rent-tax-credit', 'medical-expenses', 'personal-tax-returns', 'company-registration', 'payroll-paye', 'vat-rct'].map((s) => SERVICE_LINKS.find((l) => l.href === `/services/${s}/`)!);
 const year = new Date().getFullYear();
 ---
 <footer class="ftr">
@@ -19,7 +20,7 @@ const year = new Date().getFullYear();
         <div class="cols">
           <div>
             <h3>Services</h3>
-            <ul>{SERVICE_LINKS.slice(0, 7).map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+            <ul>{svc.map((l) => <li><a href={l.href}>{l.label}</a></li>)}<li><a href="/services/">All services</a></li></ul>
           </div>
           <div>
             <h3>Company</h3>
@@ -35,6 +36,15 @@ const year = new Date().getFullYear();
             </ul>
           </div>
         </div>
+      </div>
+      <div class="offs">
+        {OFFICES.map((o) => (
+          <div class="off">
+            <h3>{o.name}</h3>
+            {o.address && <p>{o.address}</p>}
+            <p><a href={o.phoneHref}>{o.phone}</a>{o.contactName && <span class="who"> · Contact: {o.contactName}{o.contactPhone && <>, <a href={`tel:${o.contactPhone.replace(/[^+\d]/g, '')}`}>{o.contactPhone}</a></>}</span>}</p>
+          </div>
+        ))}
       </div>
       <div class="bottom">
         <Logo tone="dark" height={36} />
@@ -73,10 +83,15 @@ const year = new Date().getFullYear();
   .cols li{margin-bottom:10px}
   .cols a,.lg a{color:var(--on-dark-2);text-decoration:none;font-size:var(--fs-sm);transition:color .2s}
   .cols a:hover,.lg a:hover{color:var(--green-bright)}
+  .offs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s5) clamp(24px,4vw,64px);padding:var(--s6) 0;border-bottom:1px solid var(--line-dark)}
+  .off h3{font:600 1rem/1.2 var(--f-display);color:#fff;margin-bottom:8px}
+  .off p{margin:0 0 4px;font-size:var(--fs-sm);color:var(--on-dark-2)}
+  .off a{color:#fff;text-decoration:none}
+  .off a:hover{color:var(--green-bright)}
   .bottom{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:var(--s6);padding-top:var(--s6)}
   .legal{margin:0;font-size:var(--fs-xs);line-height:1.6;color:var(--on-dark-2);max-width:70ch}
   .lg{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:var(--fs-xs)}
   .lg span{color:var(--on-dark-2)}
   @media (max-width:1000px){.top{grid-template-columns:1fr}.bottom{grid-template-columns:1fr}}
-  @media (max-width:560px){.cols{grid-template-columns:1fr 1fr}}
+  @media (max-width:560px){.cols{grid-template-columns:1fr 1fr}.offs{grid-template-columns:1fr}}
 </style>

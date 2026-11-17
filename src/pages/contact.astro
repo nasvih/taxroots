@@ -3,19 +3,18 @@ import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import LeadForm from '../components/LeadForm.astro';
 import Pic from '../components/Pic.astro';
-import { SITE } from '../data/site';
+import { SITE, OFFICES } from '../data/site';
 
 const details = [
   { k: 'Email', v: SITE.email, href: `mailto:${SITE.email}` },
   { k: 'Phone', v: SITE.phone, href: SITE.phoneHref },
   { k: 'WhatsApp', v: 'Message us on WhatsApp', href: SITE.whatsapp },
   { k: 'Hours', v: SITE.hours },
-  { k: 'Registered office', v: SITE.address },
 ];
 const next = [
   { t: 'We reply', d: 'As soon as we can, by email or phone, whichever you prefer.' },
   { t: 'A quick chat', d: 'We ask a few questions about your work, rent, health costs and family over the last four years.' },
-  { t: 'Your engagement letter', d: 'If we can help, you get our fee and terms in writing before any work starts.' },
+  { t: 'Your engagement letter', d: 'If we can help, you get our terms in writing before any work starts. For refunds, that’s only a 6% service charge.' },
   { t: 'You approve our link', d: 'You approve our agent request inside your own myAccount. We never need your password.' },
 ];
 ---
@@ -48,6 +47,24 @@ const next = [
         </div>
         <Pic src="about-consultant-video-call.jpg" alt="Friendly advisor in glasses smiling at the camera during a video call" ratio="3/2" reveal="rv-c" class="ct-pic" />
       </aside>
+    </div>
+  </section>
+
+  <section class="sec-s ct-off-sec" aria-labelledby="off-h">
+    <div class="wrap">
+      <h2 id="off-h" class="split ct-nh">Our offices</h2>
+      <div class="ct-offs stg">
+        {OFFICES.map((o, i) => (
+          <article class:list={['ct-off', { 'ct-off-g': i % 2 === 1 }]}>
+            <h3>{o.name}</h3>
+            {o.address && <p class="ct-off-addr">{o.address}{i === 0 && <span class="ct-off-reg">Registered office</span>}</p>}
+            <dl>
+              <div><dt>Phone</dt><dd><a href={o.phoneHref}>{o.phone}</a></dd></div>
+              {o.contactName && <div><dt>Contact</dt><dd>{o.contactName}{o.contactPhone && <> · <a href={`tel:${o.contactPhone.replace(/[^+\d]/g, '')}`}>{o.contactPhone}</a></>}</dd></div>}
+            </dl>
+          </article>
+        ))}
+      </div>
     </div>
   </section>
 
@@ -86,7 +103,19 @@ const next = [
   .ct-next span{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--indigo);color:#fff;font:600 1.05rem/1 var(--f-display);margin-bottom:var(--s4)}
   .ct-next h3{font-size:1.2rem;margin-bottom:8px}
   .ct-next p{margin:0}
+  .ct-offs{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5)}
+  .ct-off{border-radius:var(--r-xl);padding:clamp(24px,3vw,40px);background:var(--indigo-50);border:1px solid var(--indigo-100)}
+  .ct-off-g{background:var(--green-50);border-color:var(--green-100)}
+  .ct-off h3{font-size:var(--fs-h3);color:var(--indigo);margin-bottom:var(--s4)}
+  .ct-off-g h3{color:var(--green-ink)}
+  .ct-off-addr{margin:0 0 var(--s4);font-weight:500;color:var(--ink);max-width:34ch}
+  .ct-off-reg{display:block;margin-top:6px;font-size:var(--fs-xs);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+  .ct-off dl{margin:0;display:grid;gap:10px}
+  .ct-off dl>div{display:flex;gap:12px;align-items:baseline}
+  .ct-off dt{min-width:64px;font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3)}
+  .ct-off dd{margin:0;font-weight:600;color:var(--ink)}
+  .ct-off a{color:var(--indigo);text-underline-offset:4px;text-decoration-color:var(--green)}
   .ct-note{margin-top:var(--s7);max-width:72ch}
   @media (max-width:980px){.ct{grid-template-columns:1fr}.ct-next{grid-template-columns:1fr 1fr}}
-  @media (max-width:560px){.ct-next{grid-template-columns:1fr}}
+  @media (max-width:560px){.ct-next,.ct-offs{grid-template-columns:1fr}}
 </style>

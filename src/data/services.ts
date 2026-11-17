@@ -4,7 +4,7 @@
 // Strings in canClaim / goodToKnow / faqs[].a may contain simple inline HTML (<strong>, <em>).
 import { SERVICE_LINKS } from './site';
 
-export type ServiceGroup = 'Everyone' | 'Your costs' | 'Your family' | 'Property';
+export type ServiceGroup = 'Everyone' | 'Your costs' | 'Your family' | 'Property' | 'Business' | 'Mortgage & pension';
 
 export interface FigureTable {
   caption: string;
@@ -17,6 +17,10 @@ export interface FigureTable {
 
 export interface Service {
   slug: string;
+  /** 'refund' (default): tax-refund claim, 6% service charge. 'support': business/admin service, quoted before we start. */
+  kind?: 'refund' | 'support';
+  /** regulatory disclaimer shown prominently on the page */
+  regNote?: string;
   title: string;
   /** label used in nav + lead form (from SERVICE_LINKS) */
   label: string;
@@ -86,6 +90,16 @@ export const SOURCES: Record<string, { label: string; url: string }> = {
   S43: { label: 'Revenue: Rent-a-Room Relief', url: 'https://www.revenue.ie/en/personal-tax-credits-reliefs-and-exemptions/land-and-property/rent-a-room-relief/index.aspx' },
   S44: { label: 'Revenue: pension contribution relief limits', url: 'https://www.revenue.ie/en/jobs-and-pensions/pension/relief/tax-relief-limits.aspx' },
   S45: { label: 'Revenue: Mortgage Interest Tax Credit', url: 'https://www.revenue.ie/en/personal-tax-credits-reliefs-and-exemptions/land-and-property/mortgage/how-much-can-you-claim.aspx' },
+  S60: { label: 'Companies Registration Office (CRO)', url: 'https://cro.ie/' },
+  S62: { label: 'Irish Statute Book: Companies Act 2014', url: 'https://www.irishstatutebook.ie/eli/2014/act/38/enacted/en/html' },
+  S63: { label: 'Register of Beneficial Ownership (RBO)', url: 'https://rbo.gov.ie/' },
+  S64: { label: 'Revenue: becoming an employer and ongoing obligations', url: 'https://www.revenue.ie/en/employing-people/becoming-an-employer-and-ongoing-obligations/index.aspx' },
+  S65: { label: 'Revenue: PAYE Modernisation', url: 'https://www.revenue.ie/en/employing-people/paye-modernisation/index.aspx' },
+  S66: { label: 'Revenue: VAT registration', url: 'https://www.revenue.ie/en/vat/vat-registration/index.aspx' },
+  S67: { label: 'Revenue: VAT rates', url: 'https://www.revenue.ie/en/vat/vat-rates/index.aspx' },
+  S68: { label: 'Revenue: Relevant Contracts Tax (RCT)', url: 'https://www.revenue.ie/en/self-assessment-and-self-employment/rct/index.aspx' },
+  S69: { label: 'Central Bank of Ireland: register of authorised firms', url: 'https://registers.centralbank.ie/' },
+  S70: { label: 'Revenue: filing your tax return (self-assessment)', url: 'https://www.revenue.ie/en/self-assessment-and-self-employment/filing-your-tax-return/index.aspx' },
   S51: { label: 'Revenue press release, 11 March 2026 (2025 PAYE returns)', url: 'https://www.revenue.ie/en/corporate/press-office/press-releases/2026/pr-031126-paye-filing.aspx' },
 };
 
@@ -94,6 +108,8 @@ export const GROUPS: { name: ServiceGroup; id: string; blurb: string; photo: str
   { name: 'Your costs', id: 'your-costs', blurb: 'Money you already spent on rent, health, college fees, work clothes or home bills. Part of it can come back to you.', photo: 'service-rent-apartment-keys.jpg', alt: 'Hand holding a set of house keys in front of an apartment door' },
   { name: 'Your family', id: 'your-family', blurb: 'Marriage, children, caring for someone, turning 65. Life changes often mean credits that never made it onto your record.', photo: 'service-parent-child.jpg', alt: 'Father and young daughter washing up together at the kitchen sink' },
   { name: 'Property', id: 'property', blurb: 'Letting a flat or a spare room alongside your job? Declare it properly and claim the relief that goes with it.', photo: 'service-irish-terrace-house.jpg', alt: 'Brick terraced houses in Sandymount, Dublin, with red and blue Georgian-style front doors' },
+  { name: 'Business', id: 'business', blurb: 'Running a company or employing people? Company set-up and changes, CRO and RBO filings, payroll, VAT and RCT, handled on time.', photo: 'hero-cafe-remote-worker.jpg', alt: 'Woman smiling as she works on a laptop in a bright café' },
+  { name: 'Mortgage & pension', id: 'mortgage-pension', blurb: 'Paperwork and tax relief around your home and your pension. We prepare and check; regulated advice comes from authorised firms.', photo: 'service-elderly-couple.jpg', alt: 'Older couple sharing an affectionate moment on a windswept beach' },
 ];
 
 const label = (slug: string) => SERVICE_LINKS.find((s) => s.href === `/services/${slug}/`)?.label ?? slug;
@@ -255,6 +271,57 @@ const raw: Omit<Service, 'label'>[] = [
     alt: 'Empty airport departure lounge looking out at a plane on the stand',
     sources: ['S35', 'S36', 'S1', 'S39'],
     related: ['emergency-tax-refund', 'paye-tax-review', 'rent-tax-credit'],
+  },
+  {
+    slug: 'personal-tax-returns',
+    kind: 'support',
+    title: 'Personal Tax Returns',
+    group: 'Everyone',
+    summary: 'Your Income Tax Return filed properly, whether that is a PAYE return in myAccount or a Form 11 through ROS, with every relief you are entitled to claimed.',
+    metaTitle: 'Personal Tax Returns in Ireland: Form 11 & Form 12',
+    metaDescription: 'We prepare and file your Irish Income Tax Return (Form 11 on ROS or the PAYE return in myAccount) and claim the tax credits, reliefs and refunds you are due.',
+    whoFor: [
+      'PAYE workers with side income, such as rent, a small business or foreign income',
+      'Self-employed people and company directors who must file a Form 11',
+      'Anyone who wants to claim tax relief or a refund through a full return',
+    ],
+    canClaim: [
+      '<strong>PAYE Income Tax Return (Form 12).</strong> Filed in myAccount by PAYE workers to declare small amounts of other income and claim credits and reliefs. It is also how most refunds for past years are claimed.',
+      '<strong>Form 11 (self-assessment).</strong> Filed through ROS if you are self-employed, a proprietary company director, or your net non-PAYE income is over €5,000 (or gross over €30,000). The return and any tax due are normally due by 31 October after the end of the tax year, with a later date for people who pay and file online through ROS.',
+      '<strong>Tax relief and refund claims.</strong> Whichever return you file, we claim every credit and relief that applies, for every year still open, so you <strong>get more back</strong> where you are owed it.',
+    ],
+    tables: [
+      {
+        caption: 'Which return do you need?',
+        head: ['Your situation', 'Return'],
+        rows: [
+          ['PAYE only, claiming credits or a refund', 'PAYE Income Tax Return in myAccount'],
+          ['PAYE with net other income under €5,000', 'PAYE Income Tax Return in myAccount'],
+          ['Self-employed or proprietary director', 'Form 11 through ROS'],
+          ['Net non-PAYE income over €5,000, or gross over €30,000', 'Form 11 through ROS'],
+        ],
+      },
+    ],
+    keyFigure: { value: '€5,000', label: 'net non-PAYE income above which you usually need to file a Form 11', year: 'Or gross over €30,000' },
+    chip: 'Form 11, Form 12, refund claims',
+    goodToKnow: [
+      'Where your return produces a refund, our fee is the same 6% service charge (plus VAT), paid only after you receive the refund. No refund, no fee. Returns that do not produce a refund are quoted in writing before we start.',
+    ],
+    documents: [
+      'Your PPSN, and ROS access if you already have it',
+      'Employment Detail Summary for the year',
+      'Records of any other income: rent, self-employment, foreign income, dividends',
+      'Receipts for costs you want to claim: health, rent, tuition, pension contributions',
+    ],
+    faqs: [
+      { q: 'Do I have to file a return if I am only on PAYE?', a: 'Usually not, but filing the PAYE return in myAccount is how you claim credits and reliefs you missed, and get a refund for past years.' },
+      { q: 'When is the Form 11 due?', a: 'Normally by 31 October after the end of the tax year. If you pay and file online through ROS, Revenue usually gives a later date in November.' },
+      { q: 'How much does it cost?', a: 'Where the return produces a refund, our 6% service charge (plus VAT) applies, paid after you receive it. Other returns are quoted in writing before we start.' },
+    ],
+    photo: 'hero-couple-kitchen-paperwork.jpg',
+    alt: 'Couple laughing together while reading a letter at their kitchen counter',
+    sources: ['S37', 'S70', 'S7'],
+    related: ['paye-tax-review', 'landlord-tax-returns', 'pension-support'],
   },
 
   // ───────────────────────── Your costs ─────────────────────────
@@ -867,6 +934,322 @@ const raw: Omit<Service, 'label'>[] = [
     alt: 'Brick terraced houses in Sandymount, Dublin, with red and blue Georgian-style front doors',
     sources: ['S41', 'S42', 'S43', 'S37', 'S6'],
     related: ['paye-tax-review', 'rent-tax-credit', 'marriage-joint-assessment'],
+  },
+
+  // ───────────────────────── Business ─────────────────────────
+  {
+    slug: 'company-registration',
+    kind: 'support',
+    title: 'Company Registration & Changes',
+    group: 'Business',
+    summary: 'Setting up an Irish limited company, or changing its directors, secretary, registered office or trading name? We prepare and file it with the CRO.',
+    metaTitle: 'Company Registration & CRO Changes in Ireland',
+    metaDescription: 'Register a private limited company in Ireland, or change directors, company secretary, registered office or trading name. We prepare and file the CRO forms.',
+    whoFor: [
+      'People starting a business who want to trade as a private company limited by shares (LTD)',
+      'Companies appointing or removing a director or company secretary',
+      'Companies moving their registered office address',
+      'Businesses trading under a name that is not their registered company name',
+    ],
+    canClaim: [
+      '<strong>Incorporation.</strong> We prepare the incorporation application (Form A1) and the company constitution, and file them with the Companies Registration Office (CRO). An Irish company needs at least one director, a company secretary (who cannot be the sole director), and a registered office in Ireland. At least one director must normally be resident in the EEA; if not, the company needs a non-resident director bond.',
+      '<strong>Director and secretary changes.</strong> We file Form B10 when a director or company secretary is appointed, resigns or changes details.',
+      '<strong>Registered office changes.</strong> We file Form B2 when the company moves its registered office.',
+      '<strong>Trading names.</strong> If the company trades under a name other than its registered name, the business name must be registered with the CRO. We prepare and file it (Form RBN1B for a company).',
+      'After incorporation we can also register the company for tax with Revenue, and set up its first Register of Beneficial Ownership filing.',
+    ],
+    tables: [
+      {
+        caption: 'Common CRO forms and time limits',
+        head: ['Change', 'CRO form', 'Time limit'],
+        rows: [
+          ['New private company limited by shares', 'A1', 'Before trading as a company'],
+          ['Director or secretary appointed, resigned or details changed', 'B10', 'Within 14 days'],
+          ['Registered office moved', 'B2', 'Within 15 days'],
+          ['Trading under a business name (company)', 'RBN1B', 'Within one month of starting to use it'],
+        ],
+        note: 'Time limits are set by the Companies Act 2014 and the Registration of Business Names Act 1963. Late or missed filings can lead to fines and, for annual returns, late filing penalties.',
+      },
+    ],
+    keyFigure: { value: '14', label: 'days to tell the CRO about a new, departing or changed director or company secretary (Form B10)', year: 'Companies Act 2014' },
+    chip: 'Incorporation, B10, B2, RBN1B',
+    documents: [
+      'Proposed company name, and any trading name',
+      'Name, address, date of birth, nationality and occupation of each director and the secretary',
+      'Each director\'s PPSN (or an identity number if they have none)',
+      'Registered office address in Ireland',
+      'Shareholders and how many shares each will hold',
+      'What the company will do (its main activity)',
+    ],
+    faqs: [
+      { q: 'Can I be the only director and also the secretary?', a: 'No. A company with one director needs a different person (or a firm) as company secretary.' },
+      { q: 'Do I need a director who lives in Ireland?', a: 'At least one director must normally be resident in the EEA. If none is, the company usually needs a non-resident director bond. We will tell you which applies before we file.' },
+      { q: 'Is a business name the same as a company name?', a: 'No. Your company name is registered on incorporation. If you trade under any other name, that business name must be registered with the CRO separately.' },
+      { q: 'What does it cost?', a: 'It depends on the job and any CRO fees. We tell you the full cost in writing before any work starts.' },
+    ],
+    photo: 'about-coffee-notebook.jpg',
+    alt: 'Open notebook and pen beside a latte on a wooden desk',
+    sources: ['S60', 'S62'],
+    related: ['cro-rbo-compliance', 'vat-rct', 'payroll-paye'],
+  },
+  {
+    slug: 'cro-rbo-compliance',
+    kind: 'support',
+    title: 'CRO & RBO Compliance',
+    group: 'Business',
+    summary: 'Annual returns to the CRO and beneficial ownership filings with the RBO, filed on time so your company stays in good standing.',
+    metaTitle: 'CRO Annual Returns & RBO Filings in Ireland',
+    metaDescription: 'We file your company\'s CRO annual return (Form B1) and Register of Beneficial Ownership (RBO) submissions on time, so you avoid late filing penalties.',
+    whoFor: [
+      'Irish limited companies with an annual return coming up',
+      'New companies that have not yet filed with the Register of Beneficial Ownership',
+      'Companies whose shareholders or controllers have changed',
+      'Directors who want one place to keep track of company deadlines',
+    ],
+    canClaim: [
+      '<strong>CRO annual return (Form B1).</strong> Every Irish company must file an annual return made up to its Annual Return Date (ARD), with its financial statements attached. It must reach the CRO within 56 days of the ARD.',
+      '<strong>Register of Beneficial Ownership (RBO).</strong> Companies must file details of their beneficial owners, generally anyone who owns or controls more than 25% of the company, with the RBO. A new company has five months from incorporation to file, and changes must be filed within 14 days.',
+      'We keep a note of your deadlines, prepare the filings, and send them to you to check and sign before anything is submitted.',
+    ],
+    tables: [
+      {
+        caption: 'Key company filing deadlines',
+        head: ['Filing', 'Where', 'Deadline'],
+        rows: [
+          ['Annual return (B1) with financial statements', 'CRO', 'Within 56 days of the Annual Return Date'],
+          ['First beneficial ownership filing', 'RBO', 'Within 5 months of incorporation'],
+          ['Change in beneficial owners', 'RBO', 'Within 14 days of the change'],
+        ],
+        note: 'A late annual return brings a late filing penalty and can cost a small company its audit exemption for two years.',
+      },
+    ],
+    keyFigure: { value: '56', label: 'days after your Annual Return Date to file the B1 annual return with the CRO', year: 'Every year' },
+    chip: 'B1 annual return + RBO',
+    documents: [
+      'Your company number and Annual Return Date',
+      'Financial statements for the year (or your accountant\'s contact)',
+      'Current directors, secretary and shareholders',
+      'Details of each beneficial owner, including their PPSN',
+    ],
+    faqs: [
+      { q: 'What happens if the annual return is late?', a: 'The CRO charges a late filing penalty that grows each day the return is late, and a small company can lose its audit exemption for two years. In serious cases a company can be struck off.' },
+      { q: 'Who counts as a beneficial owner?', a: 'Generally anyone who owns or controls more than 25% of the company. If nobody does, the directors or senior managers are recorded instead.' },
+      { q: 'Do you prepare the financial statements too?', a: 'Tell us what you need. We tell you upfront what we can take on and the cost, in writing, before any work starts.' },
+    ],
+    photo: 'blog-calendar-deadline.jpg',
+    alt: 'Desk calendar open beside a potted plant',
+    sources: ['S60', 'S63'],
+    related: ['company-registration', 'payroll-paye', 'vat-rct'],
+  },
+  {
+    slug: 'payroll-paye',
+    kind: 'support',
+    title: 'Payroll & PAYE',
+    group: 'Business',
+    summary: 'Payroll run for you: PAYE, USC and PRSI worked out, payslips issued and every payroll submission made to Revenue on time.',
+    metaTitle: 'Payroll & PAYE Services for Irish Employers',
+    metaDescription: 'Payroll processing for Irish employers: payslips, PAYE, USC and PRSI, real-time payroll submissions to Revenue through ROS, and employer registration.',
+    whoFor: [
+      'Small businesses taking on their first employee',
+      'Employers who want payroll handled each week or month',
+      'Directors paying themselves a salary through their own company',
+    ],
+    canClaim: [
+      '<strong>Employer registration.</strong> Before you pay anyone, the business must be registered with Revenue as an employer. We can do this for you through ROS.',
+      '<strong>Payroll processing.</strong> Each pay period we apply the employee\'s Revenue Payroll Notification (RPN), work out income tax, USC and PRSI, and issue payslips.',
+      '<strong>PAYE administration.</strong> Since PAYE Modernisation in 2019, every payroll must be reported to Revenue in real time, on or before each pay date. We make those submissions, check the monthly statement Revenue sends you, and remind you when payment is due.',
+      'We also handle starters and leavers, and the auto-enrolment pension deductions that apply to eligible employees from 2026.',
+    ],
+    tables: [
+      {
+        caption: 'Your payroll calendar',
+        head: ['What', 'When'],
+        rows: [
+          ['Payroll submission to Revenue', 'On or before each pay date'],
+          ['Payslip to each employee', 'Every pay day'],
+          ['Monthly statement from Revenue', 'After the end of each month'],
+          ['Pay PAYE, USC and PRSI to Revenue', 'By the 23rd of the next month (ROS)'],
+        ],
+      },
+    ],
+    keyFigure: { value: '23', label: 'day of the following month by which PAYE, USC and PRSI are paid to Revenue through ROS', year: 'Every month' },
+    chip: 'Payslips + real-time PAYE',
+    documents: [
+      'Your employer registration number, or company details so we can register you',
+      'Each employee\'s PPSN, start date and pay rate',
+      'Hours, overtime and any bonuses for each pay period',
+      'Your ROS access, or permission for us to act as your agent',
+    ],
+    faqs: [
+      { q: 'What if an employee has no PPSN yet?', a: 'Revenue cannot issue an RPN without one, so they will pay emergency tax until it is sorted. We help them register the job and get it fixed.' },
+      { q: 'Do I pay Revenue every month?', a: 'Most employers pay monthly, by the 23rd of the following month when filing through ROS. Some small employers can agree to pay quarterly or by direct debit.' },
+      { q: 'What does it cost?', a: 'It depends on how many people you pay and how often. We tell you the cost in writing before any work starts.' },
+    ],
+    photo: 'service-hospitality-barista.jpg',
+    alt: 'Smiling barista in a beanie working behind a café counter',
+    sources: ['S64', 'S65'],
+    related: ['vat-rct', 'company-registration', 'cro-rbo-compliance'],
+  },
+  {
+    slug: 'vat-rct',
+    kind: 'support',
+    title: 'VAT & RCT',
+    group: 'Business',
+    summary: 'VAT registration and returns, and Relevant Contracts Tax for construction, forestry and meat-processing contracts, all filed through ROS.',
+    metaTitle: 'VAT Returns & RCT Services in Ireland',
+    metaDescription: 'VAT registration and returns, plus Relevant Contracts Tax (RCT) registration, contract and payment notifications for contractors in Ireland, filed on ROS.',
+    whoFor: [
+      'Businesses close to, or over, the VAT registration thresholds',
+      'VAT-registered businesses that want their returns done for them',
+      'Principal contractors and subcontractors in construction, forestry or meat processing',
+    ],
+    canClaim: [
+      '<strong>VAT registration.</strong> You must register once your turnover goes over the threshold: €42,500 for services or €85,000 for goods in a 12-month period (from 1 January 2025). You can also choose to register below it, for example to reclaim VAT on start-up costs.',
+      '<strong>VAT returns.</strong> We prepare and file your VAT returns through ROS, usually every two months, and your annual Return of Trading Details. The standard rate of VAT is 23%.',
+      '<strong>Relevant Contracts Tax (RCT).</strong> RCT is a withholding tax on payments by principal contractors to subcontractors in construction, forestry and meat processing. Principal contractors must notify Revenue of each contract and each payment through ROS before paying, and deduct tax at 0%, 20% or 35%. We register you and keep the notifications and returns up to date.',
+    ],
+    tables: [
+      {
+        caption: 'VAT registration thresholds (12-month turnover, from 1 January 2025)',
+        head: ['You supply', 'Threshold'],
+        rows: [
+          ['Services', '€42,500'],
+          ['Goods', '€85,000'],
+        ],
+      },
+      {
+        caption: 'RCT deduction rates',
+        head: ['Subcontractor', 'Rate'],
+        rows: [
+          ['Registered for tax, good compliance record', '0%'],
+          ['Registered for tax, standard rate', '20%'],
+          ['Not registered, or poor compliance record', '35%'],
+        ],
+        note: 'Revenue sets the rate for each subcontractor. RCT filing and payments are made online through ROS.',
+      },
+    ],
+    keyFigure: { value: '23%', label: 'standard rate of VAT in Ireland', year: '2026' },
+    chip: 'VAT returns + eRCT',
+    documents: [
+      'Sales and purchase invoices for the period',
+      'Your VAT and tax registration numbers (or company details to register)',
+      'For RCT: each contract and subcontractor, and each payment you are about to make',
+      'Your ROS access, or permission for us to act as your agent',
+    ],
+    faqs: [
+      { q: 'I am under the threshold. Should I register anyway?', a: 'Sometimes it makes sense, for example if most of your customers are VAT-registered businesses or you have large start-up costs. We talk it through with you first.' },
+      { q: 'Does RCT apply to me?', a: 'Only to payments under relevant contracts in construction, forestry or meat processing. If you pay subcontractors in those sectors, it almost certainly does.' },
+      { q: 'What does it cost?', a: 'It depends on the number of returns and transactions. We tell you the cost in writing before any work starts.' },
+    ],
+    photo: 'service-construction-worker.jpg',
+    alt: 'Construction worker in hard hat and hi-vis cutting timber on site',
+    sources: ['S66', 'S67', 'S68'],
+    related: ['payroll-paye', 'company-registration', 'cro-rbo-compliance'],
+  },
+
+  // ───────────────────────── Mortgage & pension ─────────────────────────
+  {
+    slug: 'mortgage-finance-support',
+    kind: 'support',
+    title: 'Mortgage Finance Support',
+    group: 'Mortgage & pension',
+    summary: 'Help getting your mortgage application ready: your tax and income paperwork gathered, organised and sent where it needs to go.',
+    metaTitle: 'Mortgage Application Support in Ireland',
+    metaDescription: 'We help prepare your Irish mortgage application paperwork: tax balancing statements, payslips and documents. Regulated advice comes from an authorised provider.',
+    regNote: 'We do not provide regulated mortgage advice; where needed we refer you to an authorised provider.',
+    whoFor: [
+      'First-time buyers getting ready to apply for a mortgage',
+      'Self-employed people who need their tax records in order for a lender',
+      'Anyone switching mortgage who wants the paperwork handled',
+    ],
+    canClaim: [
+      '<strong>Application preparation.</strong> Lenders want proof of income and tax. We gather what they ask for, such as your Revenue Employment Detail Summaries, tax balancing statements and, if you are self-employed, filed returns, and check it is complete and consistent.',
+      '<strong>Documentation coordination.</strong> We keep one organised file and send it to your broker or lender, so nothing gets lost between them, you and Revenue.',
+      '<strong>Referrals and admin support.</strong> When you need advice on which mortgage to choose, we refer you to an authorised mortgage intermediary or lender. You can check any firm on the Central Bank of Ireland register.',
+      'We also check you are claiming the tax credits that come with your home, such as the Mortgage Interest Tax Credit for 2023, 2024 and 2025.',
+    ],
+    tables: [
+      {
+        caption: 'Mortgage Interest Tax Credit, maximum (€)',
+        head: ['Tax year', 'Maximum credit'],
+        rows: [
+          ['2023', '1,250'],
+          ['2024', '1,250'],
+          ['2025', '1,250'],
+          ['2026', '625'],
+        ],
+        note: 'For qualifying mortgages on your home, based on the increase in interest paid compared with 2022.',
+      },
+    ],
+    keyFigure: { value: '€1,250', label: 'maximum Mortgage Interest Tax Credit for each of 2023, 2024 and 2025', year: '2023 to 2025' },
+    chip: 'Paperwork, not advice',
+    documents: [
+      'Recent payslips and your Employment Detail Summaries',
+      'Bank statements the lender asks for',
+      'If self-employed: your last two filed tax returns and accounts',
+      'Photo ID and proof of address',
+      'Your broker or lender\'s contact details, if you have one',
+    ],
+    faqs: [
+      { q: 'Will you tell me which mortgage to take?', a: 'No. We do not provide regulated mortgage advice. Where you need advice, we refer you to an authorised provider.' },
+      { q: 'Can you get my tax records ready for the lender?', a: 'Yes. That is most of what we do here: getting your Revenue documents in order so the application is not held up.' },
+      { q: 'What does it cost?', a: 'We tell you the cost in writing before any work starts.' },
+    ],
+    photo: 'service-rent-apartment-keys.jpg',
+    alt: 'Hand holding a set of house keys in front of an apartment door',
+    sources: ['S45', 'S69'],
+    related: ['personal-tax-returns', 'pension-support', 'paye-tax-review'],
+  },
+  {
+    slug: 'pension-support',
+    kind: 'support',
+    title: 'Pension Support',
+    group: 'Mortgage & pension',
+    summary: 'Make sure you get the tax relief on what you pay into a pension, and get pointed to the right authorised firm when you need advice.',
+    metaTitle: 'Pension Tax Relief Support in Ireland',
+    metaDescription: 'Check you get tax relief on pension contributions in Ireland: age-related limits, PRSAs and AVCs. Regulated pension advice comes only from authorised firms.',
+    regNote: 'Regulated pension or investment advice is provided only by appropriately authorised firms.',
+    whoFor: [
+      'Employees paying into a workplace pension, PRSA or AVCs',
+      'Self-employed people paying into their own pension',
+      'Anyone unsure whether they got tax relief on their contributions',
+    ],
+    canClaim: [
+      '<strong>Pension information.</strong> We explain in plain language how tax relief on pension contributions works, and what the age-related limits mean for you.',
+      '<strong>Contribution tax-relief reviews.</strong> Contributions get income tax relief at your highest rate, up to a percentage of your earnings that rises with age, on earnings of up to €115,000 a year. Contributions taken through payroll usually get relief automatically, but personal PRSA or AVC payments often have to be claimed. We check what was claimed and claim what was missed.',
+      '<strong>Administration and referrals.</strong> We help with the paperwork and, when you need advice on choosing or changing a pension, refer you to an appropriately authorised firm.',
+    ],
+    tables: [
+      {
+        caption: 'Age-related limits for tax relief on pension contributions',
+        head: ['Your age', 'Maximum % of earnings'],
+        rows: [
+          ['Under 30', '15%'],
+          ['30 to 39', '20%'],
+          ['40 to 49', '25%'],
+          ['50 to 54', '30%'],
+          ['55 to 59', '35%'],
+          ['60 or over', '40%'],
+        ],
+        note: 'Earnings taken into account are capped at €115,000 a year. Employer contributions do not count towards your limit.',
+      },
+    ],
+    keyFigure: { value: '40%', label: 'of earnings you can get tax relief on at age 60 or over (15% under 30)', year: 'Earnings cap €115,000' },
+    chip: 'Relief checked, advice referred',
+    documents: [
+      'Your annual pension statement or PRSA/AVC certificates',
+      'Receipts for any personal contributions you paid',
+      'Your PPSN and date of birth',
+    ],
+    faqs: [
+      { q: 'Will you recommend a pension fund?', a: 'No. Regulated pension or investment advice is provided only by appropriately authorised firms, and we refer you to one when you need it.' },
+      { q: 'I pay into a PRSA myself. Do I get relief automatically?', a: 'Not always. Payments you make yourself, outside payroll, often have to be claimed from Revenue. We check that for every open year.' },
+      { q: 'What does it cost?', a: 'If the review gets you a tax refund, our 6% service charge applies, plus VAT. No refund, no fee. Any other work is quoted in writing before we start.' },
+    ],
+    photo: 'blog-savings-jar.jpg',
+    alt: 'Euro cent coins spilling out of a glass savings jar',
+    sources: ['S44', 'S69'],
+    related: ['paye-tax-review', 'mortgage-finance-support', 'personal-tax-returns'],
   },
 ];
 

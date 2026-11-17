@@ -1,11 +1,12 @@
 ---
-// Full logo (icon + TaxRoots wordmark + GET MORE BACK). tone: 'color' (white bg) | 'dark' (indigo bg) | 'white'
-const { tone = 'color', height = 44, tagline = true, class: cls = '' } = Astro.props;
-// Source art is the client's logo (files/brand), aspect 674:149.
-const w = Math.round(height * 674 / 149);
+// Full logo (icon + TaxRoots wordmark + GET MORE BACK), client's official vector (files/brand/TaxRoots-logo-official.pdf, 2026-11-17).
+// tone: 'color' (white bg) | 'dark' (indigo bg) | 'white'
+const { tone = 'color', height = 44, class: cls = '' } = Astro.props;
+// Source art viewBox 716:168.
+const w = Math.round(height * 716 / 168);
 ---
-<a href="/" class:list={['logo', cls]} aria-label="TaxRoots — home">
-  <img src={`/brand/logo-${tone}.webp`} width={w} height={height} alt="TaxRoots — Get more back" style={`height:${height}px;width:auto`} decoding="async" fetchpriority="high" />
+<a href="/" class:list={['logo', cls]} aria-label="TaxRoots: Get More Back. Home">
+  <img src={`/brand/logo-${tone}.svg`} width={w} height={height} alt="TaxRoots: Get More Back" style={`height:${height}px;width:auto`} decoding="async" fetchpriority="high" />
 </a>
 <style>
   .logo{display:inline-flex;align-items:center;text-decoration:none;flex:none}

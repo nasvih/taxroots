@@ -13,7 +13,7 @@ import Footer from '../components/Footer.astro';
 import { SITE } from '../data/site';
 
 interface Props { title: string; description: string; image?: string; imageAlt?: string; noindex?: boolean; jsonld?: object | object[]; article?: { published: string; modified?: string; section?: string } }
-const { title, description, image = '/og.jpg', imageAlt = 'TaxRoots: Irish tax refunds. Get more back.', noindex = false, jsonld, article } = Astro.props;
+const { title, description, image = '/og.jpg', imageAlt = 'TaxRoots: Get More Back. Irish tax refunds.', noindex = false, jsonld, article } = Astro.props;
 const ogImage = new URL(image, SITE.url).href;
 const isDefaultOg = image === '/og.jpg';
 const canonical = new URL(Astro.url.pathname, SITE.url).href;

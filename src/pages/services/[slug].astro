@@ -17,12 +17,13 @@ const related = s.related.map(getService).filter(Boolean) as Service[];
 const url = `${SITE.url}/services/${s.slug}/`;
 // Guides whose main topic is this service (first `related` slug).
 const guides = ARTICLES.filter((a) => a.related[0] === s.slug);
+const support = s.kind === 'support';
 const ld = {
   '@context': 'https://schema.org', '@type': 'Service',
   name: s.title, serviceType: s.title, description: s.summary, url,
   provider: { '@id': `${SITE.url}/#org` },
   areaServed: { '@type': 'Country', name: 'Ireland', identifier: 'IE' },
-  audience: { '@type': 'Audience', audienceType: 'PAYE taxpayers in Ireland' },
+  audience: { '@type': 'Audience', audienceType: s.group === 'Business' ? 'Businesses and company directors in Ireland' : s.kind === 'support' ? 'Individuals in Ireland' : 'PAYE taxpayers in Ireland' },
 };
 ---
 <Base title={s.metaTitle} description={s.metaDescription} jsonld={ld}>
@@ -33,11 +34,18 @@ const ld = {
     lede={s.summary}
     photo={s.photo}
     alt={s.alt}>
-    <div class="btns">
-      <Button href={CTA.href} variant="green">{CTA.label}</Button>
-      <Button href="/refund-estimator/" variant="ghost">Estimate my refund</Button>
-    </div>
-    <p class="hero-dl"><span aria-hidden="true"></span>2022 refunds close on 31 December 2026</p>
+    {support ? (
+      <div class="btns">
+        <Button href="#start" variant="green">Talk to us</Button>
+        <Button href={SITE.whatsapp} variant="ghost">WhatsApp us</Button>
+      </div>
+    ) : (
+      <div class="btns">
+        <Button href={CTA.href} variant="green">{CTA.label}</Button>
+        <Button href="/refund-estimator/" variant="ghost">Estimate my refund</Button>
+      </div>
+    )}
+    {s.regNote ? <p class="hero-reg"><strong>Please note:</strong> {s.regNote}</p> : !support && <p class="hero-dl"><span aria-hidden="true"></span>2022 refunds close on 31 December 2026</p>}
   </PageHero>
 
   <!-- Who it's for + key figure -->
@@ -60,8 +68,9 @@ const ld = {
   <section class="sec bg-2 claim" aria-labelledby="claim-h">
     <div class="wrap claim-in">
       <div class="claim-copy">
-        <h2 id="claim-h" class="split">What you can claim</h2>
+        <h2 id="claim-h" class="split">{support ? 'What we do' : 'What you can claim'}</h2>
         <div class="claim-text">{s.canClaim.map((p) => <p class="rv" set:html={p} />)}</div>
+        {s.regNote && <p class="note reg rv"><strong>Regulated advice.</strong> {s.regNote}</p>}
         {s.goodToKnow && (
           <div class="gtk rv">
             <h3>Good to know</h3>
@@ -90,9 +99,15 @@ const ld = {
       <div class="docs-side">
         <div class="pic sd-clip docs-pic"><img src="/photos/about-laptop-documents.jpg" alt="Laptop on a bright white desk with documents and a coffee cup" loading="lazy" /></div>
         <ul class="promise stg">
-          <li><strong>We never ask for your myAccount password.</strong> You approve our link to your record in your own myAccount.</li>
-          <li><strong>Your refund goes straight to you.</strong> Revenue pays it into your own bank account.</li>
-          <li><strong>No surprises.</strong> We tell you what we've found before anything is filed.</li>
+          {support ? (<>
+            <li><strong>The cost in writing first.</strong> We tell you what the work costs before we start.</li>
+            <li><strong>You see it before it's filed.</strong> Nothing goes to Revenue, the CRO or the RBO until you have checked it.</li>
+            <li><strong>We never ask for your passwords.</strong> You give us access the official way, as your agent.</li>
+          </>) : (<>
+            <li><strong>We never ask for your myAccount password.</strong> You approve our link to your record in your own myAccount.</li>
+            <li><strong>Your refund goes straight to you.</strong> Revenue pays it into your own bank account.</li>
+            <li><strong>No surprises.</strong> We tell you what we've found before anything is filed.</li>
+          </>)}
         </ul>
       </div>
     </div>
@@ -113,7 +128,7 @@ const ld = {
   <!-- Related -->
   <section class="sec-s rel" aria-labelledby="rel-h">
     <div class="wrap">
-      <h2 id="rel-h" class="split rel-h">Often claimed together</h2>
+      <h2 id="rel-h" class="split rel-h">{support ? 'Often used together' : 'Often claimed together'}</h2>
       <ul class="rel-list stg">
         {related.map((r) => (
           <li>
@@ -129,7 +144,7 @@ const ld = {
           </li>
         ))}
       </ul>
-      <p class="rel-all rv"><a class="link" href="/services/">See all 14 services</a></p>
+      <p class="rel-all rv"><a class="link" href="/services/">See all {SERVICES.length} services</a></p>
     </div>
   </section>
 
@@ -138,13 +153,23 @@ const ld = {
     <div class="wrap">
       <div class="lead-card band sd-band">
         <div class="lead-copy">
-          <h2 id="lead-h" class="split">Start your claim</h2>
-          <p class="lede rv">Tell us a little about you and we'll start with {s.slug === 'paye-tax-review' ? 'your 4-Year PAYE Tax Review' : `your ${s.title} claim`}, then check the rest of your record while we're at it.</p>
-          <ul class="checks rv">
-            <li>{SITE.fee}</li>
-            <li>We check every open year, 2022 to 2025</li>
-            <li>TaxRoots is independent and not part of Revenue</li>
-          </ul>
+          {support ? (<>
+            <h2 id="lead-h" class="split">Tell us what you need</h2>
+            <p class="lede rv">Leave your details and we'll come back to you about <strong>{s.title}</strong>, with the cost in writing before any work starts.</p>
+            <ul class="checks rv">
+              <li>Cost agreed in writing before we start</li>
+              {s.regNote ? <li>{s.regNote}</li> : <li>{SITE.legal}, CRO {SITE.cro}</li>}
+              <li>TaxRoots is independent and not part of Revenue</li>
+            </ul>
+          </>) : (<>
+            <h2 id="lead-h" class="split">Start your claim</h2>
+            <p class="lede rv">Tell us a little about you and we'll start with {s.slug === 'paye-tax-review' ? 'your 4-Year PAYE Tax Review' : `your ${s.title} claim`}, then check the rest of your record while we're at it.</p>
+            <ul class="checks rv">
+              <li>{SITE.fee}</li>
+              <li>We check every open year, 2022 to 2025</li>
+              <li>TaxRoots is independent and not part of Revenue</li>
+            </ul>
+          </>)}
         </div>
         <div class="lead-form"><LeadForm source={`service:${s.slug}`} service={s.label} compact /></div>
       </div>
@@ -165,6 +190,8 @@ const ld = {
 
 <style>
   .hero-dl{display:inline-flex;align-items:center;gap:10px;margin:var(--s5) 0 0;font-size:var(--fs-sm);font-weight:600;color:var(--ink)}
+  .hero-reg{margin:var(--s5) 0 0;max-width:52ch;padding:12px 16px;border-radius:var(--r-md);background:var(--indigo-50);border-left:4px solid var(--indigo);font-size:var(--fs-sm);color:var(--ink)}
+  .reg{margin-top:var(--s5)}
   .hero-dl span{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 5px var(--green-50)}
 
   .who-in{display:grid;grid-template-columns:1.3fr .9fr;gap:clamp(32px,6vw,96px);align-items:center}

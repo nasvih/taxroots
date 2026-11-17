@@ -763,7 +763,10 @@ const faq = [
     const feeEl = $('[data-fee]');
     if (ESTIMATOR.feePercent != null && res.totalCents > 0) {
       const feeE = Math.round(euroTotal * ESTIMATOR.feePercent) / 100;
-      feeEl.textContent = `Our fee (${ESTIMATOR.feePercent}%${ESTIMATOR.feeVat ? ' + VAT' : ''}): €${feeE.toLocaleString('en-IE')} · You’d keep: €${(euroTotal - feeE).toLocaleString('en-IE')}. No refund, no fee.`;
+      const vatE = ESTIMATOR.feeVat ? Math.round(feeE * 23) / 100 : 0;
+      const keepE = Math.round((euroTotal - feeE - vatE) * 100) / 100;
+      const f2 = (n: number) => n.toLocaleString('en-IE', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
+      feeEl.textContent = `Our ${ESTIMATOR.feePercent}% service charge: €${f2(feeE)}${ESTIMATOR.feeVat ? ` + €${f2(vatE)} VAT (23%)` : ''} · You’d keep about €${f2(keepE)}. Payable only after you receive your refund. No refund, no fee.`;
       feeEl.hidden = false;
     } else feeEl.hidden = true;
 
