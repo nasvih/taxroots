@@ -33,6 +33,7 @@ const year = new Date().getFullYear();
             <ul>
               <li><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
               <li><a href={SITE.phoneHref}>{SITE.phone}</a></li>
+              <li><a href="/contact/#offices">Cork &amp; Dublin offices</a></li>
             </ul>
           </div>
         </div>
@@ -42,12 +43,15 @@ const year = new Date().getFullYear();
           <div class="off">
             <h3>{o.name}</h3>
             {o.address && <p>{o.address}</p>}
-            <p><a href={o.phoneHref}>{o.phone}</a>{o.contactName && <span class="who"> · Contact: {o.contactName}{o.contactPhone && <>, <a href={`tel:${o.contactPhone.replace(/[^+\d]/g, '')}`}>{o.contactPhone}</a></>}</span>}</p>
+            <ul class="off-ph">
+              {o.phones.map((p) => <li><span>{p.label}</span><a href={p.href}>{p.number}</a></li>)}
+            </ul>
+            {o.contactName && <p class="who">Contact: {o.contactName}</p>}
           </div>
         ))}
       </div>
       <div class="bottom">
-        <Logo tone="dark" height={36} />
+        <Logo tone="dark" height={58} />
         <p class="legal">{SITE.legal} is a private company limited by shares, registered in Ireland. Company number (CRO) {SITE.cro}. {SITE.address}.<br />TaxRoots is an independent company, not part of or endorsed by the Revenue Commissioners. You can claim credits and reliefs yourself, free of charge, through Revenue's myAccount. Information on this site is general guidance, not advice on your own circumstances. Figures last checked 30 October 2026.</p>
         <ul class="lg">
           {FOOTER.legal.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
@@ -86,9 +90,15 @@ const year = new Date().getFullYear();
   .offs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s5) clamp(24px,4vw,64px);padding:var(--s6) 0;border-bottom:1px solid var(--line-dark)}
   .off h3{font:600 1rem/1.2 var(--f-display);color:#fff;margin-bottom:8px}
   .off p{margin:0 0 4px;font-size:var(--fs-sm);color:var(--on-dark-2)}
+  .off-ph{list-style:none;margin:6px 0 8px;padding:0;display:grid;gap:4px}
+  .off-ph li{display:grid;grid-template-columns:104px auto;justify-content:start;align-items:baseline;gap:10px;font-size:var(--fs-sm)}
+  .off-ph span{font-size:var(--fs-xs);letter-spacing:.06em;text-transform:uppercase;color:var(--on-dark-2)}
+  .off-ph a{font-weight:600}
+  .off .who{font-size:var(--fs-xs)}
   .off a{color:#fff;text-decoration:none}
   .off a:hover{color:var(--green-bright)}
-  .bottom{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:var(--s6);padding-top:var(--s6)}
+  .bottom{display:grid;grid-template-columns:auto 1fr;align-items:start;gap:var(--s5) var(--s7);padding-top:var(--s6)}
+  .bottom .lg{grid-column:1/-1}
   .legal{margin:0;font-size:var(--fs-xs);line-height:1.6;color:var(--on-dark-2);max-width:70ch}
   .lg{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:var(--fs-xs)}
   .lg span{color:var(--on-dark-2)}

@@ -5,6 +5,7 @@ import PageHero from '../components/PageHero.astro';
 import Button from '../components/Button.astro';
 import Pic from '../components/Pic.astro';
 import CtaBand from '../components/CtaBand.astro';
+import FeeBadge from '../components/FeeBadge.astro';
 import { CTA, SITE } from '../data/site';
 const F = SITE.feePercent, V = SITE.vatRate;
 const ex = 1000, exFee = ex * F / 100, exVat = Math.round(exFee * V) / 100;
@@ -20,13 +21,14 @@ const eur = (n: number) => '€' + n.toLocaleString('en-IE', { minimumFractionDi
     crumbs={[{ label: 'Fees' }]}
     lede={SITE.feeLine}
   >
+    <FeeBadge class="fe-hero-badge" />
     <div class="btns"><Button href={CTA.href} variant="green">{CTA.label}</Button><Button href="#calculator" variant="ghost">Work out your fee</Button></div>
   </PageHero>
 
   <section class="sec-s fe-top">
     <div class="wrap">
       <div class="fe-trio stg">
-        <div class="fe-t fe-t1"><p class="fe-k">Only {F}%</p><p>Our service charge is <strong>{F}% of the refund</strong> Revenue pays you. VAT is charged separately and is not included in the {F}%.</p></div>
+        <div class="fe-t fe-t1"><p class="fe-k"><span class="fe-6">{F}<i>%</i></span>Only {F}%, that’s it</p><p>Our service charge is <strong>{F}% of the refund</strong> Revenue pays you. VAT is charged separately and is not included in the {F}%.</p></div>
         <div class="fe-t fe-t2"><p class="fe-k">No refund, no fee</p><p>If you don’t get a refund, you pay nothing. No sign-up charge, no hidden extras.</p></div>
         <div class="fe-t fe-t3"><p class="fe-k">Payable after your refund</p><p>Revenue pays your refund directly into your own account. Our {F}% is payable only after you receive it.</p></div>
       </div>
@@ -64,7 +66,7 @@ const eur = (n: number) => '€' + n.toLocaleString('en-IE', { minimumFractionDi
         <div class="fe-hint muted"><span>€100</span><span>€5,000</span></div>
         <div class="fe-bar" aria-hidden="true"><span class="fe-bar-keep" data-bar="keep" style={`flex:${ex - exFee - exVat}`}></span><span class="fe-bar-fee" data-bar="fee" style={`flex:${exFee + exVat}`}></span></div>
         <dl class="fe-res">
-          <div><dt>Service charge ({F}%)</dt><dd data-out="fee">{eur(exFee)}</dd></div>
+          <div class="fe-svc"><dt>Service charge <span class="fe-chip">{F}%</span></dt><dd data-out="fee">{eur(exFee)}</dd></div>
           <div><dt>VAT ({V}%)</dt><dd data-out="vat">{eur(exVat)}</dd></div>
           <div><dt>Total fee</dt><dd data-out="total">{eur(exFee + exVat)}</dd></div>
           <div class="fe-keep"><dt>You keep</dt><dd data-out="keep">{eur(ex - exFee - exVat)}</dd></div>
@@ -95,6 +97,9 @@ const eur = (n: number) => '€' + n.toLocaleString('en-IE', { minimumFractionDi
   .fe-t p{margin:0}
   .fe-k{font:600 clamp(1.3rem,1.1rem + .8vw,1.8rem)/1.15 var(--f-display);margin-bottom:var(--s4)!important;letter-spacing:-.02em}
   .fe-t1{background:var(--indigo);color:var(--on-dark-2)}.fe-t1 .fe-k,.fe-t1 strong{color:#fff}
+  .fe-6{display:block;font:700 clamp(5rem,3.6rem + 5vw,8rem)/.85 var(--f-display);color:var(--green-bright);letter-spacing:-.06em;margin-bottom:10px}
+  .fe-6 i{font-style:normal;font-size:.5em;margin-left:3px}
+  :global(.fe-hero-badge){margin-bottom:var(--s6)}
   .fe-t2{background:var(--green-50)}.fe-t2 .fe-k{color:var(--green-ink)}
   .fe-t3{background:var(--indigo-50)}.fe-t3 .fe-k{color:var(--indigo)}
 
@@ -126,6 +131,8 @@ const eur = (n: number) => '€' + n.toLocaleString('en-IE', { minimumFractionDi
   .fe-res dt{font-size:var(--fs-sm);color:var(--ink-2)}
   .fe-res dd{margin:4px 0 0;font:600 1.6rem/1.2 var(--f-display);color:var(--indigo);font-variant-numeric:tabular-nums}
   .fe-res .fe-keep{background:var(--green-50)}
+  .fe-res .fe-svc{background:var(--indigo-50);outline:2px solid var(--indigo-100)}
+  .fe-chip{display:inline-block;margin-left:4px;padding:3px 9px;border-radius:var(--r-pill);background:var(--green);color:#fff;font:700 .85rem/1.1 var(--f-display)}
   .fe-res .fe-keep dd{color:var(--green-ink)}
   .fe-ex{background:#fff;border-radius:var(--r-md);padding:14px 18px;border-left:4px solid var(--green)}
   .fe-small{font-size:var(--fs-xs);margin:var(--s4) 0 0}

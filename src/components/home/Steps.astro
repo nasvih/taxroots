@@ -1,5 +1,6 @@
 ---
 import Button from '../Button.astro';
+import FeeBadge from '../FeeBadge.astro';
 import { CTA } from '../../data/site';
 const steps = [
   { t: 'Tell us about you', d: 'Fill in our short online form with your name, PPSN, contact details and the costs you’ve had, such as rent, medical bills, college fees or working from home. We never ask for your myAccount password.', p: 'about-coffee-notebook.jpg', alt: 'Open notebook and pen beside a latte on a wooden desk' },
@@ -27,6 +28,7 @@ const steps = [
             <span class="no">Step {i + 1}<i>/4</i></span>
             <h3>{s.t}</h3>
             <p>{s.d}</p>
+            {i === 3 && <FeeBadge tone="dark" size="md" class="st-fee" text="Only after the refund is in your account." />}
           </div>
           <figure class="pic"><img src={`/photos/${s.p}`} alt={s.alt} loading="lazy" /></figure>
         </li>
@@ -54,6 +56,7 @@ const steps = [
   .c3 .no{color:var(--green-bright)}.c3 .no i{color:var(--on-dark-2)}
   h3{font-size:clamp(1.5rem,1.1rem + 1.3vw,2.25rem);letter-spacing:-.025em;margin-bottom:14px}
   .txt p{margin:0;font-size:var(--fs-sm);line-height:1.6}
+  .txt :global(.st-fee){margin-top:18px;align-self:flex-start}
   .pic{margin:0;border-radius:var(--r-lg);min-height:100%}
   @media (max-width:1000px){
     .steps-in{grid-template-columns:1fr}

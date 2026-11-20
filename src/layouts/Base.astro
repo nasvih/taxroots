@@ -10,7 +10,7 @@ import '../styles/base.css';
 import '../styles/motion.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { SITE } from '../data/site';
+import { SITE, OFFICES } from '../data/site';
 
 interface Props { title: string; description: string; image?: string; imageAlt?: string; noindex?: boolean; jsonld?: object | object[]; article?: { published: string; modified?: string; section?: string } }
 const { title, description, image = '/og.jpg', imageAlt = 'TaxRoots: Get More Back. Irish tax refunds.', noindex = false, jsonld, article } = Astro.props;
@@ -26,8 +26,11 @@ const org = {
   image: `${SITE.url}/og.jpg`, slogan: SITE.tagline,
   description: 'TaxRoots Limited is an Irish company, based in Co. Cork, that helps PAYE workers in Ireland claim back overpaid tax from Revenue: tax credits, reliefs and refunds for every open year.',
   telephone: SITE.phone.replace(/\s/g, ''),
-  contactPoint: { '@type': 'ContactPoint', telephone: SITE.phone.replace(/\s/g, ''), contactType: 'customer service', areaServed: 'IE', availableLanguage: 'en' },
-  areaServed: { '@type': 'Country', name: 'Ireland', identifier: 'IE' },
+  contactPoint: [
+    { '@type': 'ContactPoint', telephone: SITE.phone.replace(/\s/g, ''), contactType: 'customer service', areaServed: 'IE', availableLanguage: 'en' },
+    ...OFFICES.flatMap((o) => o.phones.filter((p) => p.number !== SITE.phone).map((p) => ({ '@type': 'ContactPoint', name: `${o.name} (${p.label.toLowerCase()} line)`, telephone: p.number.replace(/\s/g, ''), contactType: 'customer service', areaServed: [{ '@type': 'City', name: o.city }, 'IE'], availableLanguage: 'en' }))),
+  ],
+  areaServed: [{ '@type': 'Country', name: 'Ireland', identifier: 'IE' }, ...OFFICES.map((o) => ({ '@type': 'City', name: o.city }))],
   address: { '@type': 'PostalAddress', streetAddress: '3 Willow Close, Bishops Island', addressLocality: 'Watergrasshill', addressRegion: 'Co. Cork', postalCode: 'T56 RF40', addressCountry: 'IE' },
   identifier: { '@type': 'PropertyValue', propertyID: 'CRO', value: SITE.cro }, foundingDate: SITE.incorporated,
   knowsAbout: ['PAYE tax refunds', 'Irish tax credits', 'Rent Tax Credit', 'Medical expenses tax relief', 'Remote Working Relief', 'Flat rate expenses', 'Tuition fees tax relief', 'Emergency tax'],

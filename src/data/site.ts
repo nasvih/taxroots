@@ -23,10 +23,14 @@ export const SITE = {
 };
 
 // Offices. Empty strings are hidden on the site (never shown as placeholders). See /CONFIRM.md.
-export type Office = { name: string; address: string; phone: string; phoneHref: string; contactName: string; contactPhone: string };
+// Each office lists the main line first, then its own secondary line (client 2026-11-20).
+export type Phone = { label: string; number: string; href: string };
+export type Office = { name: string; city: string; address: string; phones: Phone[]; contactName: string };
+const tel = (n: string) => 'tel:' + n.replace(/[^+\d]/g, '');
+const phone = (label: string, number: string): Phone => ({ label, number, href: tel(number) });
 export const OFFICES: Office[] = [
-  { name: 'Cork office', address: SITE.address, phone: SITE.phone, phoneHref: SITE.phoneHref, contactName: 'Jibin', contactPhone: '' },  // CONFIRM Jibin's direct number
-  { name: 'Dublin office', address: '', phone: SITE.phone, phoneHref: SITE.phoneHref, contactName: 'Sujir', contactPhone: '' },        // CONFIRM Dublin address + Sujir's direct number
+  { name: 'Cork office', city: 'Cork', address: SITE.address, phones: [phone('Main', SITE.phone), phone('Secondary', '+353 89 499 6722')], contactName: 'Jibin' },
+  { name: 'Dublin office', city: 'Dublin', address: '', phones: [phone('Main', SITE.phone), phone('Secondary', '+353 89 973 4131')], contactName: 'Sujir' },  // CONFIRM Dublin address
 ];
 
 export type NavLink = { label: string; href: string; desc?: string; group?: string };

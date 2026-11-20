@@ -1,0 +1,41 @@
+---
+// The "only 6%" callout (client 2026-11-20: highlight the 6% more). Reads SITE.feePercent, never hard-coded.
+// tone: 'light' (white card, on white/grey) | 'dark' (on indigo) | 'tint' (on green-50/indigo-50 cards)
+// size: 'lg' (hero, /fees) | 'md' (cards)
+import { SITE } from '../data/site';
+const { tone = 'light', size = 'lg', class: cls = '', title = `Only ${SITE.feePercent}% + VAT`, text = 'Paid only after you get your refund. No refund, no fee.', ...rest } = Astro.props;
+---
+<div class:list={['fee6', `fee6-${tone}`, `fee6-${size}`, cls]} {...rest}>
+  <span class="fee6-n" aria-hidden="true"><b>{SITE.feePercent}</b><i>%</i></span>
+  <span class="fee6-t"><strong>{title}</strong><span>{text}</span></span>
+</div>
+<style>
+  .fee6{display:inline-flex;align-items:center;gap:16px;padding:10px 22px 10px 10px;border-radius:var(--r-pill);background:#fff;border:1.5px solid var(--green-100);box-shadow:var(--sh-1);max-width:100%;text-align:left}
+  .fee6-n{position:relative;flex:none;display:flex;align-items:baseline;justify-content:center;width:76px;height:76px;border-radius:50%;background:var(--green);color:#fff;font-family:var(--f-display);letter-spacing:-.04em;line-height:76px}
+  .fee6-n b{font-weight:700;font-size:2.6rem;line-height:inherit}
+  .fee6-n i{font-style:normal;font-weight:600;font-size:1.3rem;margin-left:1px}
+  .fee6-n::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--green);opacity:0;animation:fee6-ring 2.8s var(--ease-out,ease-out) 1.2s infinite}
+  .fee6-t{display:grid;gap:3px;min-width:0}
+  .fee6-t strong{font:700 1.3rem/1.15 var(--f-display);color:var(--indigo);letter-spacing:-.02em}
+  .fee6-t span{font-size:var(--fs-sm);line-height:1.4;color:var(--ink-2)}
+  .fee6-md{gap:12px;padding:8px 18px 8px 8px}
+  .fee6-md .fee6-n{width:60px;height:60px;line-height:60px}
+  .fee6-md .fee6-n b{font-size:2rem}
+  .fee6-md .fee6-n i{font-size:1.05rem}
+  .fee6-md .fee6-t strong{font-size:1.1rem}
+  .fee6-md .fee6-t span{font-size:var(--fs-xs)}
+  .fee6-dark{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.22);box-shadow:none}
+  .fee6-dark .fee6-t strong{color:#fff}
+  .fee6-dark .fee6-t span{color:var(--on-dark-2)}
+  .fee6-dark .fee6-n::after{border-color:var(--green-bright)}
+  .fee6-tint{box-shadow:none;border-color:var(--green-100)}
+  @keyframes fee6-ring{0%{opacity:.7;transform:scale(.92)}70%,100%{opacity:0;transform:scale(1.25)}}
+  @media (prefers-reduced-motion:reduce){.fee6-n::after{animation:none}}
+  @media (max-width:420px){
+    .fee6{border-radius:var(--r-lg);padding:10px 14px 10px 10px;gap:12px}
+    .fee6-lg .fee6-n{width:64px;height:64px;line-height:64px}
+    .fee6-lg .fee6-n b{font-size:2.15rem}
+    .fee6-lg .fee6-t strong{font-size:1.12rem}
+    .fee6-t span{font-size:var(--fs-xs)}
+  }
+</style>

@@ -5,6 +5,7 @@ import Button from '../components/Button.astro';
 import Pic from '../components/Pic.astro';
 import Faq from '../components/Faq.astro';
 import CtaBand from '../components/CtaBand.astro';
+import FeeBadge from '../components/FeeBadge.astro';
 import { CTA } from '../data/site';
 import { ESTIMATOR, openYears, deadlineBanner, pick } from '../lib/estimator';
 
@@ -78,6 +79,7 @@ const faq = [
     <ul class="hero-points">
       <li>About two minutes</li><li>Nothing is sent to us</li><li>Rates last checked {fmtDate(ESTIMATOR.lastChecked)}</li>
     </ul>
+    {ESTIMATOR.feePercent != null && <FeeBadge size="md" class="est-fee" title={`Only ${ESTIMATOR.feePercent}% + VAT if you claim`} />}
   </PageHero>
 
   <section class="tool-sec bg-2" id="estimator" aria-label="Refund estimator">
@@ -313,7 +315,7 @@ const faq = [
               <p class="disc-in">{DISCLAIMER}</p>
               <div class="years" data-years-out></div>
               <p class="zero" data-zero hidden>We couldn’t estimate a refund from these answers, but there may be things this tool can’t see, like emergency tax or USC (Universal Social Charge). Want us to take a proper look? No refund, no fee.</p>
-              <p class="fee" data-fee hidden></p>
+              <p class="fee" data-fee data-pct={ESTIMATOR.feePercent ?? ''} hidden></p>
               <h3 class="cav-h">Good to know</h3>
               <ul class="cav">
                 <li>Credits can’t be more than the income tax you paid in a year, so we cap each year where we can.</li>
@@ -380,6 +382,7 @@ const faq = [
 </Base>
 
 <style>
+  :global(.est-fee){margin-top:var(--s5)}
   .hero-points{display:flex;flex-wrap:wrap;gap:10px;list-style:none;padding:0;margin:0}
   .hero-points li{padding:8px 14px;border-radius:var(--r-pill);background:var(--green-50);color:var(--green-ink);font:600 var(--fs-sm)/1.2 var(--f-body)}
   .tool-sec{padding-block:clamp(40px,5vw,80px)}
@@ -527,7 +530,9 @@ const faq = [
   .years :global(.yr.cur){background:var(--bg-2);border-style:dashed}
   .years :global(.yr .none){color:var(--ink-3);font-size:var(--fs-sm);margin:0}
   .zero{margin:0;padding:16px 18px;border-radius:var(--r-md);background:var(--green-50);color:var(--ink)}
-  .fee{margin:0;font-weight:600;color:var(--ink)}
+  .fee{margin:0;display:flex;align-items:center;gap:14px;padding:14px 18px 14px 14px;border-radius:var(--r-lg);background:var(--green-50);border:1.5px solid var(--green-100);font-weight:600;color:var(--ink);line-height:1.45}
+  .fee[hidden]{display:none}
+  .fee::before{content:attr(data-pct) "%";flex:none;display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:var(--green);color:#fff;font:700 1.45rem/1 var(--f-display);letter-spacing:-.03em}
   .cav-h{font-size:1.1rem;margin-top:8px}
   .cav{margin:0;padding-left:1.2em;display:grid;gap:6px;font-size:var(--fs-sm)}
   .cav li[hidden]{display:none}

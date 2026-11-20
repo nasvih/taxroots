@@ -4,7 +4,7 @@ import PageHero from '../components/PageHero.astro';
 import Button from '../components/Button.astro';
 import Pic from '../components/Pic.astro';
 import CtaBand from '../components/CtaBand.astro';
-import { SITE, CTA } from '../data/site';
+import { SITE, CTA, OFFICES } from '../data/site';
 
 const incorporated = new Date(SITE.incorporated).toLocaleDateString('en-IE', { day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -29,6 +29,7 @@ const facts: [string, string][] = [
   ['CRO number', SITE.cro],
   ['Incorporated', `${incorporated}, under the Companies Act 2014`],
   ['Registered office', SITE.address],
+  ...OFFICES.map((o): [string, string] => [o.name, o.phones.map((p) => `${p.number} (${p.label.toLowerCase()})`).join(', ')]),
 ];
 ---
 <Base
@@ -62,7 +63,7 @@ const facts: [string, string][] = [
     <div class="wrap ab-who-in">
       <h2 class="split">Who we are</h2>
       <div class="ab-who-copy">
-        <p class="lede rv">We’re an Irish company based in Watergrasshill, Co. Cork, incorporated on {incorporated}, and we help PAYE workers all over Ireland by phone, WhatsApp and online. We’re new, and we’d rather tell you that than dress it up.</p>
+        <p class="lede rv">We’re an Irish company with offices in Cork and Dublin, incorporated on {incorporated}, and we help PAYE workers all over Ireland by phone, WhatsApp and online. We’re new, and we’d rather tell you that than dress it up.</p>
         <p class="rv">What we offer is simple: someone who checks every open year and every relief that applies to you, does the Revenue paperwork, and keeps you informed until the money lands in your own account.</p>
         <p class="rv">You can claim all of this yourself, free of charge, through Revenue’s myAccount. Many people do. We’re here for everyone who would rather an expert took care of it, and wants to be sure nothing was missed.</p>
       </div>
