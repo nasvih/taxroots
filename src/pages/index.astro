@@ -7,14 +7,18 @@ import Deadline from '../components/home/Deadline.astro';
 import Ticker from '../components/home/Ticker.astro';
 import DidYouKnow from '../components/home/DidYouKnow.astro';
 import Services from '../components/home/Services.astro';
+import Claims from '../components/home/Claims.astro';
 import WhoWeHelp from '../components/home/WhoWeHelp.astro';
 import Steps from '../components/home/Steps.astro';
-import EstimatorTeaser from '../components/home/EstimatorTeaser.astro';
-import WhyUs from '../components/home/WhyUs.astro';
-import { SITE, OFFICES } from '../data/site';
+import Testimonials from '../components/home/Testimonials.astro';
+import { OFFICES, taxYears } from '../data/site';
+
+// Open years follow Revenue's four-year rule and roll over each 1 January (see the script below).
+const { current, oldest, newest } = taxYears();
+const yr = (k: 'oldest' | 'newest' | 'current', v: number) => `<span data-yr="${k}">${v}</span>`;
 
 const faqs = [
-  { q: 'How far back can I claim?', a: 'Four years. Right now that means 2022, 2023, 2024 and 2025. Claims for 2022 must be made by 31 December 2026, or Revenue can’t repay them.' },
+  { q: 'How far back can I claim?', a: `Four years. Right now that means ${yr('oldest', oldest)} to ${yr('newest', newest)}. Claims for ${yr('oldest', oldest)} must be made by 31 December ${yr('current', current)}, or Revenue can’t repay them.` },
   { q: 'Can’t I do this myself for free?', a: 'Yes. Revenue’s myAccount lets you claim credits and reliefs at no cost. We do the work for you, check every open year and every relief that applies, and deal with Revenue if questions come up.' },
   { q: 'Will you need my myAccount password?', a: 'No, never. Revenue advises against sharing it, and we don’t need it. You approve our agent request inside your own myAccount.' },
   { q: 'How does my refund get paid?', a: 'Revenue pays it straight into the bank account on your Revenue record, or by cheque if there’s no account. Since the start of 2026, refunds can’t be paid into an agent’s account.' },
@@ -29,19 +33,17 @@ const faqs = [
   <Hero />
   <Deadline />
   <Ticker />
-  <DidYouKnow />
   <Services />
+  <Claims />
   <WhoWeHelp />
   <Steps />
-  <EstimatorTeaser />
-  <WhyUs />
+  <Testimonials />
 
-  <section class="faq-sec sec bg-2" aria-labelledby="faq-h">
+  <section class="faq-sec sec bg-2" id="faq" aria-labelledby="faq-h">
     <div class="wrap faq-in">
       <div class="faq-l">
         <h2 id="faq-h" class="split">Questions people ask first</h2>
         <p class="lede rv">Straight answers about how refunds work in Ireland and what we do for you.</p>
-        <a class="link rv" href="/faq/">Read all FAQs</a>
       </div>
       <Faq items={faqs} />
     </div>
@@ -55,26 +57,35 @@ const faqs = [
         <p class="lede rv">Leave your details and we’ll get back to you about what you could claim, and which years are still open for you.</p>
         <ul class="checks stg">
           <li>No obligation: we tell you what we find before anything is filed</li>
-          <li>Only a 6% service charge, payable after you get your refund</li>
+          <li>No refund, no fee: we’re paid only after Revenue pays you</li>
           <li>We never ask for your myAccount password</li>
           <li>Your refund is paid by Revenue, straight to you</li>
         </ul>
-        <div class="offs rv" aria-label="Call our offices">
+        <div class="offs rv" aria-label="Our offices">
           {OFFICES.map((o) => (
             <div class="off">
               <p class="off-c">{o.city}</p>
-              <ul>{o.phones.map((p) => <li><span>{p.label}</span><a href={p.href}>{p.number}</a></li>)}</ul>
+              {o.address && <p class="off-a">{o.address}</p>}
+              <ul>{o.phones.map((p) => <li><a href={p.href}>{p.number}</a></li>)}</ul>
             </div>
           ))}
         </div>
-        <p class="alt rv">Prefer email? <a class="link" href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
       </div>
       <div class="lead-card rv rv-r">
         <LeadForm source="home" />
       </div>
     </div>
   </section>
+
+  <DidYouKnow />
 </Base>
+
+<script>
+  // Roll the open tax years over on 1 January without a rebuild.
+  const y = new Date().getFullYear();
+  const v: Record<string, number> = { oldest: y - 4, newest: y - 1, current: y };
+  document.querySelectorAll<HTMLElement>('[data-yr]').forEach((el) => { const k = el.dataset.yr!; if (k in v) el.textContent = String(v[k]); });
+</script>
 
 <style>
   .faq-in{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr);gap:clamp(32px,5vw,80px);align-items:start}
@@ -85,15 +96,14 @@ const faqs = [
   .lead-l .tag{margin-bottom:var(--s5)}
   .lead-l h2{margin-bottom:var(--s5)}
   .lead-l .lede{margin-bottom:var(--s6)}
-  .alt{margin:var(--s5) 0 0;font-size:var(--fs-sm)}
   .offs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:var(--s6)}
   .off{padding:16px 18px;border-radius:var(--r-lg);background:var(--indigo-50);border:1px solid var(--indigo-100)}
   .off:nth-child(2){background:var(--green-50);border-color:var(--green-100)}
-  .off-c{margin:0 0 8px;font:600 1.1rem/1.2 var(--f-display);color:var(--indigo)}
+  .off-c{margin:0 0 6px;font:600 1.1rem/1.2 var(--f-display);color:var(--indigo)}
+  .off-a{margin:0 0 10px;font-size:var(--fs-xs);line-height:1.5;color:var(--ink-2)}
   .off:nth-child(2) .off-c{color:var(--green-ink)}
   .off ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
-  .off li{display:grid;grid-template-columns:92px auto;justify-content:start;align-items:baseline;gap:4px 8px;font-size:var(--fs-sm)}
-  .off li span{font-size:var(--fs-xs);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+  .off li{font-size:var(--fs-sm)}
   .off a{color:var(--ink);font-weight:600;text-decoration:none;font-variant-numeric:tabular-nums;white-space:nowrap}
   .off a:hover{color:var(--indigo);text-decoration:underline}
   .lead-card{padding:clamp(22px,3vw,40px);border-radius:var(--r-xl);background:#fff;border:1px solid var(--line);box-shadow:var(--sh-2)}

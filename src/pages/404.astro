@@ -2,19 +2,19 @@
 import Base from '../layouts/Base.astro';
 import Button from '../components/Button.astro';
 import Pic from '../components/Pic.astro';
-import { CTA, SERVICE_LINKS } from '../data/site';
+import { CTA } from '../data/site';
 const links = [
-  { label: 'All services', href: '/services/' },
-  { label: 'How it works', href: '/how-it-works/' },
-  { label: 'Fees', href: '/fees/' },
-  { label: 'FAQ', href: '/faq/' },
+  { label: 'About us', href: '/#about' },
+  { label: 'Our services', href: '/#services' },
+  { label: 'How it works', href: '/#how-it-works' },
+  { label: 'FAQ', href: '/#faq' },
   { label: 'Insights', href: '/insights/' },
-  { label: 'Contact', href: '/contact/' },
+  { label: 'Contact', href: '/#check' },
 ];
 ---
 <Base
   title="Page not found"
-  description="Sorry, we couldn’t find that page on the TaxRoots website. Try one of these links to our services, fees, FAQs or guides to claiming your Irish tax refund."
+  description="Sorry, we couldn’t find that page on the TaxRoots website. Try one of these links to our services, FAQs or guides to claiming your Irish tax refund."
   noindex
 >
   <section class="sec nf">
@@ -29,7 +29,6 @@ const links = [
         </div>
         <ul class="nf-links stg">
           {links.map((l) => <li><a class="pill" href={l.href}>{l.label}</a></li>)}
-          {SERVICE_LINKS.slice(0, 3).map((l) => <li><a class="pill" href={l.href}>{l.label}</a></li>)}
         </ul>
       </div>
       <Pic src="about-irish-coastline.jpg" alt="Rugged green clifftop above the turquoise sea on the Irish coast" ratio="1/1" reveal="rv-i" class="nf-pic" eager />

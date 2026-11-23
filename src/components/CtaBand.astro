@@ -12,7 +12,6 @@ const { title = 'Ready to see what you are owed?', text = 'Tell us a little abou
       <p class="lede rv">{text}</p>
       <div class="btns rv" data-delay="150">
         <Button href={CTA.href} variant="green">{CTA.label}</Button>
-        <Button href="/refund-estimator/" variant="ghost">Estimate my refund</Button>
       </div>
     </div>
     {photo && <figure class="pic rv rv-i"><img src={`/photos/${photo}`} alt="" loading="lazy" /></figure>}

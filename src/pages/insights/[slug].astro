@@ -1,10 +1,9 @@
 ---
 import Base from '../../layouts/Base.astro';
 import CtaBand from '../../components/CtaBand.astro';
-import Arrow from '../../components/Arrow.astro';
 import Button from '../../components/Button.astro';
 import { ARTICLES, SOURCES, LAST_CHECKED, LAST_CHECKED_ISO, fmtDate, withToc, type Article } from '../../data/articles';
-import { SITE, SERVICE_LINKS, CTA } from '../../data/site';
+import { SITE, SERVICE_LINKS, SERVICES, CTA } from '../../data/site';
 
 export function getStaticPaths() {
   return ARTICLES.map((article, i) => ({
@@ -17,9 +16,16 @@ interface Props { article: Article; newer: Article | null; older: Article | null
 const { article: x, newer, older } = Astro.props;
 const { html, toc } = withToc(x.body);
 const tocAll = [...toc, { id: 'sources', text: 'Sources' }];
+// Reliefs related to this article. They have no pages of their own: shown as tags, one link to #services.
+// Slugs may be personal reliefs (SERVICE_LINKS) or one of the seven services (SERVICES).
 const services = x.related
-  .map((s) => SERVICE_LINKS.find((l) => l.href === `/services/${s}/`))
-  .filter(Boolean) as typeof SERVICE_LINKS;
+  .map((s) => {
+    const r = SERVICE_LINKS.find((l) => l.slug === s);
+    if (r) return { group: 'Personal tax', label: r.label, desc: r.desc };
+    const v = SERVICES.find((l) => l.slug === s);
+    return v ? { group: `Service ${v.no}`, label: v.title, desc: v.desc } : null;
+  })
+  .filter(Boolean) as { group: string; label: string; desc: string }[];
 const url = `${SITE.url}/insights/${x.slug}/`;
 
 const ld = [
@@ -92,10 +98,9 @@ const ld = [
       <div class="inline-cta">
         <div>
           <p class="ic-t">Want us to check your four open years?</p>
-          <p class="ic-p">Get a rough figure first, or start your claim now. {SITE.fee}</p>
+          <p class="ic-p">Tell us a little about you and we’ll take it from there. {SITE.fee}</p>
         </div>
         <div class="btns">
-          <Button href="/refund-estimator/" variant="ghost" size="sm">Estimate my refund</Button>
           <Button href={CTA.href} size="sm">{CTA.label}</Button>
         </div>
       </div>
@@ -105,17 +110,17 @@ const ld = [
   {services.length > 0 && (
     <section class="sec-s bg-2 rel">
       <div class="wrap">
-        <h2 class="split rel-h">Services related to this article</h2>
+        <h2 class="split rel-h">How we can help with this</h2>
         <div class="rel-grid stg">
           {services.map((s) => (
-            <a class="rel-card" href={s.href}>
+            <div class="rel-card">
               <span class="rel-g">{s.group}</span>
               <span class="rel-t">{s.label}</span>
               <span class="rel-d">{s.desc}</span>
-              <span class="rel-a" aria-hidden="true"><Arrow /></span>
-            </a>
+            </div>
           ))}
         </div>
+        <p class="rel-more rv"><a class="link" href="/#services">See all our services</a></p>
       </div>
     </section>
   )}
@@ -217,14 +222,11 @@ const ld = [
 
   .rel-h{font-size:var(--fs-h2);margin-bottom:var(--s6);max-width:18ch}
   .rel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--s5)}
-  .rel-card{position:relative;display:flex;flex-direction:column;gap:8px;background:#fff;border-radius:var(--r-xl);padding:28px 28px 76px;text-decoration:none;border:1px solid transparent;transition:border-color var(--t-fast)}
-  .rel-card:hover{border-color:var(--indigo)}
+  .rel-card{position:relative;display:flex;flex-direction:column;gap:8px;background:#fff;border-radius:var(--r-xl);padding:28px;border:1px solid var(--line)}
+  .rel-more{margin:var(--s6) 0 0}
   .rel-g{font:600 var(--fs-xs)/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--green-ink)}
   .rel-t{font:600 var(--fs-h3)/1.2 var(--f-display);color:var(--ink);letter-spacing:-.01em}
   .rel-d{font-size:var(--fs-sm);color:var(--ink-2)}
-  .rel-a{position:absolute;left:28px;bottom:24px;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--indigo);color:#fff}
-  .rel-a :global(svg){width:18px;height:18px;transition:transform .45s var(--ease-out)}
-  .rel-card:hover .rel-a :global(svg){transform:translateX(3px)}
 
   .pn-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5)}
   .pn-card{display:flex;align-items:center;gap:var(--s5);padding:12px 24px 12px 12px;border:1px solid var(--line);border-radius:var(--r-xl);text-decoration:none;transition:border-color var(--t-fast)}

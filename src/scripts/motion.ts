@@ -18,7 +18,7 @@ if (!reduce) {
     const a = (e.target as HTMLElement).closest('a[href^="#"]') as HTMLAnchorElement | null;
     if (!a || a.getAttribute('href') === '#') return;
     const el = document.querySelector(a.getAttribute('href')!);
-    if (el) { e.preventDefault(); lenis!.scrollTo(el as HTMLElement, { offset: -90 }); }
+    if (el) { e.preventDefault(); lenis!.scrollTo(el as HTMLElement, { offset: 0 }); }
   });
 }
 

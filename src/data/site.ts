@@ -22,68 +22,74 @@ export const SITE = {
   feeLine: 'No refund, no fee. The tax refund is paid directly into your account by Revenue. Our 6% service charge is payable only after you receive the refund. VAT is charged separately and is not included in the 6%.',
 };
 
-// Offices. Empty strings are hidden on the site (never shown as placeholders). See /CONFIRM.md.
-// Each office lists the main line first, then its own secondary line (client 2026-11-20).
-export type Phone = { label: string; number: string; href: string };
-export type Office = { name: string; city: string; address: string; phones: Phone[]; contactName: string };
+// Offices, Dublin first (client 2026-11-24). Empty strings are hidden on the site.
+// Phones: the shared main line first, then the office's own line. Labels are not shown on the site.
+export type Phone = { number: string; href: string };
+export type Office = { name: string; city: string; address: string; phones: Phone[] };
 const tel = (n: string) => 'tel:' + n.replace(/[^+\d]/g, '');
-const phone = (label: string, number: string): Phone => ({ label, number, href: tel(number) });
+const phone = (number: string): Phone => ({ number, href: tel(number) });
 export const OFFICES: Office[] = [
-  { name: 'Cork office', city: 'Cork', address: SITE.address, phones: [phone('Main', SITE.phone), phone('Secondary', '+353 89 499 6722')], contactName: 'Jibin' },
-  { name: 'Dublin office', city: 'Dublin', address: '', phones: [phone('Main', SITE.phone), phone('Secondary', '+353 89 973 4131')], contactName: 'Sujir' },  // CONFIRM Dublin address
+  { name: 'Dublin office', city: 'Dublin', address: 'Apartment 39, Block B1, The Quarter, Citywest Avenue, Citywest, Co. Dublin, D24 V4PV', phones: [phone(SITE.phone), phone('+353 89 973 4131')] },
+  { name: 'Cork office', city: 'Cork', address: SITE.address, phones: [phone(SITE.phone), phone('+353 89 499 6722')] },
 ];
 
-export type NavLink = { label: string; href: string; desc?: string; group?: string };
+// Tax years. Revenue's four-year rule: the oldest open year is (this year - 4) and its claims close
+// on 31 December of this year. Computed at build time here; the home page recomputes it in the browser
+// so the site rolls over on 1 January without a rebuild.
+export const taxYears = (now = new Date()) => {
+  const y = now.getFullYear();
+  return { current: y, oldest: y - 4, newest: y - 1, open: [y - 4, y - 3, y - 2, y - 1] };
+};
 
-// Canonical service slugs. Pages live at /services/<slug>/ (built from src/data/services.ts).
-export const SERVICE_LINKS: NavLink[] = [
-  { label: '4-Year PAYE Tax Review', href: '/services/paye-tax-review/', desc: 'Every credit and relief, every open year', group: 'Everyone' },
-  { label: 'Emergency tax refunds', href: '/services/emergency-tax-refund/', desc: 'New job or first job? Get it back', group: 'Everyone' },
-  { label: 'Leaving Ireland refunds', href: '/services/leaving-ireland-refund/', desc: 'Moving abroad mid-year', group: 'Everyone' },
-  { label: 'Personal tax returns', href: '/services/personal-tax-returns/', desc: 'Form 11, Form 12 and myAccount returns', group: 'Everyone' },
-  { label: 'Rent Tax Credit', href: '/services/rent-tax-credit/', desc: 'Renters and parents of students', group: 'Your costs' },
-  { label: 'Medical & dental expenses', href: '/services/medical-expenses/', desc: '20% back on qualifying health costs', group: 'Your costs' },
-  { label: 'Remote working relief', href: '/services/remote-working-relief/', desc: 'Work from home? Claim on your bills', group: 'Your costs' },
-  { label: 'Flat rate expenses', href: '/services/flat-rate-expenses/', desc: 'Nurses, teachers, retail and more', group: 'Your costs' },
-  { label: 'Tuition fees relief', href: '/services/tuition-fees-relief/', desc: 'College fees for you or family', group: 'Your costs' },
-  { label: 'Marriage & joint assessment', href: '/services/marriage-joint-assessment/', desc: 'Share credits and rate bands', group: 'Your family' },
-  { label: 'Home Carer Tax Credit', href: '/services/home-carer-tax-credit/', desc: 'One partner caring at home', group: 'Your family' },
-  { label: 'Single parent credit (SPCCC)', href: '/services/single-parent-credit/', desc: 'Single Person Child Carer Credit', group: 'Your family' },
-  { label: 'Incapacitated Child Credit', href: '/services/incapacitated-child-credit/', desc: 'For a child with a lasting incapacity', group: 'Your family' },
-  { label: 'Dependent relative & age credits', href: '/services/dependent-relative-age-credits/', desc: 'Caring for a relative, or 65+', group: 'Your family' },
-  { label: 'Small landlord tax returns', href: '/services/landlord-tax-returns/', desc: 'Rental income, done right', group: 'Property' },
-  { label: 'Company registration & changes', href: '/services/company-registration/', desc: 'New company, directors, office, trading name', group: 'Business' },
-  { label: 'CRO & RBO compliance', href: '/services/cro-rbo-compliance/', desc: 'Annual returns and beneficial owners', group: 'Business' },
-  { label: 'Payroll & PAYE', href: '/services/payroll-paye/', desc: 'Payroll runs, payslips, PAYE on ROS', group: 'Business' },
-  { label: 'VAT & RCT', href: '/services/vat-rct/', desc: 'VAT returns and Relevant Contracts Tax', group: 'Business' },
-  { label: 'Mortgage finance support', href: '/services/mortgage-finance-support/', desc: 'Paperwork for your mortgage application', group: 'Mortgage & pension' },
-  { label: 'Pension support', href: '/services/pension-support/', desc: 'Contribution relief reviews and referrals', group: 'Mortgage & pension' },
+export type NavLink = { label: string; href: string };
+
+// The seven services (client PDF, 2026-11-24). All live in the home page #services section.
+export const SERVICES = [
+  { no: '01', slug: 'personal-tax', title: 'Personal Tax', desc: 'Personal tax returns and eligible tax relief / refund claims.' },
+  { no: '02', slug: 'company-registration', title: 'Company Registration & Changes', desc: 'Company incorporation, director changes, registered office address changes, company secretary changes and trading name registration.' },
+  { no: '03', slug: 'cro-rbo-compliance', title: 'CRO & RBO Compliance', desc: 'Companies Registration Office filings and Register of Beneficial Ownership submissions.' },
+  { no: '04', slug: 'payroll-paye', title: 'Payroll & PAYE', desc: 'Payroll processing, payslips and PAYE administration.' },
+  { no: '05', slug: 'vat-rct', title: 'VAT & RCT', desc: 'VAT registration and returns; Relevant Contracts Tax registration and filings.' },
+  { no: '06', slug: 'mortgage-finance-support', title: 'Mortgage Finance Support', desc: 'Mortgage application preparation, documentation coordination, and referral or administrative support. Regulated mortgage advice, arranging or credit intermediation only where legally authorised.' },
+  { no: '07', slug: 'pension-support', title: 'Pension Support', desc: 'Pension information, contribution tax-relief reviews and administration/referrals. Regulated pension or investment advice requires appropriate authorisation.' },
 ];
 
-export const NAV: (NavLink & { children?: NavLink[] })[] = [
-  { label: 'How it works', href: '/how-it-works/' },
-  { label: 'Services', href: '/services/', children: SERVICE_LINKS },
-  { label: 'Refund estimator', href: '/refund-estimator/' },
-  { label: 'Fees', href: '/fees/' },
+// Personal reliefs we claim (all part of 01 Personal Tax). No pages of their own any more.
+// `slug` is kept because insight articles list related reliefs by slug (src/data/articles.ts `related`).
+export type Relief = { slug: string; label: string; desc: string };
+export const SERVICE_LINKS: Relief[] = [
+  { slug: 'paye-tax-review', label: '4-year PAYE tax review', desc: 'Every credit and relief, every open year' },
+  { slug: 'rent-tax-credit', label: 'Rent Tax Credit', desc: 'Renters and parents of students' },
+  { slug: 'medical-expenses', label: 'Medical & dental expenses', desc: '20% back on qualifying health costs' },
+  { slug: 'remote-working-relief', label: 'Remote working relief', desc: 'Work from home? Claim on your bills' },
+  { slug: 'flat-rate-expenses', label: 'Flat rate expenses', desc: 'Nurses, teachers, retail and more' },
+  { slug: 'tuition-fees-relief', label: 'Tuition fees relief', desc: 'College fees for you or family' },
+  { slug: 'emergency-tax-refund', label: 'Emergency tax refunds', desc: 'New job or first job? Get it back' },
+  { slug: 'marriage-joint-assessment', label: 'Marriage & joint assessment', desc: 'Share credits and rate bands' },
+  { slug: 'leaving-ireland-refund', label: 'Leaving Ireland refunds', desc: 'Moving abroad mid-year' },
+  { slug: 'personal-tax-returns', label: 'Personal tax returns', desc: 'Form 11, Form 12 and myAccount returns' },
+  { slug: 'home-carer-tax-credit', label: 'Home Carer Tax Credit', desc: 'One partner caring at home' },
+  { slug: 'single-parent-credit', label: 'Single parent credit (SPCCC)', desc: 'Single Person Child Carer Credit' },
+  { slug: 'incapacitated-child-credit', label: 'Incapacitated Child Credit', desc: 'For a child with a lasting incapacity' },
+  { slug: 'dependent-relative-age-credits', label: 'Dependent relative & age credits', desc: 'Caring for a relative, or 65+' },
+  { slug: 'landlord-tax-returns', label: 'Small landlord tax returns', desc: 'Rental income, done right' },
+];
+// The nine shown as tags under 01 Personal Tax.
+export const PERSONAL_TAGS = SERVICE_LINKS.slice(0, 9).map((r) => r.label);
+
+// Single page: everything is an anchor on the home page except Insights.
+export const NAV: NavLink[] = [
+  { label: 'About', href: '/#about' },
+  { label: 'Services', href: '/#services' },
+  { label: 'How it works', href: '/#how-it-works' },
   { label: 'Insights', href: '/insights/' },
-  { label: 'About', href: '/about/' },
+  { label: 'FAQ', href: '/#faq' },
+  { label: 'Contact', href: '/#check' },
 ];
 
-export const CTA = { label: 'Start my claim', href: '/start/' };
+export const CTA = { label: 'Start my claim', href: '/#check' };
 
 export const FOOTER = {
-  company: [
-    { label: 'About us', href: '/about/' },
-    { label: 'How it works', href: '/how-it-works/' },
-    { label: 'Fees', href: '/fees/' },
-    { label: 'Insights', href: '/insights/' },
-    { label: 'Contact', href: '/contact/' },
-  ],
-  help: [
-    { label: 'Start my claim', href: '/start/' },
-    { label: 'Refund estimator', href: '/refund-estimator/' },
-    { label: 'FAQ', href: '/faq/' },
-  ],
   legal: [
     { label: 'Privacy notice', href: '/privacy/' },
     { label: 'Terms of engagement', href: '/terms/' },

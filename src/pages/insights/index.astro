@@ -6,7 +6,7 @@ import Button from '../../components/Button.astro';
 import { ARTICLES, TAGS, fmtDate } from '../../data/articles';
 import { SITE } from '../../data/site';
 
-// Taxpert-style listing: 1 featured, 3 text teasers, 2 photo cards (+ estimator card). No duplicates.
+// Taxpert-style listing: 1 featured, 3 text teasers, 2 photo cards (+ free-check card). No duplicates.
 const [featured, ...rest] = ARTICLES;
 const teasers = rest.slice(0, 3);
 const photos = rest.slice(3);
@@ -89,11 +89,11 @@ const ld = [
             <h3><a href={`/insights/${x.slug}/`} class="stretch">{x.title}</a></h3>
           </article>
         ))}
-        <aside class="est band" aria-label="Refund estimator">
-          <p class="est-k">Refund estimator</p>
+        <aside class="est band" aria-label="Free check">
+          <p class="est-k">Free check</p>
           <p class="est-t">Not sure what you could be owed?</p>
-          <p class="est-p">Answer a few questions about 2022 to 2025 and get a rough idea in a couple of minutes.</p>
-          <Button href="/refund-estimator/" variant="white" size="sm">Estimate my refund</Button>
+          <p class="est-p">Tell us a little about you and we’ll look at every year that’s still open for you. No obligation.</p>
+          <Button href="/#check" variant="white" size="sm">Ask us to check</Button>
         </aside>
       </div>
 
@@ -101,7 +101,7 @@ const ld = [
     </div>
   </section>
 
-  <CtaBand title="2022 refunds close on 31 December 2026." text="We check every credit and relief across your four open years, file the returns and keep you posted until Revenue pays you directly." />
+  <CtaBand title="Don’t leave your money with Revenue." text="We check every credit and relief across your four open years, file the returns and keep you posted until Revenue pays you directly." />
 </Base>
 
 <script>

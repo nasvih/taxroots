@@ -1,8 +1,7 @@
 ---
 import Logo from './Logo.astro';
 import Button from './Button.astro';
-import { SITE, FOOTER, SERVICE_LINKS, CTA, OFFICES } from '../data/site';
-const svc = ['paye-tax-review', 'rent-tax-credit', 'medical-expenses', 'personal-tax-returns', 'company-registration', 'payroll-paye', 'vat-rct'].map((s) => SERVICE_LINKS.find((l) => l.href === `/services/${s}/`)!);
+import { SITE, FOOTER, CTA, OFFICES } from '../data/site';
 const year = new Date().getFullYear();
 ---
 <footer class="ftr">
@@ -14,45 +13,24 @@ const year = new Date().getFullYear();
           <p class="rv">Four years of unclaimed tax credits and reliefs could be sitting with Revenue right now. We find them, file them and keep you posted.</p>
           <div class="btns rv" data-delay="120">
             <Button href={CTA.href} variant="green">{CTA.label}</Button>
-            <Button href="/refund-estimator/" variant="ghost">Estimate my refund</Button>
           </div>
         </div>
-        <div class="cols">
-          <div>
-            <h3>Services</h3>
-            <ul>{svc.map((l) => <li><a href={l.href}>{l.label}</a></li>)}<li><a href="/services/">All services</a></li></ul>
-          </div>
-          <div>
-            <h3>Company</h3>
-            <ul>{FOOTER.company.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
-          </div>
-          <div>
-            <h3>Help</h3>
-            <ul>{FOOTER.help.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
-            <h3 class="mt">Talk to us</h3>
-            <ul>
-              <li><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
-              <li><a href={SITE.phoneHref}>{SITE.phone}</a></li>
-              <li><a href="/contact/#offices">Cork &amp; Dublin offices</a></li>
-            </ul>
-          </div>
+        <div class="offs stg" aria-label="Our offices">
+          {OFFICES.map((o) => (
+            <address class="off">
+              <h3>{o.name}</h3>
+              {o.address && <p class="adr">{o.address}</p>}
+              <ul class="off-ct">
+                <li><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
+                {o.phones.map((p) => <li><a href={p.href}>{p.number}</a></li>)}
+              </ul>
+            </address>
+          ))}
         </div>
-      </div>
-      <div class="offs">
-        {OFFICES.map((o) => (
-          <div class="off">
-            <h3>{o.name}</h3>
-            {o.address && <p>{o.address}</p>}
-            <ul class="off-ph">
-              {o.phones.map((p) => <li><span>{p.label}</span><a href={p.href}>{p.number}</a></li>)}
-            </ul>
-            {o.contactName && <p class="who">Contact: {o.contactName}</p>}
-          </div>
-        ))}
       </div>
       <div class="bottom">
         <Logo tone="dark" height={58} />
-        <p class="legal">{SITE.legal} is a private company limited by shares, registered in Ireland. Company number (CRO) {SITE.cro}. {SITE.address}.<br />TaxRoots is an independent company, not part of or endorsed by the Revenue Commissioners. You can claim credits and reliefs yourself, free of charge, through Revenue's myAccount. Information on this site is general guidance, not advice on your own circumstances. Figures last checked 30 October 2026.</p>
+        <p class="legal">{SITE.legal} is a private company limited by shares, registered in Ireland. Company number (CRO) {SITE.cro}. Registered office: {SITE.address}.<br />TaxRoots is an independent company, not part of or endorsed by the Revenue Commissioners. You can claim credits and reliefs yourself, free of charge, through Revenue's myAccount. Information on this site is general guidance, not advice on your own circumstances. Figures last checked 30 October 2026.</p>
         <ul class="lg">
           {FOOTER.legal.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
           <li><span>© {year} {SITE.legal}</span></li>
@@ -74,34 +52,29 @@ const year = new Date().getFullYear();
 </style>
 
 <style>
-  .ftr{padding:0 0 clamp(12px,2vw,24px)}
+  .ftr{padding:clamp(10px,1.6vw,24px) 0 clamp(12px,2vw,24px)}
   .ftr>.wrap{max-width:calc(var(--wrap) + 160px);padding-inline:clamp(10px,1.6vw,24px)}
   .ftr-card{border-radius:var(--r-xl);padding:clamp(40px,6vw,88px) clamp(24px,5vw,80px) clamp(28px,3vw,40px)}
-  .top{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(40px,6vw,96px);padding-bottom:clamp(40px,5vw,72px);border-bottom:1px solid var(--line-dark)}
+  .top{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(40px,6vw,96px);align-items:end;padding-bottom:clamp(40px,5vw,72px);border-bottom:1px solid var(--line-dark)}
   .say h2{font-size:var(--fs-display);line-height:1.04;letter-spacing:-.03em;margin-bottom:var(--s5)}
   .say p{max-width:46ch;margin-bottom:var(--s6)}
-  .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s5)}
-  .cols h3{font:600 1rem/1.2 var(--f-display);color:#fff;margin-bottom:var(--s4)}
-  .cols h3.mt{margin-top:var(--s6)}
-  .cols ul,.lg{list-style:none;margin:0;padding:0}
-  .cols li{margin-bottom:10px}
-  .cols a,.lg a{color:var(--on-dark-2);text-decoration:none;font-size:var(--fs-sm);transition:color .2s}
-  .cols a:hover,.lg a:hover{color:var(--green-bright)}
-  .offs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s5) clamp(24px,4vw,64px);padding:var(--s6) 0;border-bottom:1px solid var(--line-dark)}
-  .off h3{font:600 1rem/1.2 var(--f-display);color:#fff;margin-bottom:8px}
-  .off p{margin:0 0 4px;font-size:var(--fs-sm);color:var(--on-dark-2)}
-  .off-ph{list-style:none;margin:6px 0 8px;padding:0;display:grid;gap:4px}
-  .off-ph li{display:grid;grid-template-columns:104px auto;justify-content:start;align-items:baseline;gap:10px;font-size:var(--fs-sm)}
-  .off-ph span{font-size:var(--fs-xs);letter-spacing:.06em;text-transform:uppercase;color:var(--on-dark-2)}
-  .off-ph a{font-weight:600}
-  .off .who{font-size:var(--fs-xs)}
-  .off a{color:#fff;text-decoration:none}
-  .off a:hover{color:var(--green-bright)}
+  .offs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}
+  .off{font-style:normal;padding:clamp(20px,2vw,28px);border-radius:var(--r-lg);background:rgba(255,255,255,.06);border:1px solid var(--line-dark);display:flex;flex-direction:column}
+  .off h3{display:flex;align-items:center;gap:10px;font:600 1.15rem/1.2 var(--f-display);color:#fff;margin-bottom:12px}
+  .off h3::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--green-bright);flex:none}
+  .off .adr{margin:0 0 16px;font-size:var(--fs-sm);line-height:1.55;color:var(--on-dark-2)}
+  .off-ct{list-style:none;margin:auto 0 0;padding:14px 0 0;border-top:1px solid var(--line-dark);display:grid;gap:6px}
+  .off-ct a{color:#fff;font-size:var(--fs-sm);font-weight:600;text-decoration:none;font-variant-numeric:tabular-nums;white-space:nowrap;transition:color .2s}
+  .off-ct li:first-child a{font-weight:500;color:var(--on-dark-2)}
+  .off-ct a:hover{color:var(--green-bright)}
+  .lg{list-style:none;margin:0;padding:0}
+  .lg a{color:var(--on-dark-2);text-decoration:none;font-size:var(--fs-sm);transition:color .2s}
+  .lg a:hover{color:var(--green-bright)}
   .bottom{display:grid;grid-template-columns:auto 1fr;align-items:start;gap:var(--s5) var(--s7);padding-top:var(--s6)}
   .bottom .lg{grid-column:1/-1}
   .legal{margin:0;font-size:var(--fs-xs);line-height:1.6;color:var(--on-dark-2);max-width:70ch}
   .lg{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:var(--fs-xs)}
   .lg span{color:var(--on-dark-2)}
-  @media (max-width:1000px){.top{grid-template-columns:1fr}.bottom{grid-template-columns:1fr}}
-  @media (max-width:560px){.cols{grid-template-columns:1fr 1fr}.offs{grid-template-columns:1fr}}
+  @media (max-width:1000px){.top{grid-template-columns:1fr;align-items:start}.bottom{grid-template-columns:1fr}}
+  @media (max-width:560px){.offs{grid-template-columns:1fr}}
 </style>

@@ -1,0 +1,143 @@
+---
+// DEMO testimonials supplied by the client (2026-11-24) to show the layout. Replace with real, consented
+// reviews before relying on them. No € amounts, no promised results.
+// Behaviour mirrors the F2S International testimonial slider: 2 cards per view on wide screens, 1 on
+// phones, autoplay every 5s with loop and pill pagination. Here it is a native scroll-snap track, so
+// swipe/trackpad/keyboard work without a library; autoplay is off for prefers-reduced-motion.
+const items = [
+  { n: 'Badhira Kombi', m: 'Dublin · Medical expenses', q: 'We had a lot of GP visits and prescriptions after our little one was born and I never thought to claim any of it. TaxRoots sorted the medical expenses for us and explained every step. Couldn’t have been easier.' },
+  { n: 'Suhana Kombi', m: 'Cork · Rent Tax Credit', q: 'I’d been renting for a few years and never claimed the Rent Tax Credit. One short form, and they dealt with Revenue for me. The refund went straight into my own account.' },
+  { n: 'Jack', m: 'Galway · PAYE review', q: 'Changed jobs twice and ended up on emergency tax. The team got it sorted and told me exactly what was happening at each stage. No jargon, just straight answers.' },
+  { n: 'Trony', m: 'Dublin · Remote working relief', q: 'I work from home most of the week and had no idea I could claim on my bills. They checked every year that was still open, not just last year. Friendly and clear the whole way.' },
+  { n: 'Misheal', m: 'Cork · PAYE review', q: 'What I liked most was the honesty. They told me what they’d found before anything was filed, and I never had to hand over my myAccount password.' },
+];
+const initials = (n: string) => n.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+---
+<section class="tst sec" aria-labelledby="tst-h" data-tst>
+  <div class="wrap">
+    <div class="hd">
+      <div>
+        <p class="tag rv">Kind words</p>
+        <h2 id="tst-h" class="split">People we’ve <span class="hl">helped get more back</span></h2>
+      </div>
+      <div class="tnav rv" data-delay="120">
+        <button type="button" class="nb prev" aria-label="Previous testimonial"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button type="button" class="nb next" aria-label="Next testimonial"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap vp-w rv" data-delay="160">
+    <ul class="track" tabindex="0" aria-label="Testimonials" aria-roledescription="carousel">
+      {items.map((t, i) => (
+        <li class:list={['card-t', `a${i % 5}`]} aria-roledescription="slide" aria-label={`${i + 1} of ${items.length}`}>
+          <figure>
+            <svg class="qm" viewBox="0 0 32 24" aria-hidden="true"><path fill="currentColor" d="M0 24V14.4C0 6.6 4.3 1.8 12 0l1.4 3.4C8.8 5 6.6 7.8 6.3 11.6H12V24H0Zm19 0V14.4C19 6.6 23.3 1.8 31 0l1 3.4c-4.6 1.6-6.8 4.4-7.1 8.2H31V24H19Z"/></svg>
+            <blockquote><p>{t.q}</p></blockquote>
+            <figcaption>
+              <span class="av" aria-hidden="true">{initials(t.n)}</span>
+              <span class="who"><strong>{t.n}</strong><span>{t.m}</span></span>
+            </figcaption>
+          </figure>
+        </li>
+      ))}
+    </ul>
+    <div class="dots" role="group" aria-label="Choose testimonial">
+      {items.map((t, i) => <button type="button" class:list={['dot', { on: i === 0 }]} aria-label={`Show testimonial from ${t.n}`} aria-current={i === 0 ? 'true' : undefined}></button>)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .hd{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:clamp(28px,4vw,48px)}
+  .hd .tag{margin-bottom:var(--s5)}
+  .hd h2{margin:0;max-width:22ch}
+  .tnav{display:flex;gap:10px}
+  .nb{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;border:1.5px solid var(--line-2);background:#fff;color:var(--indigo);cursor:pointer;transition:background .25s,border-color .25s,color .25s}
+  .nb svg{width:20px;height:20px}
+  .nb:hover{background:var(--indigo);border-color:var(--indigo);color:#fff}
+
+  /* Track: native horizontal scroll with snap = swipe on touch, smooth on trackpads */
+  .track{position:relative;--per:2;--gap:clamp(14px,1.6vw,20px);list-style:none;margin:0;padding:4px 0 8px;display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - (var(--per) - 1) * var(--gap)) / var(--per));gap:var(--gap);overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none;border-radius:var(--r-xl)}
+  .track::-webkit-scrollbar{display:none}
+  .track:focus-visible{outline:2px solid var(--indigo);outline-offset:4px}
+  .card-t{scroll-snap-align:start;min-width:0}
+  figure{height:100%;margin:0;display:flex;flex-direction:column;gap:22px;padding:clamp(24px,3vw,40px);border-radius:var(--r-xl);background:var(--indigo-50);border:1px solid var(--indigo-100)}
+  .a1 figure,.a3 figure{background:var(--green-50);border-color:var(--green-100)}
+  .qm{width:34px;height:26px;color:var(--indigo)}
+  .a1 .qm,.a3 .qm{color:var(--green)}
+  blockquote{margin:0;flex:1}
+  blockquote p{margin:0;font:500 clamp(1.05rem,.95rem + .45vw,1.3rem)/1.55 var(--f-display);color:var(--ink);letter-spacing:-.01em}
+  figcaption{display:flex;align-items:center;gap:14px;padding-top:20px;border-top:1px solid var(--line-2)}
+  .av{flex:none;display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:var(--indigo);color:#fff;font:600 1.05rem/1 var(--f-display);letter-spacing:.02em}
+  .a1 .av{background:var(--green-ink)}
+  .a2 .av{background:var(--indigo-900)}
+  .a3 .av{background:var(--indigo)}
+  .a4 .av{background:var(--green-ink)}
+  .who{display:grid;gap:3px}
+  .who strong{font:600 1.05rem/1.2 var(--f-display);color:var(--ink)}
+  .who span{font-size:var(--fs-sm);color:var(--ink-2)}
+
+  /* Pagination pills (active one stretches, like the F2S slider) */
+  .dots{display:flex;justify-content:center;gap:8px;margin-top:clamp(20px,3vw,32px)}
+  .dot{width:10px;height:10px;padding:0;border:0;border-radius:var(--r-pill);background:var(--indigo-100);cursor:pointer;transition:width .35s var(--ease-out),background .35s}
+  .dot.on{width:30px;background:var(--indigo)}
+  .dot:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+
+  @media (max-width:1000px){.track{--per:1.15}}
+  @media (max-width:640px){
+    .track{--per:1.08;margin-inline:calc(var(--gut) * -1);padding-inline:var(--gut);scroll-padding-inline:var(--gut);border-radius:0}
+    .tnav{display:none}
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-tst]');
+  if (root) {
+    const track = root.querySelector<HTMLElement>('.track')!;
+    const cards = Array.from(track.children) as HTMLElement[];
+    const dots = Array.from(root.querySelectorAll<HTMLButtonElement>('.dot'));
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Index of the card nearest the left edge of the track.
+    // (track is position:relative, so card offsetLeft is measured from the track's padding edge)
+    const pad = () => parseFloat(getComputedStyle(track).paddingLeft || '0');
+    const current = () => {
+      const x = track.scrollLeft + pad();
+      let best = 0, d = Infinity;
+      cards.forEach((c, i) => { const dd = Math.abs(c.offsetLeft - x); if (dd < d) { d = dd; best = i; } });
+      return best;
+    };
+    const atEnd = () => track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+    const go = (i: number) => {
+      const n = (i + cards.length) % cards.length;
+      track.scrollTo({ left: cards[n].offsetLeft - pad(), behavior: reduce ? 'auto' : 'smooth' });
+    };
+    const next = () => (atEnd() ? go(0) : go(current() + 1));
+    const prev = () => (track.scrollLeft <= 4 ? go(cards.length - 1) : go(current() - 1));
+    const sync = () => {
+      const i = atEnd() ? cards.length - 1 : current();
+      dots.forEach((d, j) => { d.classList.toggle('on', j === i); d.toggleAttribute('aria-current', j === i); });
+    };
+    let raf = 0;
+    track.addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(sync); }, { passive: true });
+    root.querySelector('.next')!.addEventListener('click', () => { stop(); next(); });
+    root.querySelector('.prev')!.addEventListener('click', () => { stop(); prev(); });
+    dots.forEach((d, i) => d.addEventListener('click', () => { stop(); go(i); }));
+    track.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); stop(); next(); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); stop(); prev(); }
+    });
+
+    // Autoplay every 5s while visible; pauses on hover, focus and touch; never with reduced motion.
+    let timer = 0 as any, visible = false, hold = false, stopped = false;
+    const stop = () => { stopped = true; clearInterval(timer); };
+    const tick = () => { clearInterval(timer); if (!reduce && !stopped && visible && !hold && !document.hidden) timer = setInterval(next, 5000); };
+    root.addEventListener('pointerenter', () => { hold = true; tick(); });
+    root.addEventListener('pointerleave', () => { hold = false; tick(); });
+    root.addEventListener('focusin', () => { hold = true; tick(); });
+    root.addEventListener('focusout', () => { hold = false; tick(); });
+    track.addEventListener('touchstart', stop, { passive: true });
+    document.addEventListener('visibilitychange', tick);
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; tick(); }, { threshold: 0.35 }).observe(track);
+  }
+</script>

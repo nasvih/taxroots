@@ -1,10 +1,10 @@
 ---
 import Logo from './Logo.astro';
 import Button from './Button.astro';
-import Arrow from './Arrow.astro';
-import { NAV, CTA, SITE, SERVICE_LINKS } from '../data/site';
+import { NAV, CTA, SITE } from '../data/site';
 const path = Astro.url.pathname;
-const active = (href: string) => href !== '/' && path.startsWith(href);
+// Only Insights is a real page; the rest are anchors on the home page (scroll-spy marks them there).
+const active = (href: string) => !href.includes('#') && path.startsWith(href);
 ---
 <div class="progress" aria-hidden="true"></div>
 <header class="site-header">
@@ -13,46 +13,19 @@ const active = (href: string) => href !== '/' && path.startsWith(href);
       <Logo height={50} class="hd-logo" />
       <nav class="nav" aria-label="Main">
         <ul>
-          {NAV.map((l) => l.children ? (
-            <li class="has-mega">
-              <a href={l.href} class:list={['nl', { on: active(l.href) }]} aria-haspopup="true">{l.label}<svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></a>
-              <div class="mm" role="group" aria-label="Services">
-                <div class="mega-in">
-                  <ul class="mega-list">
-                    {l.children.map((c) => (
-                      <li><a href={c.href}><strong>{c.label}</strong><span>{c.desc}</span></a></li>
-                    ))}
-                  </ul>
-                  <a class="mega-cta" href="/refund-estimator/">
-                    <img class="mega-logo" src="/brand/logo-dark-lockup.svg" alt="" width="160" height="38" />
-                    <strong>Not sure what you can claim?</strong>
-                    <span>Two minutes with our refund estimator shows where your money is.</span>
-                    <span class="go">Estimate my refund <Arrow /></span>
-                  </a>
-                </div>
-              </div>
-            </li>
-          ) : (
-            <li><a href={l.href} class:list={['nl', { on: active(l.href) }]}>{l.label}</a></li>
-          ))}
+          {NAV.map((l) => <li><a href={l.href} class:list={['nl', { on: active(l.href) }]} aria-current={active(l.href) ? 'page' : undefined}>{l.label}</a></li>)}
         </ul>
       </nav>
       <div class="end">
-        <a class="nl phone" href="/contact/">Contact</a>
         <Button href={CTA.href} variant="green" size="sm" class="cta">{CTA.label}</Button>
-        <button class="burger" aria-expanded="false" aria-controls="mnav" aria-label="Open menu"><span></span><span></span></button>
+        <button class="burger" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Open menu"><span></span><span></span></button>
       </div>
     </div>
   </div>
   <div id="mnav" class="mnav" hidden>
     <div class="wrap">
       <ul class="m-main">
-        {NAV.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
-        <li><a href="/contact/">Contact</a></li>
-      </ul>
-      <p class="m-h">Services</p>
-      <ul class="m-svc">
-        {SERVICE_LINKS.map((c) => <li><a class="pill" href={c.href}>{c.label}</a></li>)}
+        {NAV.map((l, i) => <li style={`--i:${i}`}><a href={l.href} class:list={{ on: active(l.href) }}>{l.label}</a></li>)}
       </ul>
       <div class="m-cta"><Button href={CTA.href} variant="green">{CTA.label}</Button></div>
       <div class="m-foot"><Logo height={44} link={false} /><p class="muted m-legal">{SITE.legal} · CRO {SITE.cro}</p></div>
@@ -68,27 +41,9 @@ const active = (href: string) => href !== '/' && path.startsWith(href);
   .nav{margin-inline:auto}
   .nav>ul{display:flex;gap:2px;list-style:none;margin:0;padding:0}
   .nl{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 14px;white-space:nowrap;border-radius:var(--r-pill);font:500 .95rem/1 var(--f-display);color:var(--ink);text-decoration:none;transition:background .2s,color .2s}
-  .nl:hover,.has-mega:focus-within>.nl,.has-mega:hover>.nl{background:var(--indigo-50);color:var(--indigo)}
+  .nl:hover{background:var(--indigo-50);color:var(--indigo)}
   .nl.on{color:var(--indigo);box-shadow:inset 0 -2px 0 var(--green)}
-  .chev{flex:none;width:12px;height:12px;transition:transform .3s}
-  .has-mega:hover .chev{transform:rotate(180deg)}
   .end{display:flex;align-items:center;gap:6px}
-  /* Mega menu */
-  .has-mega{position:relative}
-  .mm{position:absolute;left:50%;top:100%;padding-top:18px;transform:translate(-38%,8px);opacity:0;visibility:hidden;transition:opacity .25s,transform .35s var(--ease-out),visibility .25s}
-  .has-mega:hover .mm,.has-mega:focus-within .mm{opacity:1;visibility:visible;transform:translate(-38%,0)}
-  .mega-in{display:grid;grid-template-columns:1fr 240px;gap:12px;width:min(1120px,94vw);padding:12px;background:#fff;border:1px solid var(--line);border-radius:var(--r-xl);box-shadow:var(--sh-3)}
-  .mega-list{display:grid;grid-template-columns:repeat(3,1fr);gap:0;list-style:none;margin:0;padding:0}
-  .mega-list a{display:grid;gap:2px;padding:9px 12px;border-radius:var(--r-md);text-decoration:none;transition:background .2s}
-  .mega-list a:hover{background:var(--bg-2)}
-  .mega-list strong{font:600 .95rem/1.3 var(--f-display);color:var(--ink)}
-  .mega-list span{font-size:var(--fs-xs);color:var(--ink-3);line-height:1.4}
-  .mega-cta{display:flex;flex-direction:column;gap:10px;padding:22px;border-radius:var(--r-lg);background:var(--indigo);color:var(--on-dark-2);text-decoration:none;font-size:var(--fs-sm);line-height:1.5}
-  .mega-cta strong{color:#fff;font:600 1.15rem/1.25 var(--f-display)}
-  .mega-cta .mega-logo{width:auto;height:38px;align-self:flex-start;margin-bottom:4px}
-  .mega-cta .go{margin-top:auto;display:inline-flex;align-items:center;gap:8px;color:var(--green-bright);font-weight:600}
-  .mega-cta .go :global(svg){width:16px;height:16px;flex:none;transition:transform .3s}
-  .mega-cta:hover .go :global(svg){transform:translateX(4px)}
   /* Burger + mobile */
   .burger{display:none;width:48px;height:48px;border:0;border-radius:50%;background:var(--indigo);cursor:pointer;position:relative}
   .burger span{position:absolute;left:15px;right:15px;height:2px;background:#fff;border-radius:2px;transition:transform .35s var(--ease-out)}
@@ -97,15 +52,18 @@ const active = (href: string) => href !== '/' && path.startsWith(href);
   .open .burger span:last-child{transform:translateY(-4px) rotate(-45deg)}
   .mnav{position:fixed;inset:calc(var(--header-h) + 24px) 0 0;background:#fff;overflow:auto;padding:var(--s5) 0 var(--s8);border-top:1px solid var(--line)}
   .m-main{list-style:none;margin:0;padding:0}
-  .m-main a{display:block;padding:12px 0;font:600 1.6rem/1.2 var(--f-display);color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
-  .m-h{margin:var(--s6) 0 var(--s3);font:600 var(--fs-xs)/1 var(--f-body);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
-  .m-svc{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0}
+  .m-main a{display:flex;align-items:center;justify-content:space-between;padding:14px 0;font:600 1.6rem/1.2 var(--f-display);color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line);transition:color .2s}
+  .m-main a::after{content:"";width:10px;height:10px;border-top:2px solid currentColor;border-right:2px solid currentColor;transform:rotate(45deg);opacity:.35;transition:opacity .2s,transform .3s var(--ease-out)}
+  .m-main a:hover,.m-main a.on{color:var(--indigo)}
+  .m-main a:hover::after,.m-main a.on::after{opacity:1;transform:translateX(4px) rotate(45deg)}
+  :global(html.mo) .open .m-main li{animation:m-in .5s var(--ease-out) both;animation-delay:calc(var(--i) * 45ms)}
+  @keyframes m-in{from{opacity:0;transform:translateY(14px)}}
   .m-cta{margin-top:var(--s6)}
   .m-foot{margin-top:var(--s7);padding-top:var(--s5);border-top:1px solid var(--line);display:grid;gap:10px;justify-items:start}
   .m-legal{margin:0;font-size:var(--fs-xs)}
   @media (max-width:1480px){.nl{padding:0 12px}.bar :global(.hd-logo img){height:46px!important}}
-  @media (max-width:1300px){.phone{display:none}.nl{padding:0 11px}}
-  @media (max-width:1140px){
+  @media (max-width:1300px){.nl{padding:0 11px}}
+  @media (max-width:1000px){
     .nav{display:none}
     .end{margin-left:auto}
     .burger{display:block}
@@ -115,16 +73,65 @@ const active = (href: string) => href !== '/' && path.startsWith(href);
 </style>
 
 <script>
-  const h = document.querySelector('.site-header')!;
+  const h = document.querySelector<HTMLElement>('.site-header')!;
   const b = h.querySelector<HTMLButtonElement>('.burger')!;
   const m = document.getElementById('mnav')!;
+  const lenis = () => (window as any).__lenis as { stop(): void; start(): void; scrollTo(t: HTMLElement | number, o?: object): void } | undefined;
+  const isOpen = () => h.classList.contains('open');
   const set = (open: boolean) => {
-    h.classList.toggle('open', open); b.setAttribute('aria-expanded', String(open));
+    if (open === isOpen()) return;
+    h.classList.toggle('open', open); h.classList.remove('hide');
+    b.setAttribute('aria-expanded', String(open));
     b.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     m.hidden = !open; document.body.style.overflow = open ? 'hidden' : '';
-    const l = (window as any).__lenis; if (l) open ? l.stop() : l.start();
+    const l = lenis(); if (l) open ? l.stop() : l.start();
+    if (!open && m.contains(document.activeElement)) b.focus();
   };
-  b.addEventListener('click', () => set(!h.classList.contains('open')));
-  addEventListener('keydown', (e) => { if (e.key === 'Escape') set(false); });
-  matchMedia('(min-width:1141px)').addEventListener('change', (e) => e.matches && set(false));
+  b.addEventListener('click', () => set(!isOpen()));
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && isOpen()) set(false); });
+  matchMedia('(min-width:1001px)').addEventListener('change', (e) => e.matches && set(false));
+
+  // Same-page anchors ("/#services" etc.): on the home page, scroll smoothly (Lenis) with room for the
+  // sticky header instead of reloading. From other pages the browser simply navigates to /#x.
+  const onHome = location.pathname === '/';
+  const OFFSET = 0; // Lenis already honours html scroll-padding-top (header height + 16px)
+  const go = (id: string, instant = false) => {
+    const el = document.getElementById(id);
+    if (!el) return false;
+    const l = lenis();
+    if (l) l.scrollTo(el, { offset: OFFSET, immediate: instant, lock: !instant });
+    else el.scrollIntoView({ behavior: instant || matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    return true;
+  };
+  document.addEventListener('click', (e) => {
+    const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href]');
+    if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    const url = new URL(a.href, location.href);
+    const wasOpen = isOpen();
+    if (url.origin === location.origin && url.pathname === location.pathname && url.hash.length > 1) {
+      e.preventDefault();
+      set(false);
+      // wait a frame so Lenis has restarted after the menu closed
+      requestAnimationFrame(() => go(decodeURIComponent(url.hash.slice(1))));
+      if (onHome) history.pushState(null, '', url.hash);
+    } else if (wasOpen) set(false);
+  }, true);
+  // Arriving with a hash (e.g. /#faq from an insight page): settle on the target once images have laid out.
+  if (onHome && location.hash.length > 1) {
+    addEventListener('load', () => setTimeout(() => go(decodeURIComponent(location.hash.slice(1)), true), 60));
+  }
+
+  // Scroll-spy: underline the nav item for the section in view (home page only).
+  if (onHome) {
+    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.nav a.nl, .m-main a')).filter((a) => a.getAttribute('href')!.startsWith('/#'));
+    const ids = [...new Set(links.map((a) => a.getAttribute('href')!.slice(2)))];
+    const secs = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+    const mark = () => {
+      const y = innerHeight * 0.35;
+      let cur = '';
+      for (const s of secs) { const r = s.getBoundingClientRect(); if (r.top <= y && r.bottom > y) cur = s.id; }
+      links.forEach((a) => a.classList.toggle('on', a.getAttribute('href') === '/#' + cur));
+    };
+    addEventListener('scroll', mark, { passive: true }); mark();
+  }
 </script>
