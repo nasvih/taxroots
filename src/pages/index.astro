@@ -4,14 +4,13 @@ import Faq from '../components/Faq.astro';
 import LeadForm from '../components/LeadForm.astro';
 import Hero from '../components/home/Hero.astro';
 import Deadline from '../components/home/Deadline.astro';
-import Ticker from '../components/home/Ticker.astro';
 import DidYouKnow from '../components/home/DidYouKnow.astro';
 import Services from '../components/home/Services.astro';
 import Claims from '../components/home/Claims.astro';
 import WhoWeHelp from '../components/home/WhoWeHelp.astro';
 import Steps from '../components/home/Steps.astro';
 import Testimonials from '../components/home/Testimonials.astro';
-import { OFFICES, taxYears } from '../data/site';
+import { OFFICES, SITE, taxYears } from '../data/site';
 
 // Open years follow Revenue's four-year rule and roll over each 1 January (see the script below).
 const { current, oldest, newest } = taxYears();
@@ -21,6 +20,7 @@ const faqs = [
   { q: 'How far back can I claim?', a: `Four years. Right now that means ${yr('oldest', oldest)} to ${yr('newest', newest)}. Claims for ${yr('oldest', oldest)} must be made by 31 December ${yr('current', current)}, or Revenue can’t repay them.` },
   { q: 'Can’t I do this myself for free?', a: 'Yes. Revenue’s myAccount lets you claim credits and reliefs at no cost. We do the work for you, check every open year and every relief that applies, and deal with Revenue if questions come up.' },
   { q: 'Will you need my myAccount password?', a: 'No, never. Revenue advises against sharing it, and we don’t need it. You approve our agent request inside your own myAccount.' },
+  { q: 'What do you charge?', a: SITE.feeLine },
   { q: 'How does my refund get paid?', a: 'Revenue pays it straight into the bank account on your Revenue record, or by cheque if there’s no account. Since the start of 2026, refunds can’t be paid into an agent’s account.' },
   { q: 'What if I owe tax instead?', a: 'Sometimes a review shows an underpayment, for example from a second job or extra income. We check first and tell you before anything is filed. Revenue usually collects underpayments by reducing your tax credits over up to four years.' },
   { q: 'I’ve left Ireland. Can you still help?', a: 'Yes. You may be owed tax for the year you left and for earlier years that are still open.' },
@@ -32,7 +32,6 @@ const faqs = [
 >
   <Hero />
   <Deadline />
-  <Ticker />
   <Services />
   <Claims />
   <WhoWeHelp />
@@ -57,9 +56,8 @@ const faqs = [
         <p class="lede rv">Leave your details and we’ll get back to you about what you could claim, and which years are still open for you.</p>
         <ul class="checks stg">
           <li>No obligation: we tell you what we find before anything is filed</li>
-          <li>No refund, no fee: we’re paid only after Revenue pays you</li>
-          <li>We never ask for your myAccount password</li>
-          <li>Your refund is paid by Revenue, straight to you</li>
+          <li>Personal or business tax: tell us what you need and we’ll point you to the right service</li>
+          <li>We reply on WhatsApp, so you can keep everything in one chat</li>
         </ul>
         <div class="offs rv" aria-label="Our offices">
           {OFFICES.map((o) => (

@@ -2,9 +2,9 @@
 import { taxYears } from '../../data/site';
 const { oldest, newest } = taxYears();
 const steps = [
-  { t: 'Tell us about you', d: 'Fill in our short online form with your name, PPSN, contact details and the costs you’ve had, such as rent, medical bills, college fees or working from home. We never ask for your myAccount password.', p: 'about-coffee-notebook.jpg', alt: 'Open notebook and pen beside a latte on a wooden desk' },
+  { t: 'Tell us about you', d: 'Fill in our short online form with your name, PPSN, contact details and the costs you’ve had, such as rent, medical bills, college fees or working from home.', p: 'about-coffee-notebook.jpg', alt: 'Open notebook and pen beside a latte on a wooden desk' },
   { t: 'We review and claim', d: `We check every year still open, currently <span data-yr="oldest">${oldest}</span> to <span data-yr="newest">${newest}</span>, match your costs to the credits and reliefs you qualify for and file the returns. If a year could show tax owed, we tell you first and only file it with your OK.`, p: 'about-calculator-paperwork.jpg', alt: 'Calculator and pen on handwritten paperwork' },
-  { t: 'Revenue pays you directly', d: 'Your refund goes from Revenue into the bank account on your Revenue record, usually within three to five working days of the Statement of Liability. Only then is our 6% service charge (plus VAT) payable. No refund, no fee.', p: 'about-euro-coin.jpg', alt: 'Euro coins on a white surface, including an Irish harp one-euro coin' },
+  { t: 'Revenue pays you directly', d: 'Your refund goes from Revenue into the bank account on your Revenue record, usually within three to five working days of the Statement of Liability. You only pay our service charge after that, and if there’s no refund, there’s no fee.', p: 'about-euro-coin.jpg', alt: 'Euro coins on a white surface, including an Irish harp one-euro coin' },
 ];
 ---
 <section class="steps sec" id="how-it-works" aria-labelledby="steps-h">

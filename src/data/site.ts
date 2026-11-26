@@ -43,7 +43,7 @@ export const taxYears = (now = new Date()) => {
 
 export type NavLink = { label: string; href: string };
 
-// The seven services (client PDF, 2026-11-24). All live in the home page #services section.
+// The eight services (client PDF, 2026-11-24). All live in the home page #services section.
 export const SERVICES = [
   { no: '01', slug: 'personal-tax', title: 'Personal Tax', desc: 'Personal tax returns and eligible tax relief / refund claims.' },
   { no: '02', slug: 'company-registration', title: 'Company Registration & Changes', desc: 'Company incorporation, director changes, registered office address changes, company secretary changes and trading name registration.' },
@@ -52,6 +52,7 @@ export const SERVICES = [
   { no: '05', slug: 'vat-rct', title: 'VAT & RCT', desc: 'VAT registration and returns; Relevant Contracts Tax registration and filings.' },
   { no: '06', slug: 'mortgage-finance-support', title: 'Mortgage Finance Support', desc: 'Mortgage application preparation, documentation coordination, and referral or administrative support. Regulated mortgage advice, arranging or credit intermediation only where legally authorised.' },
   { no: '07', slug: 'pension-support', title: 'Pension Support', desc: 'Pension information, contribution tax-relief reviews and administration/referrals. Regulated pension or investment advice requires appropriate authorisation.' },
+  { no: '08', slug: 'property-investment-support', title: 'Property Investment Support', desc: 'Looking to invest in property? We provide guidance and end-to-end support, from investment planning to identifying suitable property opportunities, helping you make informed and confident investment decisions.' },
 ];
 
 // Personal reliefs we claim (all part of 01 Personal Tax). No pages of their own any more.

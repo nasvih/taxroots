@@ -17,7 +17,7 @@ const { article: x, newer, older } = Astro.props;
 const { html, toc } = withToc(x.body);
 const tocAll = [...toc, { id: 'sources', text: 'Sources' }];
 // Reliefs related to this article. They have no pages of their own: shown as tags, one link to #services.
-// Slugs may be personal reliefs (SERVICE_LINKS) or one of the seven services (SERVICES).
+// Slugs may be personal reliefs (SERVICE_LINKS) or one of the eight services (SERVICES).
 const services = x.related
   .map((s) => {
     const r = SERVICE_LINKS.find((l) => l.slug === s);

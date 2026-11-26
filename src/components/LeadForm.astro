@@ -12,17 +12,14 @@ const id = 'lf-' + Math.random().toString(36).slice(2, 7);
   <div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off" /></label></div>
   <div class="row">
     <div class="field"><label for={`${id}-n`}>Full name</label><input id={`${id}-n`} name="name" autocomplete="name" required /></div>
-    <div class="field"><label for={`${id}-e`}>Email <span class="opt">(optional)</span></label><input id={`${id}-e`} name="email" type="email" autocomplete="email" /></div>
-  </div>
-  <div class="row">
     <div class="field"><label for={`${id}-p`}>Phone <span class="opt">(optional)</span></label><input id={`${id}-p`} name="phone" type="tel" autocomplete="tel" inputmode="tel" /></div>
-    <div class="field"><label for={`${id}-s`}>What can we help with?</label>
+  </div>
+  <div class="field"><label for={`${id}-s`}>What can we help with?</label>
       <select id={`${id}-s`} name="service">
         {SERVICES.map((s) => <option value={s.title} selected={s.title === service}>{s.title}</option>)}
         <option value="Not sure" selected={!service}>Not sure — please check</option>
       </select>
     </div>
-  </div>
   {!compact && <div class="field"><label for={`${id}-m`}>Anything we should know? <span class="opt">(optional)</span></label><textarea id={`${id}-m`} name="message" rows="3" placeholder="e.g. I rented in Dublin for the last three years and started a new job in March."></textarea></div>}
   <label class="consent"><input type="checkbox" name="consent" value="yes" required /> <span>I agree that TaxRoots may contact me about my claim. See our <a href="/privacy/">privacy notice</a>.</span></label>
   <div class="foot">
