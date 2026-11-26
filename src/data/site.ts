@@ -29,8 +29,8 @@ export type Office = { name: string; city: string; address: string; phones: Phon
 const tel = (n: string) => 'tel:' + n.replace(/[^+\d]/g, '');
 const phone = (number: string): Phone => ({ number, href: tel(number) });
 export const OFFICES: Office[] = [
-  { name: 'Dublin office', city: 'Dublin', address: 'Apartment 39, Block B1, The Quarter, Citywest Avenue, Citywest, Co. Dublin, D24 V4PV', phones: [phone(SITE.phone), phone('+353 89 973 4131')] },
-  { name: 'Cork office', city: 'Cork', address: SITE.address, phones: [phone(SITE.phone), phone('+353 89 499 6722')] },
+  { name: 'Dublin', city: 'Dublin', address: 'Apartment 39, Block B1, The Quarter, Citywest Avenue, Citywest, Co. Dublin, D24 V4PV', phones: [phone(SITE.phone), phone('+353 89 973 4131')] },
+  { name: 'Cork', city: 'Cork', address: SITE.address, phones: [phone(SITE.phone), phone('+353 89 499 6722')] },
 ];
 
 // Tax years. Revenue's four-year rule: the oldest open year is (this year - 4) and its claims close
