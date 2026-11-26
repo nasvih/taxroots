@@ -15,10 +15,10 @@ const year = new Date().getFullYear();
             <Button href={CTA.href} variant="green">{CTA.label}</Button>
           </div>
         </div>
-        <div class="offs stg" aria-label="Our offices">
+        <div class="offs stg" aria-label="Dublin and Cork">
           {OFFICES.map((o) => (
             <address class="off">
-              <h3>{o.name}</h3>
+              <h3>{o.city}</h3>
               {o.address && <p class="adr">{o.address}</p>}
               <ul class="off-ct">
                 <li><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>

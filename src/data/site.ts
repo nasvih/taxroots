@@ -52,7 +52,6 @@ export const SERVICES = [
   { no: '05', slug: 'vat-rct', title: 'VAT & RCT', desc: 'VAT registration and returns; Relevant Contracts Tax registration and filings.' },
   { no: '06', slug: 'mortgage-finance-support', title: 'Mortgage Finance Support', desc: 'Mortgage application preparation, documentation coordination, and referral or administrative support. Regulated mortgage advice, arranging or credit intermediation only where legally authorised.' },
   { no: '07', slug: 'pension-support', title: 'Pension Support', desc: 'Pension information, contribution tax-relief reviews and administration/referrals. Regulated pension or investment advice requires appropriate authorisation.' },
-  { no: '08', slug: 'property-investment-support', title: 'Property Investment Support', desc: 'Looking to invest in property? We provide guidance and end-to-end support, from investment planning to identifying suitable property opportunities, helping you make informed and confident investment decisions.' },
 ];
 
 // Personal reliefs we claim (all part of 01 Personal Tax). No pages of their own any more.
