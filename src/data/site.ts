@@ -9,7 +9,7 @@ export const SITE = {
   cro: '828654',
   incorporated: '2026-10-19',
   city: 'Co. Cork, Ireland',
-  email: 'hello@taxroots.ie',          // CONFIRM
+  email: 'info@taxroots.ie',
   phone: '+353 85 228 1647',
   phoneHref: 'tel:+353852281647',
   whatsappNumber: '353852281647',
