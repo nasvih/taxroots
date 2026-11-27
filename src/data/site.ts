@@ -50,8 +50,6 @@ export const SERVICES = [
   { no: '03', slug: 'cro-rbo-compliance', title: 'CRO & RBO Compliance', desc: 'Companies Registration Office filings and Register of Beneficial Ownership submissions.' },
   { no: '04', slug: 'payroll-paye', title: 'Payroll & PAYE', desc: 'Payroll processing, payslips and PAYE administration.' },
   { no: '05', slug: 'vat-rct', title: 'VAT & RCT', desc: 'VAT registration and returns; Relevant Contracts Tax registration and filings.' },
-  { no: '06', slug: 'mortgage-finance-support', title: 'Mortgage Finance Support', desc: 'Mortgage application preparation, documentation coordination, and referral or administrative support. Regulated mortgage advice, arranging or credit intermediation only where legally authorised.' },
-  { no: '07', slug: 'pension-support', title: 'Pension Support', desc: 'Pension information, contribution tax-relief reviews and administration/referrals. Regulated pension or investment advice requires appropriate authorisation.' },
 ];
 
 // Personal reliefs we claim (all part of 01 Personal Tax). No pages of their own any more.
