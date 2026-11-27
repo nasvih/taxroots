@@ -30,7 +30,7 @@ const year = new Date().getFullYear();
       </div>
       <div class="bottom">
         <Logo tone="dark" height={58} />
-        <p class="legal">{SITE.legal} is a private company limited by shares, registered in Ireland. Company number (CRO) {SITE.cro}. Registered office: {SITE.address}.<br />TaxRoots is an independent company, not part of or endorsed by the Revenue Commissioners. You can claim credits and reliefs yourself, free of charge, through Revenue's myAccount. Information on this site is general guidance, not advice on your own circumstances. Figures last checked 24 November 2026.</p>
+        <p class="legal">{SITE.legal}. Registered in Ireland, CRO {SITE.cro}. VAT no. {SITE.vat}.<br />Independent of Revenue. General information only, not personal tax advice.</p>
         <ul class="lg">
           {FOOTER.legal.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
           <li><span>© {year} {SITE.legal}</span></li>

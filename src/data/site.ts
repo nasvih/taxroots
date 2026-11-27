@@ -7,6 +7,7 @@ export const SITE = {
   tagline: 'Get More Back',
   url: 'https://taxroots.ie',
   cro: '828654',
+  vat: '4849686MH',   // Revenue VAT04849686MH, registered 19/10/2026
   incorporated: '2026-10-19',
   city: 'Co. Cork, Ireland',
   email: 'info@taxroots.ie',
